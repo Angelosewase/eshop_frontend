@@ -59,7 +59,7 @@ function AdminLayout() {
   const location = useLocation();
   console.log(location.pathname);
   return (
-    <div className="flex gap-2 w-full h-screen">
+    <div className="flex gap-1 w-full h-screen">
       <div className=" h-full w-2/12 bg-[#1B1B1E] text-white">
         <div className="h-32 flex items-center justify-center " id="logo-div">
           <h1 className="text-5xl  font-semibold">#E-shop</h1>
