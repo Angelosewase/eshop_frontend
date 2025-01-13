@@ -2,7 +2,7 @@ import { Bell, Search, User } from "lucide-react";
 
 function PageHeaderWithIcons({title}:{title:string}) {
   return (
-    <div className="flex-1 flex justify-between  w-full py-3 items-center">
+    <div className="flex justify-between  w-full py-3 items-center">
       <div>
         <h1 className="text-3xl font-bold">{title}</h1>
       </div>

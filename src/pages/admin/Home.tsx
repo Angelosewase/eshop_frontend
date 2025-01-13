@@ -1,4 +1,10 @@
-import { ChartColumnStacked, HeartHandshake, Kanban, PersonStanding } from "lucide-react";
+import {
+  ChartColumnStacked,
+  HeartHandshake,
+  Kanban,
+  PersonStanding,
+  Plus,
+} from "lucide-react";
 import { PageHeaderWithIcons, StatisticsCard } from "../../components/custom";
 import { statisticsCardPropsInterface } from "../../components/custom/StatisticsCard";
 
@@ -43,15 +49,33 @@ const DashboardStats: Array<statisticsCardPropsInterface> = [
 
 function Home() {
   return (
-    <div className="flex-1 px-2">
+    <div className="flex-1 flex flex-col px-2 h-full a">
       <PageHeaderWithIcons title="Dashboard" />
-      <div className="w-full grid grid-cols-4 gap-6">
+      <div className="w-full grid grid-cols-4 gap-6 h-3/12">
         {DashboardStats.map((data, idx) => (
           <StatisticsCard {...data} key={idx} />
         ))}
+      </div>
+      <div className="flex flex-1 py-4 gap-6 ">
+        <ProductCategories />
+        <div className="flex-1 "></div>
       </div>
     </div>
   );
 }
 
 export default Home;
+
+const ProductCategories = () => {
+  return (
+    <div className="flex-1 bg-[#D8DBE2] rounded-lg px-5">
+      <div className="flex justify-between items-center py-3">
+        <h1 className="text-2xl font-semibold">Product categories </h1>
+        <button className="text-[#58A4B0] flex items-center gap-0.5 button ">
+          <Plus size={15} />
+          <p>Add</p>
+        </button>
+      </div>
+    </div>
+  );
+};
