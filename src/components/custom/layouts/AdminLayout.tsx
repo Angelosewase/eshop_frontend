@@ -102,11 +102,14 @@ function AdminLayout() {
             );
           })}
         </div>
-        <div className="mt-20 mb-8 p-2">
+        <div className="mt-20 mb-8 p-2 ">
           <ContactDevCard />
         </div>
       </div>
+      <section className="flex-1">
+
       <Outlet />
+      </section>
     </div>
   );
 }
