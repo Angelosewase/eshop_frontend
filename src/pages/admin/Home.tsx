@@ -3,10 +3,10 @@ import {
   HeartHandshake,
   Kanban,
   PersonStanding,
-  Plus,
 } from "lucide-react";
 import { PageHeaderWithIcons, StatisticsCard } from "../../components/custom";
 import { statisticsCardPropsInterface } from "../../components/custom/StatisticsCard";
+import { AddCategoryModal } from "../../components/custom/modals";
 
 const DashboardStats: Array<statisticsCardPropsInterface> = [
   {
@@ -56,7 +56,7 @@ function Home() {
           <StatisticsCard {...data} key={idx} />
         ))}
       </div>
-      <div className="flex flex-1 py-4 gap-6 ">
+      <div className="flex flex-1 py-4 gap-14 ">
         <ProductCategories />
         <div className="flex-1 "></div>
       </div>
@@ -71,10 +71,7 @@ const ProductCategories = () => {
     <div className="flex-1 bg-[#D8DBE2] rounded-lg px-5">
       <div className="flex justify-between items-center py-3">
         <h1 className="text-2xl font-semibold">Product categories </h1>
-        <button className="text-[#58A4B0] flex items-center gap-0.5 button ">
-          <Plus size={15} />
-          <p>Add</p>
-        </button>
+        <AddCategoryModal />
       </div>
     </div>
   );

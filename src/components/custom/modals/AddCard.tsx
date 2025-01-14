@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { CirclePlus, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,35 +26,54 @@ function AddProduct() {
   return (
     <Dialog className="p-10">
       <DialogTrigger>
-        <button className="text-[#58A4B0] flex items-center gap-0.5 button ">
-          <Plus size={15} />
-          <p>Add</p>
+        <button className="w-full flex items-center justify-center border-2 m-2  border-dashed border-blue-500 rounded-lg h-48">
+          <CirclePlus size={40} color="#3b82f6" />
         </button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-3xl text-center">
-            Add new Category
+            Add new Payment
           </DialogTitle>
         </DialogHeader>
         <div className="w-[90%] mx-auto my-10">
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="name" className="mb-1">
-              Category name
+            <Label htmlFor="cardNumber" className="mb-1">
+              card number
             </Label>
-            <Input type="text" id="name" placeholder="category name" />
+            <Input type="number" id="cardNumber" placeholder="card number" />
+          </div>
+          <div className="flex items-center mt-4 gap-5">
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="expDate" className="mb-1">
+                Exp date
+              </Label>
+              <Input type="date" id="expDate" placeholder="Exp date" />
+            </div>
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="cvc" className="mb-1">
+                cvc
+              </Label>
+              <Input type="number" id="cvc" placeholder="cvc" />
+            </div>
+          </div>
+          <div className="grid w-full items-center gap-1.5 mt-4">
+            <Label htmlFor="name" className="mb-1">
+              Name on the card
+            </Label>
+            <Input type="text" id="name" placeholder="Owner's name" />
           </div>
           <div className="grid w-full  items-center gap-1.5 mt-4">
-            <Label className="mb-1">gender</Label>
+            <Label className="mb-1">country or region</Label>
             <Select>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a gender" />
+                <SelectValue placeholder="Select a country/region" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>gender</SelectLabel>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
+                  <SelectLabel>country/region</SelectLabel>
+                  <SelectItem value="male">Rwanda/kigali</SelectItem>
+                  <SelectItem value="female">Rwanda/Rubavu</SelectItem>
                   <SelectItem value="other">other</SelectItem>
                 </SelectGroup>
               </SelectContent>
@@ -71,7 +90,7 @@ function AddProduct() {
           </div>
 
           <button className="bg-[#373F51] mt-6 w-full text-white text-center py-2 font-semibold">
-            Add category
+            Add card
           </button>
 
           <p className="text-gray-400 text-xs text-center leading-4 mt-5">

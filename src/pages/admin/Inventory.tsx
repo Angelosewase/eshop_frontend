@@ -1,10 +1,10 @@
-import { Plus } from "lucide-react";
 import { PageHeaderWithIcons } from "../../components/custom";
 import StatisticsCard, {
   statisticsCardPropsInterface,
 } from "../../components/custom/StatisticsCard";
 import { InventoryProduct } from "../../components/custom/tables/inventory/columns";
 import { InventoryColumns, InventoryDataTable } from "../../components/custom/tables/inventory";
+import { AddInventoryProduct } from "../../components/custom/modals";
 
 const DashboardStats: Array<statisticsCardPropsInterface> = [
   {
@@ -44,15 +44,13 @@ export const TabComponent = ({ categories }: { categories: Array<string> }) => {
     <div className="w-full border-b border-gray-400 flex items-center py-2 mt-4 gap-4 -mb-8">
       {categories.map((category, idx) => (
         <div key={idx}>
-          <button className="hover:bg-gray-400 text-lg font-semibold py-1.5 px-3 rounded-lg">
+          <button className="hover:bg-gray-200 text-lg font-medium py-1.5 px-3 rounded-lg">
             {category}
           </button>
         </div>
       ))}
 
-      <button className="hover:bg-cyan-400 p-2 rounded-full">
-        <Plus size={15} />
-      </button>
+      <AddInventoryProduct />
     </div>
   );
 };

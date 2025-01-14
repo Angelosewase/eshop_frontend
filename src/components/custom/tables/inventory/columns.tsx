@@ -8,6 +8,7 @@ export type InventoryProduct = {
 };
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "../ColumnHeader";
+import { FolderX, Pen, SquareArrowOutUpRight } from "lucide-react";
 
  const columns: ColumnDef<InventoryProduct>[] = [
   {
@@ -73,10 +74,14 @@ import { DataTableColumnHeader } from "../ColumnHeader";
   {
     id: "actions",
     header: () => (
-      <h1 className="text-start  font-medium text-gray-500">Category</h1>
+      <h1 className="text-start  font-medium text-gray-500">Actions</h1>
     ),
     cell: () => {
-      return <div className="text-start font-medium">Actions</div>;
+      return <div className="flex items-center gap-8 text-blue-500 ">
+        <Pen  size={18} />
+        <SquareArrowOutUpRight size={18}/>
+        <FolderX  size={18} color="#ef4444"/>
+      </div>;
     },
   },
 ];
