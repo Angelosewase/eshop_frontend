@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { AdminLayout } from "./components/custom/layouts";
+import { AdminLayout, WebLayout } from "./components/custom/layouts";
 import {
   Customers,
   Home,
@@ -10,9 +10,12 @@ import {
   Settings,
   Support,
 } from "./pages/admin";
+import { Home as WebHome, Contact, Cart } from "./pages/web";
+
 import { NotfoundPage } from "./pages";
 
 const routes = createBrowserRouter([
+  { path: "*", element: <NotfoundPage /> },
   {
     path: "/admin",
     element: <AdminLayout />,
@@ -50,8 +53,25 @@ const routes = createBrowserRouter([
         element: <Payments />,
       },
     ],
+    
   },
-  { path: "*", element: <NotfoundPage /> },
+  {
+    path: "/",
+    element: <WebLayout />,
+    children: [
+      {
+       path: "/",
+       element: <WebHome />
+      },{
+        path: "/contact",
+        element: <Contact />
+      },
+      {
+        path:"/cart",
+        element: <Cart />
+      }
+    ]
+  }
 ]);
 
 function App() {
