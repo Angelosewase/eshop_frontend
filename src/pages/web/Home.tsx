@@ -5,6 +5,8 @@ import {
   Hero,
   PopularProducts,
   TopCategory,
+  TrendingProducts,
+  Services2HelpUShop,
 } from "../../components/custom/web";
 
 function Home() {
@@ -16,6 +18,8 @@ function Home() {
       <CashbackSection />
       <PopularProducts />
       <CashBack2 />
+      <TrendingProducts />
+      <Services2HelpUShop />
     </div>
   );
 }

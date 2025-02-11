@@ -10,6 +10,7 @@ interface Props {
 }
 
 import { Heart, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function WebProduct({
   name,
@@ -19,10 +20,14 @@ function WebProduct({
   price,
   rating,
 }: Props) {
+
+  const navigate = useNavigate()
   return (
-    <div className="max-w-xs rounded-2xl   bg-white min-w-[30%] mr-4 mb-8  ">
+    <div className="max-w-xs rounded   bg-white min-w-[23.86%] mr-4 mb-8  " onClick={() => {
+      navigate(`/product`)
+    }}>
       {/* Image Section */}
-      <div className="relative rounded-2xl overflow-hidden">
+      <div className="relative rounded-md overflow-hidden">
         <img
           src={imgUrl} // Replace with your image source
           alt="Product"
@@ -56,10 +61,10 @@ function WebProduct({
         {/* Price and Actions */}
       </div>
       <div className=" flex items-center justify-between px-4 ">
-        <button className="px-4 py-1 text-sm bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200">
+        <button className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg  hover:bg-gray-200">
           Add to cart
         </button>
-        <button className="px-4 py-1 text-sm bg-black text-white rounded-xl">
+        <button className="px-4 py-2 text-sm bg-black text-white rounded-lg font-semibold">
           Buy
         </button>
       </div>

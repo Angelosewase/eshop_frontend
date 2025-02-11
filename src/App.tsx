@@ -10,7 +10,15 @@ import {
   Settings,
   Support,
 } from "./pages/admin";
-import { Home as WebHome, Contact, Cart } from "./pages/web";
+import {
+  Home as WebHome,
+  Contact,
+  Cart,
+  Deals,
+  Orders as OrdersWeb,
+  ProductDetails,
+  Products,
+} from "./pages/web";
 
 import { NotfoundPage } from "./pages";
 
@@ -53,25 +61,41 @@ const routes = createBrowserRouter([
         element: <Payments />,
       },
     ],
-    
   },
   {
     path: "/",
     element: <WebLayout />,
     children: [
       {
-       path: "/",
-       element: <WebHome />
-      },{
-        path: "/contact",
-        element: <Contact />
+        path: "/",
+        element: <WebHome />,
       },
       {
-        path:"/cart",
-        element: <Cart />
-      }
-    ]
-  }
+        path: "/contact",
+        element: <Contact />,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
+      },
+      {
+        path: "/Orders",
+        element: <OrdersWeb />,
+      },
+      {
+        path: "/Deals",
+        element: <Deals />,
+      },
+      {
+        path: "/product",
+        element: <ProductDetails />,
+      },
+      {
+        path: "/products",
+        element: <Products />,
+      },
+    ],
+  },
 ]);
 
 function App() {

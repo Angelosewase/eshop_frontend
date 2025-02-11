@@ -1,6 +1,7 @@
 import { Phone, Search, ShoppingCart } from "lucide-react";
 import Logo from "./Logo";
 import { Link } from "react-router-dom";
+import { HeaderCategoriesDropDown } from "./modals";
 
 function WebHeader() {
   return (
@@ -9,18 +10,10 @@ function WebHeader() {
       <div className="w-full bg-white flex items-center  py-4 px-14">
         <Logo />
         <div className="text-[#696778] flex text-lg items-center  flex-1 font-normal justify-end  gap-12 ">
-          <select
-            name="categories"
-            id="categories"
-            className="border-none bg-white"
-          >
-            <option value="categories" className="hover:bg-gray-200">
-              categories
-            </option>
-          </select>
-          <button>Deals</button>
-          <button>Best sales</button>
-          <button>Delivery</button>
+          <HeaderCategoriesDropDown />
+          <Link className="border-b border-white hover:border-black" to={"/deals"}>Deals</Link>
+          <Link className="border-b border-white hover:border-black" to={"/best-sales"}>Best sales</Link>
+          <Link className="border-b border-white hover:border-black" to={"/orders"}>orders</Link>
           <form className="relative border border-gray-200 rounded-full ">
             <input
               type="text"
