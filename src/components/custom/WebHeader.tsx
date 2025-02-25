@@ -12,7 +12,7 @@ function WebHeader() {
         <div className="text-[#696778] flex text-lg items-center  flex-1 font-normal justify-end  gap-12 ">
           <HeaderCategoriesDropDown />
           <Link className="border-b border-white hover:border-black" to={"/deals"}>Deals</Link>
-          <Link className="border-b border-white hover:border-black" to={"/best-sales"}>Best sales</Link>
+          <Link className="border-b border-white hover:border-black" to={"/explore"}>Explore</Link>
           <Link className="border-b border-white hover:border-black" to={"/orders"}>orders</Link>
           <form className="relative border border-gray-200 rounded-full ">
             <input

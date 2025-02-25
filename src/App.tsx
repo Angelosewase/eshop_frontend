@@ -18,6 +18,8 @@ import {
   Orders as OrdersWeb,
   ProductDetails,
   Products,
+  Explore,
+  CheckOut,
 } from "./pages/web";
 
 import { NotfoundPage } from "./pages";
@@ -93,6 +95,14 @@ const routes = createBrowserRouter([
       {
         path: "/products",
         element: <Products />,
+      },
+      {
+        path: "/explore",
+        element: <Explore />,
+      },
+      {
+        path: "/checkout",
+        element: <CheckOut />,
       },
     ],
   },

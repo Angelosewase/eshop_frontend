@@ -2,16 +2,14 @@ import { MoveDown, MoveUp } from "lucide-react";
 import { Order } from "../../components/custom/tables/orders/columns";
 import { Table, columns } from "../../components/custom/tables/orders";
 import { OrdersChart } from "../../components/custom";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "../../components/ui/progress";
 
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "../../components/ui/card";
 
 function Orders() {
   return (

@@ -42,7 +42,8 @@ import {
 import { Checkbox } from "../../../ui/checkbox";
 import { DataTableColumnHeader } from "../ColumnHeader";
 
-export const columns: ColumnDef<Order>[] = [
+
+ const columns: ColumnDef<Order>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -76,19 +77,7 @@ export const columns: ColumnDef<Order>[] = [
       );
     },
   },
-  {
-    accessorKey: "customerName",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Customer Name" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="text-start  font-medium">
-          {row.getValue("customerName")}
-        </div>
-      );
-    },
-  },
+
   {
     accessorKey: "type",
     header: ({ column }) => (
@@ -252,3 +241,5 @@ function Actions({ row }: { row: Row<Order> }) {
     </Dialog>
   );
 }
+
+export default columns;

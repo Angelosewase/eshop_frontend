@@ -1,4 +1,4 @@
-import { ColumnDef, Row } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 
 export type InventoryProduct = {
   id: string;
@@ -6,8 +6,7 @@ export type InventoryProduct = {
   category: string;
   number: number;
 };
-import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "../ColumnHeader";
+import { Checkbox } from "../../../ui/checkbox";
 import { FolderX, Pen, SquareArrowOutUpRight } from "lucide-react";
 
  const columns: ColumnDef<InventoryProduct>[] = [

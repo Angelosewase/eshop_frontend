@@ -23,10 +23,9 @@ import {
   TableRow,
 } from "../../../../components/ui/table";
 
-import { Input } from "../../../../components/ui/input";
 import React from "react";
-import { DataTableViewOptions } from "../DataTableViewOptions";
 import { DataTablePagination } from "../DataTablePagination";
+import { DataTableViewOptions } from "../DataTableViewOptions";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -38,7 +37,7 @@ export default function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [paginationState, setPaginationState] = React.useState<PaginationState>({
-    pageSize: 7,
+    pageSize: 5,
     pageIndex: 0
   });
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -73,18 +72,13 @@ export default function DataTable<TData, TValue>({
   });
   return (
     <div className="p-1">
-      <div className="flex items-center py-4  border-b border-black mb-3">
-        <Input
-          placeholder="Filter customer name..."
-          value={(table.getColumn("customerName")?.getFilterValue() as string) ?? ""}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            table.getColumn("customerName")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+      <div className="flex items-center    border-b border-black mb-3">
+       <div className="mb-2 ml-auto">
+
         <DataTableViewOptions table={table} />
+       </div>
       </div>
-      <div className="rounded-md">
+      <div className="rounded-md ">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

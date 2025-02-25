@@ -6,7 +6,7 @@ function Hero() {
       <div className="relative w-full h-[450px] bg-gray-200 rounded-lg">
         <div className="absolute inset-0 flex items-center justify-center">
           <img
-            src={`https://picsum.photos/1410/450`}
+            src={`https://placeimg.com/1410/450/fashion`}
             alt="hero image"
             className=" rounded-lg"
           />
