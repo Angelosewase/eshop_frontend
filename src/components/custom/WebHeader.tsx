@@ -1,4 +1,4 @@
-import { Phone, Search, ShoppingCart } from "lucide-react";
+import { Phone, Search, ShoppingCart, User } from "lucide-react";
 import Logo from "./Logo";
 import { Link } from "react-router-dom";
 import { HeaderCategoriesDropDown } from "./modals";
@@ -9,11 +9,26 @@ function WebHeader() {
       <WebHeaderTop />
       <div className="w-full bg-white flex items-center  py-4 px-14">
         <Logo />
-        <div className="text-[#696778] flex text-lg items-center  flex-1 font-normal justify-end  gap-12 ">
+        <div className="text-[#696778] flex text-lg items-center  flex-1 font-normal justify-end  gap-7 ">
           <HeaderCategoriesDropDown />
-          <Link className="border-b border-white hover:border-black" to={"/deals"}>Deals</Link>
-          <Link className="border-b border-white hover:border-black" to={"/explore"}>Explore</Link>
-          <Link className="border-b border-white hover:border-black" to={"/orders"}>orders</Link>
+          <Link
+            className="border-b border-white hover:border-black"
+            to={"/deals"}
+          >
+            Deals
+          </Link>
+          <Link
+            className="border-b border-white hover:border-black"
+            to={"/explore"}
+          >
+            Explore
+          </Link>
+          <Link
+            className="border-b border-white hover:border-black"
+            to={"/orders"}
+          >
+            orders
+          </Link>
           <form className="relative border border-gray-200 rounded-full ">
             <input
               type="text"
@@ -33,10 +48,16 @@ function WebHeader() {
             Cart
           </Link>
 
-         <Link className="bg-[#373F51] text-white text-lg px-4 py-1 rounded-lg " to={"/contact"}>
-          contact
-          </Link> 
+          <Link
+            className="bg-[#373F51] text-white text-lg px-4 py-1 rounded-lg "
+            to={"/contact"}
+          >
+            contact
+          </Link>
 
+          <button className="py-1">
+            <User />
+          </button>
         </div>
       </div>
     </div>
