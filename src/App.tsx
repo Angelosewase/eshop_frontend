@@ -23,9 +23,18 @@ import {
 } from "./pages/web";
 
 import { NotfoundPage } from "./pages";
+import { AuthTester, Login, SignUp } from "./pages/auth";
 
 const routes = createBrowserRouter([
   { path: "*", element: <NotfoundPage /> },
+  { 
+    path:"/auth",
+    element :<AuthTester />,
+    children:[
+      { path: "/auth/login", element: <Login /> },
+      { path: "/auth/signup", element: <SignUp /> },
+    ]
+  },
   {
     path: "/admin",
     element: <AdminLayout />,
