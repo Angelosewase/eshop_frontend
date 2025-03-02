@@ -4,19 +4,23 @@ import { loginUser } from "../../features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks/Reduxhooks";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import {
+  useValidatePath,
+} from "../../app/hooks/auth";
 
 function Login() {
-  const dispatch = useAppDispatch();
+  useValidatePath();
   const [formState, setFormState] = useState({
     emailPhoneNumber: "",
     password: "",
   });
-  const {user ,   loading, error } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const { user, loading, error } = useAppSelector((state) => state.auth);
   function handleFormState(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setFormState({ ...formState, [name]: value });
   }
-
+  
   if (user != null) {
     toast.success("Login successful!");
   }
@@ -26,7 +30,9 @@ function Login() {
   } else if (error) {
     toast.dismiss();
     toast.error("Uh oh! Something went wrong.", {
-      description: "There was a problem with your request." + (error as AxiosError).message,
+      description:
+        "There was a problem with your request." +
+        (error as AxiosError).message,
     });
   }
 

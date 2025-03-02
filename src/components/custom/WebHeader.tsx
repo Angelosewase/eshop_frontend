@@ -5,59 +5,63 @@ import { HeaderCategoriesDropDown } from "./modals";
 
 function WebHeader() {
   return (
-    <div className="w-full">
+    <div className="w-full ">
       <WebHeaderTop />
       <div className="w-full bg-white flex items-center  py-4 px-14">
         <Logo />
-        <div className="text-[#696778] flex text-lg items-center  flex-1 font-normal justify-end  gap-7 ">
-          <HeaderCategoriesDropDown />
-          <Link
-            className="border-b border-white hover:border-black"
-            to={"/deals"}
-          >
-            Deals
-          </Link>
-          <Link
-            className="border-b border-white hover:border-black"
-            to={"/explore"}
-          >
-            Explore
-          </Link>
-          <Link
-            className="border-b border-white hover:border-black"
-            to={"/orders"}
-          >
-            orders
-          </Link>
-          <form className="relative border border-gray-200 rounded-full ">
-            <input
-              type="text"
-              placeholder="Search  products"
-              className="border-none bg-white rounded-full px-4 py-2 w-80 outline-1 outline-[#373F51] text-sm"
-            />
-            <button
-              type="submit"
-              className="absolute right-0.5 top-1/2 p-2 transform -translate-y-1/2 bg-[#373F51] rounded-full  text-white"
+        <div className="text-[#696778] flex text-[17.5px]  items-center  flex-1  justify-center ">
+          <div className="flex items-center gap-9 flex-1 justify-end pr-10">
+            <HeaderCategoriesDropDown />
+            <Link
+              className="border-b border-white hover:border-black"
+              to={"/deals"}
             >
-              <Search className="size-4" />
+              Deals
+            </Link>
+            <Link
+              className="border-b border-white hover:border-black"
+              to={"/explore"}
+            >
+              Explore
+            </Link>
+            <Link
+              className="border-b border-white hover:border-black"
+              to={"/orders"}
+            >
+              orders
+            </Link>
+            <form className="relative border border-gray-200 rounded-full ">
+              <input
+                type="text"
+                placeholder="Search  products"
+                className="border-none bg-white rounded-full px-4 py-2 w-80 outline-1 outline-[#373F51] text-sm"
+              />
+              <button
+                type="submit"
+                className="absolute right-0.5 top-1/2 p-2 transform -translate-y-1/2 bg-[#373F51] rounded-full  text-white"
+              >
+                <Search className="size-4" />
+              </button>
+            </form>
+          </div>
+          <div className="flex items-center justify-self-end gap-5 ">
+            <Link className="flex items-center gap-2" to={"/cart"}>
+              <ShoppingCart className="size-6" />
+              Cart
+            </Link>
+
+            <Link
+              className="bg-primary text-white text-lg px-4 py-1 rounded-lg "
+              to={"/contact"}
+            >
+              contact
+            </Link>
+
+            <button className="py-1 flex items-center gap-1  px-3 ">
+              <User />
+              Profile
             </button>
-          </form>
-
-          <Link className="flex items-center gap-2" to={"/cart"}>
-            <ShoppingCart className="size-6" />
-            Cart
-          </Link>
-
-          <Link
-            className="bg-[#373F51] text-white text-lg px-4 py-1 rounded-lg "
-            to={"/contact"}
-          >
-            contact
-          </Link>
-
-          <button className="py-1">
-            <User />
-          </button>
+          </div>
         </div>
       </div>
     </div>

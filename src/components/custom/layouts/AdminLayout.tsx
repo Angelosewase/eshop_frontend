@@ -11,6 +11,7 @@ import {
   SettingsIcon,
 } from "../icons";
 import { NavLink, ContactDevCard } from "..";
+import { useValidatePath } from "../../../app/hooks/auth";
 
 const navData = [
   {
@@ -57,7 +58,9 @@ const navData = [
 
 function AdminLayout() {
   const location = useLocation();
-  console.log(location.pathname);
+  useValidatePath();
+  
+
   return (
     <div className="flex gap-1 w-full h-screen">
       <div className=" h-full w-2/12 bg-[#1B1B1E] text-white">
