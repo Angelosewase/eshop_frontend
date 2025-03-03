@@ -1,19 +1,23 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userSlice from "./features/user/userSlice";
+import  { usersApi } from "./features/users/userSlice";
 import { default as authSlice } from "./features/auth/authSlice";
 import { orderApi } from "./features/orders/ordersSlice";
 import { productApi } from "./features/inventory/productSlice";
+import { accountApi } from "./features/account/accountSlice";
 const store = configureStore({
   reducer: {
-    user: userSlice,
     auth: authSlice,
     [orderApi.reducerPath]: orderApi.reducer,
     [productApi.reducerPath]: productApi.reducer,
+    [accountApi.reducerPath]:accountApi.reducer,
+    [usersApi.reducerPath]: usersApi.reducer
   },
   middleware(getDefaultMiddleware) {
     return getDefaultMiddleware()
       .concat(orderApi.middleware)
-      .concat(productApi.middleware);
+      .concat(productApi.middleware)
+      .concat(accountApi.middleware)
+      .concat(usersApi.middleware);
   },
 });
 

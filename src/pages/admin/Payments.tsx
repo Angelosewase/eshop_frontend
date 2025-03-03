@@ -1,6 +1,7 @@
 import { CirclePlus, FolderPen, FolderX } from "lucide-react";
 import { useState } from "react";
 import { AddCardModal } from "../../components/custom/modals";
+import { useGetAccountQuery } from "../../features/account/accountSlice";
 
 function Payments() {
   const [tabState, setTabState] = useState<"accounts" | "payments">("accounts");
@@ -42,12 +43,14 @@ export const TopTapComponent = ({
 };
 
 const TabComponent = ({ tab }: { tab: "accounts" | "payments" }) => {
+  const { data } = useGetAccountQuery();
+
   function AccountsTab() {
     const accountDetails = {
-      name: "John Doe",
-      "Phone number": "1234567890",
-      Password: "1234567890",
-      email: "V9M9a@example.com",
+      name: data?.firstName + " " + data?.lastName,
+      "Phone number": data?.phoneNumber,
+      Password: "********",
+      email: data?.email,
     };
     return (
       <div className="shadow-xl shadow-gray-100 rounded-lg p-2">
