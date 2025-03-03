@@ -1,15 +1,14 @@
-import { CirclePlus, Plus } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "../../../components/ui/dialog";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
 import {
   Select,
   SelectContent,
@@ -18,12 +17,13 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "../../../components/ui/select";
 
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "../../../components/ui/checkbox";
 
 function AddProduct() {
   return (
+    //@ts-expect-error unknown className
     <Dialog className="p-10">
       <DialogTrigger>
         <button className="w-full flex items-center justify-center border-2 m-2  border-dashed border-blue-500 rounded-lg h-48">
