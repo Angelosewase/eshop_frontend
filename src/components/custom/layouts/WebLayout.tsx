@@ -1,14 +1,12 @@
 import { Outlet } from "react-router-dom";
 import WebFooter from "../WebFooter";
 import WebHeader from "../WebHeader";
-import { useValidatePath } from "../../../app/hooks/auth";
-import { useAppSelector } from "../../../app/hooks/Reduxhooks";
+import { useValidatePath } from "../../../hooks/auth";
+import { useAppSelector } from "../../../hooks/Reduxhooks";
 
 function WebLayout({ showFooter = true }: { showFooter?: boolean }) {
   const {loading} = useAppSelector(state => state.auth)
   useValidatePath()
-
-  
   return (
     <div
       className={`h-screen w-full bg-gray-100 flex flex-col justify-center ${

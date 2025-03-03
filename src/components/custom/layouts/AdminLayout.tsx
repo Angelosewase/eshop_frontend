@@ -11,7 +11,7 @@ import {
   SettingsIcon,
 } from "../icons";
 import { NavLink, ContactDevCard } from "..";
-import { useValidatePath } from "../../../app/hooks/auth";
+import { useValidatePath } from "../../../hooks/auth";
 
 const navData = [
   {

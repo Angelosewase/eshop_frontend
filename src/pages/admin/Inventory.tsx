@@ -2,9 +2,14 @@ import { PageHeaderWithIcons } from "../../components/custom";
 import StatisticsCard, {
   statisticsCardPropsInterface,
 } from "../../components/custom/StatisticsCard";
-import { InventoryProduct } from "../../components/custom/tables/inventory/columns";
-import { InventoryColumns, InventoryDataTable } from "../../components/custom/tables/inventory";
+import {
+  InventoryColumns,
+  InventoryDataTable,
+} from "../../components/custom/tables/inventory";
 import { AddInventoryProduct } from "../../components/custom/modals";
+import { useGetProductsQuery } from "../../features/inventory/productSlice";
+import { transformProductsIntoInventoryProducts } from "../../lib/utils";
+import { Progress } from "../../components/ui/progress";
 
 const DashboardStats: Array<statisticsCardPropsInterface> = [
   {
@@ -55,26 +60,28 @@ export const TabComponent = ({ categories }: { categories: Array<string> }) => {
   );
 };
 
-export function fetchData({
-  categories,
-}: {
-  categories: Array<string>;
-}): Array<InventoryProduct> {
-  return Array.from({ length: 100 }).map((_, idx) => ({
-    id: (idx + 1).toString(),
-    name: `Product ${idx + 1}`,
-    category: categories[Math.floor(Math.random() * categories.length)],
-    number: Math.floor(Math.random() * (100 - 1 + 1)) + 1,
-  })) as Array<InventoryProduct>;
-}
-
-
 export function InventoryTable() {
-  const categories = ["All", "Mending", "Bought", "Best sale", "discount"];
-  const data = fetchData({ categories });
+  const { data, isLoading, isError } = useGetProductsQuery();
+  const productDetails = data?.products;
+
   return (
     <div className="container mx-auto py-10">
-      <InventoryDataTable columns={InventoryColumns} data={data} />
+      {isLoading && (
+        <div className="w-full h-64 flex items-center justify-center">
+          <Progress className="w-56 h-56" />
+        </div>
+      )}
+      {isError && (
+        <div className="w-full h-64 flex items-center justify-center">
+          <p className="text-center text-lg text-red-500">
+            Oops, something went wrong! Please try again later.
+          </p>
+        </div>
+      )}
+      <InventoryDataTable
+        columns={InventoryColumns}
+        data={transformProductsIntoInventoryProducts(productDetails || [])}
+      />
     </div>
   );
 }

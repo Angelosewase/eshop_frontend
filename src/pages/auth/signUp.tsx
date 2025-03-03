@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks/Reduxhooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/Reduxhooks";
 import { toast } from "sonner";
 import { registerUser } from "../../features/auth/authSlice";
 import { AxiosError } from "axios";

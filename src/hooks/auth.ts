@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { verifyIsLoggedIn } from "../../features/auth/authSlice";
-import { useAppDispatch, useAppSelector } from "../hooks/Reduxhooks";
+import { verifyIsLoggedIn } from "../features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "./Reduxhooks";
 import { useEffect } from "react";
 
 enum Role {

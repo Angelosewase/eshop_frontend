@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
-import { default as Axios } from "../../app/axios";
+import { default as Axios } from "../../api";
 import { toast } from "sonner";
 
 export const loginUser = createAsyncThunk(

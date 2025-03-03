@@ -10,8 +10,17 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
+import { useGetOrdersQuery } from "../../features/orders/ordersSlice";
+import { transformOrderDetailItoOrderI } from "../../lib/utils";
 
 function Orders() {
+  const { data, error, isLoading, refetch } = useGetOrdersQuery();
+  const orders: Order[] = transformOrderDetailItoOrderI(data?.data || []);
+
+  if (error) {
+    console.log(error);
+  }
+
   return (
     <div className="flex-1  flex items-start  w-full h-screen overflow-hidden ">
       <div className=" flex-1  border-r border-black h-full  overflow-y-auto">
@@ -24,13 +33,23 @@ function Orders() {
               <MoveDown size={16} />
               export
             </button>
-            <button className="border border-black rounded flex items-center gap-1 px-2 py-1.5 bg-black text-white">
+            <button className="border border-black rounded flex items-center gap-1 px-2 py-1.5 bg-black text-white" onClick={()=>refetch()}>
               <MoveUp size={16} />
               Import
             </button>
           </div>
         </div>
-        <OrdersTable />
+        {isLoading ? (
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center text-red-500">
+            <p>Failed to fetch orders. Please try again later.</p>
+          </div>
+        ) : (
+          <OrdersTable data={orders} />
+        )}
       </div>
       <div className="w-[20%] ">
         <OrdersChart />
@@ -44,8 +63,7 @@ function Orders() {
 
 export default Orders;
 
-export const OrdersTable = () => {
-  const data = getData();
+export const OrdersTable = ({ data }: { data: Order[] }) => {
   return (
     <div className="container mx-auto py-10">
       <Table columns={columns} data={data} />
@@ -116,7 +134,7 @@ export const OverviewCard = () => {
                   <h1 className="text-base font-semibold">$1260</h1>
                 </div>
                 <h2 className="text-xs  text-gray-400 font-semibold">
-                 5894  deals
+                  5894 deals
                 </h2>
               </div>
             </div>
@@ -127,88 +145,88 @@ export const OverviewCard = () => {
   );
 };
 
-function getData(): Order[] {
-  return [
-    {
-      id: "728ed52f",
-      customerName: "Mohamed Elhawary",
-      type: "online",
-      status: "pending",
-      product: "Product 1",
-      amount: 100,
-      date: "2022-01-01",
-    },
-    {
-      id: "728ed52d",
-      customerName: "Ahmed Hassan",
-      type: "online",
-      status: "processing",
-      product: "Product 2",
-      amount: 200,
-      date: "2022-01-02",
-    },
-    {
-      id: "728ed52c",
-      customerName: "Mahmoud Ali",
-      type: "offline",
-      status: "success",
-      product: "Product 3",
-      amount: 300,
-      date: "2022-01-03",
-    },
-    {
-      id: "728ed52b",
-      customerName: "Abdelrahman Mohamed",
-      type: "online",
-      status: "failed",
-      product: "Product 4",
-      amount: 400,
-      date: "2022-01-04",
-    },
-    {
-      id: "728ed52f",
-      customerName: "Mohamed Elhawary",
-      type: "online",
-      status: "pending",
-      product: "Product 1",
-      amount: 100,
-      date: "2022-01-01",
-    },
-    {
-      id: "728ed52d",
-      customerName: "Ahmed Hassan",
-      type: "online",
-      status: "processing",
-      product: "Product 2",
-      amount: 200,
-      date: "2022-01-02",
-    },
-    {
-      id: "728ed52d",
-      customerName: "Ahmed Hassan",
-      type: "online",
-      status: "processing",
-      product: "Product 2",
-      amount: 200,
-      date: "2022-01-02",
-    },
-    {
-      id: "728ed52d",
-      customerName: "Ahmed Hassan",
-      type: "online",
-      status: "processing",
-      product: "Product 2",
-      amount: 200,
-      date: "2022-01-02",
-    },
-    {
-      id: "728ed52d",
-      customerName: "Ahmed Hassan",
-      type: "online",
-      status: "processing",
-      product: "Product 2",
-      amount: 200,
-      date: "2022-01-02",
-    },
-  ];
-}
+// function getData(): Order[] {
+//   return [
+//     {
+//       id: "728ed52f",
+//       customerName: "Mohamed Elhawary",
+//       type: "online",
+//       status: "pending",
+//       product: "Product 1",
+//       amount: 100,
+//       date: "2022-01-01",
+//     },
+//     {
+//       id: "728ed52d",
+//       customerName: "Ahmed Hassan",
+//       type: "online",
+//       status: "processing",
+//       product: "Product 2",
+//       amount: 200,
+//       date: "2022-01-02",
+//     },
+//     {
+//       id: "728ed52c",
+//       customerName: "Mahmoud Ali",
+//       type: "offline",
+//       status: "success",
+//       product: "Product 3",
+//       amount: 300,
+//       date: "2022-01-03",
+//     },
+//     {
+//       id: "728ed52b",
+//       customerName: "Abdelrahman Mohamed",
+//       type: "online",
+//       status: "failed",
+//       product: "Product 4",
+//       amount: 400,
+//       date: "2022-01-04",
+//     },
+//     {
+//       id: "728ed52f",
+//       customerName: "Mohamed Elhawary",
+//       type: "online",
+//       status: "pending",
+//       product: "Product 1",
+//       amount: 100,
+//       date: "2022-01-01",
+//     },
+//     {
+//       id: "728ed52d",
+//       customerName: "Ahmed Hassan",
+//       type: "online",
+//       status: "processing",
+//       product: "Product 2",
+//       amount: 200,
+//       date: "2022-01-02",
+//     },
+//     {
+//       id: "728ed52d",
+//       customerName: "Ahmed Hassan",
+//       type: "online",
+//       status: "processing",
+//       product: "Product 2",
+//       amount: 200,
+//       date: "2022-01-02",
+//     },
+//     {
+//       id: "728ed52d",
+//       customerName: "Ahmed Hassan",
+//       type: "online",
+//       status: "processing",
+//       product: "Product 2",
+//       amount: 200,
+//       date: "2022-01-02",
+//     },
+//     {
+//       id: "728ed52d",
+//       customerName: "Ahmed Hassan",
+//       type: "online",
+//       status: "processing",
+//       product: "Product 2",
+//       amount: 200,
+//       date: "2022-01-02",
+//     },
+//   ];
+// }

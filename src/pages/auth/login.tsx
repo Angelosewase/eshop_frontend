@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { loginUser } from "../../features/auth/authSlice";
-import { useAppDispatch, useAppSelector } from "../../app/hooks/Reduxhooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/Reduxhooks";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import {
   useValidatePath,
-} from "../../app/hooks/auth";
+} from "../../hooks/auth";
 
 function Login() {
   useValidatePath();
