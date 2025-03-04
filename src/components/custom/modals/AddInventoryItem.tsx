@@ -17,8 +17,64 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../ui/select";
+import {  useState } from "react";
+import {
+  useCreateProductMutation,
+} from "../../../features/inventory/productSlice";
+import { toast } from "sonner";
+
+export interface productFullData {
+  product: {
+    name: string;
+    description?: string;
+    summary?: string;
+    cover?: string;
+    categoryId: number;
+    subCategories?: number[];
+  };
+  variants: Array<{
+    size: string;
+    // color: string;
+    price: string;
+    quantity: number;
+  }>;
+}
+
+
+const initialState : productFullData = {
+  product:{
+    name:"",
+    description:"",
+    summary:"",
+    cover:"",
+    categoryId:-1, 
+    subCategories:[]
+  },
+  variants:[]
+}
 
 function AddProduct() {
+  const [formState, setFormState] = useState<productFullData>(initialState);
+  const [createProduct, { isLoading, isError, isSuccess }] =
+    useCreateProductMutation();
+
+  async function handleSubmit() {
+    if (formState) await createProduct(formState);
+
+    if (isError) {
+      toast.error("failed to create the product");
+    }
+    if (isSuccess) {
+      toast.dismiss();
+      toast.success("product created successfully");
+    }
+    setFormState(initialState);
+  }
+
+  function handleChange (e :React.ChangeEvent<HTMLInputElement>| React.ChangeEvent<HTMLTextAreaElement>) {
+    setFormState({...formState , [e.target.name]:e.target.value})
+  }
+
   return (
     //@ts-expect-error unknown className
     <Dialog className="p-10 w-[800px]">
@@ -37,9 +93,13 @@ function AddProduct() {
               </label>
               <Input
                 type="text"
-                id="description"
+                id="name"
+                name= "name"
                 placeholder="product name"
                 className="bg-gray-200 mt-1"
+                value={formState.product.name}
+                onChange={handleChange}
+
               />
             </div>
             <div className="mt-2 ">
@@ -49,6 +109,10 @@ function AddProduct() {
               <Textarea
                 id="name"
                 placeholder="product description "
+                name="description"
+                value={formState.product.description
+                }
+                onChange={(e)=> handleChange(e)}
                 className="bg-gray-200 mt-1 h-[160px] items-start pl-1"
               />
             </div>
@@ -166,7 +230,18 @@ function AddProduct() {
                 </SelectContent>
               </Select>
             </div>
-            <button className="w-full mt-4 py-2 bg-primary rounded text-white">Submit</button>
+            <button
+              className="w-full mt-4 py-2 bg-primary rounded text-white"
+              onClick={handleSubmit}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+                </div>
+              ) : (
+                "Submit"
+              )}
+            </button>
           </div>
         </div>
       </DialogContent>

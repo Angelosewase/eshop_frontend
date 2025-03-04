@@ -1,40 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-export interface Product {
-  id: number;
-  name: string;
-  description?: string | null;
-  summary?: string | null;
-  cover?: string | null;
-  categoryId: number;
-  category: {
-    id: number;
-    name: string;
-  } | null;
-  subCategories: Array<{
-    id: number;
-    name: string;
-  }> | null;
-  productSkus: Array<{
-    id: number;
-    sku: string;
-    price: string;
-    quantity: number;
-    sizeAttribute: {
-      value: string;
-    } | null;
-    colorAttribute: {
-      value: string;
-    } | null;
-  }> | null;
-  reviews?: Array<{
-    id: number;
-    rating: number;
-    comment?: string | null;
-    userId: number;
-  }> | null;
-  averageRating?: number | null;
-}
+import { Product } from "../../lib/types";
+import { productFullData } from "../../components/custom/modals/AddInventoryItem";
 
 export const productApi = createApi({
   reducerPath: "products",
@@ -42,6 +8,7 @@ export const productApi = createApi({
     baseUrl: "http://localhost:5000",
     credentials: "include",
   }),
+  tagTypes: ["Products"],
   endpoints: (builder) => ({
     getProducts: builder.query<
       {
@@ -54,15 +21,38 @@ export const productApi = createApi({
       void
     >({
       query: () => "/products",
+      providesTags: ["Products"],
     }),
     createProduct: builder.mutation({
-      query: (productData :Partial<Product> ) => ({
+      query: (productData: productFullData) => ({
         url: "/products",
         method: "POST",
-        body:productData
+        body: productData,
       }),
+      invalidatesTags: ["Products"],
     }),
   }),
 });
 
-export const { useCreateProductMutation, useGetProductsQuery} = productApi
+export const { useCreateProductMutation, useGetProductsQuery } = productApi;
+
+export const productAttributesApi = createApi({
+  reducerPath: "productAttributes",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:5000/product-attributes",
+    credentials: "include",
+  }),
+  endpoints: (builder) => ({
+    getAttributes: builder.query<
+      {
+        attributes: Array<{
+          id: number;
+          name: string;
+        }>;
+      },
+      void
+    >({
+      query: () => "/",
+    }),
+  }),
+});

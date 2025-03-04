@@ -9,25 +9,26 @@ import {
 import { AddInventoryProduct } from "../../components/custom/modals";
 import { useGetProductsQuery } from "../../features/inventory/productSlice";
 import { transformProductsIntoInventoryProducts } from "../../lib/utils";
-import { Progress } from "../../components/ui/progress";
-
-const DashboardStats: Array<statisticsCardPropsInterface> = [
-  {
-    Header: <h4 className="text-sm  font-semibold">Total inventory volume</h4>,
-    fact: "100k",
-  },
-  {
-    Header: <h4 className="text-sm  font-semibold">inventory value</h4>,
-    fact: "96.4k",
-  },
-  {
-    Header: <h4 className="text-sm  font-semibold">Partners inventory</h4>,
-    fact: "10.1k",
-  },
-];
 
 function Inventory() {
   const categories = ["All", "Mending", "Bought", "Best sale", "discount"];
+  const { data: productsData } = useGetProductsQuery();
+  const DashboardStats: Array<statisticsCardPropsInterface> = [
+    {
+      Header: (
+        <h4 className="text-sm  font-semibold">Total inventory volume</h4>
+      ),
+      fact: productsData?.total.toString() || "unknown",
+    },
+    {
+      Header: <h4 className="text-sm  font-semibold">inventory value</h4>,
+      fact: "96.4k",
+    },
+    {
+      Header: <h4 className="text-sm  font-semibold">Partners inventory</h4>,
+      fact: "10.1k",
+    },
+  ];
   return (
     <div className="flex-1 px-2 = h-full">
       <PageHeaderWithIcons title="Inventory" />
@@ -67,8 +68,8 @@ export function InventoryTable() {
   return (
     <div className="container mx-auto py-10">
       {isLoading && (
-        <div className="w-full h-64 flex items-center justify-center">
-          <Progress className="w-56 h-56" />
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
         </div>
       )}
       {isError && (

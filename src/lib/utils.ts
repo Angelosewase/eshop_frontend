@@ -2,8 +2,8 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Order } from "../components/custom/tables/orders/columns";
 import { OrderDetails } from "../features/orders/ordersSlice";
-import { Product } from "../features/inventory/productSlice";
 import { InventoryProduct } from "../components/custom/tables/inventory/columns";
+import { Product } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

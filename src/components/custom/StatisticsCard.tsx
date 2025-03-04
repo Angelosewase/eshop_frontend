@@ -16,7 +16,15 @@ function StatisticsCard({ Header, fact }: statisticsCardPropsInterface) {
         </button>
       </div>
       <div className="flex-1  flex items-center justify-start h-[80%]">
-        <h1 className="text-5xl font-bold">{fact}</h1>
+        <h1 className="text-5xl font-bold">
+          {fact === "unknown" ? (
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+            </div>
+          ) : (
+            fact + ""
+          )}
+        </h1>
       </div>
     </div>
   );
