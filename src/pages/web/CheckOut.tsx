@@ -117,7 +117,7 @@ export default function CheckoutPage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Initialize cart when component mounts
+
   useEffect(() => {
     CartService.initializeCart();
   }, []);
