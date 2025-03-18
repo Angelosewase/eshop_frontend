@@ -1,72 +1,21 @@
 import WebProduct from "../WebProduct";
-
-const BestSalesProduct = [
-  {
-    id: 1,
-    name: "Product 1",
-    price: 100,
-    imgUrl: "https://picsum.photos/id/237/192",
-    description: "Product 1 description",
-    reviews: 200,
-    rating: 4,
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Product 2",
-    price: 200,
-    imgUrl: "https://picsum.photos/id/1015/192",
-    description: "Product 2 description",
-    reviews: 300,
-    rating: 3,
-    quantity: 1,
-  },
-  {
-    id: 3,
-    name: "Product 3",
-    price: 300,
-    imgUrl: "https://picsum.photos/id/1016/192",
-    description: "Product 3 description",
-    reviews: 400,
-    rating: 5,
-    quantity: 1,
-  },
-  {
-    id: 4,
-    name: "Product 4",
-    price: 400,
-    imgUrl: "https://picsum.photos/1016/192",
-    description: "Product 4 description",
-    reviews: 500,
-    rating: 4,
-    quantity: 1,
-  },
-  {
-    id: 5,
-    name: "Product 5",
-    price: 500,
-    imgUrl: "https://picsum.photos/id/1018/192",
-    description: "Product 5 description",
-    reviews: 600,
-    rating: 3,
-    quantity: 1,
-  },
-  {
-    id: 6,
-    name: "Product 6",
-    price: 600,
-    imgUrl: "https://picsum.photos/id/1019/150",
-    description: "Product 6 description",
-    reviews: 700,
-    rating: 5,
-    quantity: 1,
-  },
-];
+import { useGetProductsQuery } from "../../../features/inventory/productSlice";
+import { LoadingSpinner } from "../../ui/loading-spinner";
 
 function BestSales() {
+  const { data, error, isLoading } = useGetProductsQuery({ limit: 6 });
+
+  if (isLoading) return (
+    <div className="mt-14 flex items-center justify-center h-32">
+      <LoadingSpinner size="md" />
+    </div>
+  );
+  if (error) return <div className="mt-14">Error loading best sales</div>;
+  if (!data?.products?.length) return null;
+
   return (
-    <div className="mt-14 ">
-      <p className="text-xl font-bold mb-4 ">Best sales for you</p>
+    <div className="mt-14">
+      <p className="text-xl font-bold mb-4">Best sales for you</p>
       <section className="flex flex-nowrap overflow-auto">
         <style>
           {`
@@ -86,17 +35,17 @@ function BestSales() {
             }
           `}
         </style>
-        {BestSalesProduct.map((product) => (
+        {data.products.map((product) => (
           <WebProduct
             id={product.id}
             key={product.id}
             name={product.name}
-            imgUrl={product.imgUrl}
-            description={product.description}
-            reviews={product.reviews}
-            price={product.price}
-            rating={product.rating}
-            quantity={product.quantity}
+            imgUrl={product.cover || "https://picsum.photos/id/237/192"}
+            description={product.summary || product.description || ""}
+            reviews={product.reviews?.length || 0}
+            price={Number(product.productSkus?.[0]?.price || 0)}
+            rating={product.averageRating || 0}
+            quantity={product.productSkus?.[0]?.quantity || 0}
           />
         ))}
       </section>

@@ -1,8 +1,6 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts";
-
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import {
   Card,
   CardContent,
@@ -10,109 +8,200 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-const chartData = [{ month: "january", mending: 1260, bought: 550 }];
-const totalAmount = 110;
+} from "../ui/card";
+import { OrderDetails } from "../../features/orders/ordersSlice";
+import { formatCurrency, formatNumber } from "../../lib/utils";
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig;
+interface OrdersChartProps {
+  orders: OrderDetails[];
+}
 
-export default function Component() {
-  const totalOrders = chartData[0].mending + chartData[0].bought;
+export default function OrdersChart({ orders }: OrdersChartProps) {
+  // Debug the incoming orders
+  console.log("OrdersChart received orders:", orders);
+
+  // Calculate total revenue and order counts
+  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+  const totalOrders = orders.length;
+
+  // Group orders by date with improved error handling
+  const ordersByDate = orders.reduce((acc, order) => {
+    let dateStr;
+    try {
+      // Ensure we have a valid date object
+      const orderDate = order.createdAt instanceof Date
+        ? order.createdAt
+        : new Date(order.createdAt);
+
+      // Check if date is valid
+      if (isNaN(orderDate.getTime())) {
+        console.warn("Invalid date in order:", order);
+        dateStr = "Unknown";
+      } else {
+        dateStr = orderDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+    } catch (e) {
+      console.error("Error formatting date for order:", order, e);
+      dateStr = "Unknown";
+    }
+
+    if (!acc[dateStr]) {
+      acc[dateStr] = {
+        date: dateStr,
+        orders: 0,
+        revenue: 0,
+        paid: 0,
+        pending: 0,
+        cancelled: 0
+      };
+    }
+
+    acc[dateStr].orders += 1;
+    acc[dateStr].revenue += order.total;
+
+    const status = order.payment?.status || "pending";
+    if (status === 'paid') {
+      acc[dateStr].paid += order.total;
+    } else if (status === 'pending') {
+      acc[dateStr].pending += order.total;
+    } else if (status === 'cancelled') {
+      acc[dateStr].cancelled += order.total;
+    }
+
+    return acc;
+  }, {} as Record<string, { date: string; orders: number; revenue: number; paid: number; pending: number; cancelled: number }>);
+
+  // Convert to array and sort by date
+  const chartData = Object.values(ordersByDate);
+
+  // Sort by date if possible
+  const sortedChartData = [...chartData].sort((a, b) => {
+    // Handle "Unknown" dates
+    if (a.date === "Unknown") return 1;
+    if (b.date === "Unknown") return -1;
+
+    try {
+      // Parse dates for comparison
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateA.getTime() - dateB.getTime();
+    } catch (e) {
+      console.error("Error sorting dates:", a.date, b.date, e);
+      return 0;
+    }
+  });
+
+  // Take only the last 7 days if we have more data
+  const recentChartData = sortedChartData.slice(-7);
+
+  // Debug the chart data
+  console.log("Chart data:", recentChartData);
+
+  // If no data, show a message
+  if (recentChartData.length === 0) {
+    return (
+      <Card className="w-full">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base">Orders Overview</CardTitle>
+              <CardDescription>Revenue breakdown by day</CardDescription>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold">{formatCurrency(0)}</p>
+              <p className="text-sm text-muted-foreground">0 orders</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0 flex items-center justify-center" style={{ height: '250px' }}>
+          <div className="text-center text-muted-foreground">
+            <p>No order data available to display</p>
+            <p className="text-sm mt-2">Create some orders to see the chart</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Receipt of goods</CardTitle>
+    <Card className="w-full">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-base">Orders Overview</CardTitle>
+            <CardDescription>Revenue breakdown by day</CardDescription>
+          </div>
+          <div className="text-right">
+            <p className="text-2xl font-bold">{formatCurrency(totalRevenue)}</p>
+            <p className="text-sm text-muted-foreground">{formatNumber(totalOrders)} orders</p>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="flex flex-1 items-center -pb-">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square w-full -mb-24"
-        >
-          <RadialBarChart
-            data={chartData}
-            endAngle={180}
-            innerRadius={80}
-            outerRadius={120}
-          >
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) - 16}
-                          className="fill-foreground text-2xl font-bold"
-                        >
-                          ${totalAmount}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 4}
-                          className="fill-muted-foreground"
-                        >
-                          {totalOrders.toLocaleString()} Orders
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
-            </PolarRadiusAxis>
-            <RadialBar
-              dataKey="bought"
-              stackId="a"
-              cornerRadius={5}
-              fill="#373F51"
-              className="stroke-transparent stroke-2"
-            />
-            <RadialBar
-              dataKey="mending"
-              fill="#848294"
-              stackId="a"
-              cornerRadius={5}
-              className="stroke-transparent stroke-2"
-            />
-          </RadialBarChart>
-        </ChartContainer>
+      <CardContent className="p-0">
+        <div className="h-[calc(100%-80px)] min-h-[250px] w-full px-4">
+          {/* Add error boundary for recharts */}
+          {(() => {
+            try {
+              return (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={recentChartData}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="date" />
+                    <YAxis
+                      tickFormatter={(value) => `$${value}`}
+                      width={60}
+                    />
+                    <Tooltip
+                      formatter={(value) => [`$${value}`, '']}
+                      labelFormatter={(label) => `Date: ${label}`}
+                    />
+                    <Legend />
+                    <Bar dataKey="paid" name="Paid" fill="#16a34a" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="pending" name="Pending" fill="#eab308" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="cancelled" name="Cancelled" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              );
+            } catch (error) {
+              console.error("Error rendering chart:", error);
+              return (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center text-muted-foreground">
+                    <p>Error rendering chart</p>
+                    <p className="text-sm mt-2">Please try refreshing the page</p>
+                    <pre className="text-xs mt-4 text-left bg-gray-100 p-2 rounded max-w-full overflow-auto">
+                      {JSON.stringify(recentChartData, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              );
+            }
+          })()}
+        </div>
       </CardContent>
-      <CardFooter className="flex items-center justify-between text-sm">
-        <div className="flex flex-col items-end">
-          <div className="flex items-center gap-1 -mb-1">
-            <button className="w-1.5 h-1.5 bg-[#373F51]"/>
-            <h1 className="text-base font-semibold">$550</h1>
+      <CardFooter className="border-t px-6 py-4">
+        <div className="flex justify-between w-full text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-sm bg-green-600" />
+            <span>Paid Orders</span>
           </div>
-          <h2 className="text-xs  text-gray-400 font-semibold">{chartData[0].bought} bought</h2>
-        </div>
-        <div className="flex flex-col items-end">
-          <div className="flex items-center gap-1 -mb-1">
-            <button className="w-1.5 h-1.5 bg-[#848294]"/>
-            <h1 className="text-base font-semibold">$1260</h1>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-sm bg-yellow-500" />
+            <span>Pending Orders</span>
           </div>
-          <h2 className="text-xs  text-gray-400 font-semibold">{chartData[0].mending} mending deals</h2>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-sm bg-red-500" />
+            <span>Cancelled Orders</span>
+          </div>
         </div>
-
       </CardFooter>
     </Card>
   );

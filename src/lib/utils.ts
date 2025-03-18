@@ -9,30 +9,68 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function shortenNumber(num: number): string {
+  if (num >= 1e12) {
+    return (num / 1e12).toFixed(1) + 'T';
+  }
+  if (num >= 1e9) {
+    return (num / 1e9).toFixed(1) + 'B';
+  }
+  if (num >= 1e6) {
+    return (num / 1e6).toFixed(1) + 'M';
+  }
+  if (num >= 1e3) {
+    return (num / 1e3).toFixed(1) + 'k';
+  }
+  return num.toString();
+}
+
+export function formatCurrency(amount: number): string {
+  const shortened = shortenNumber(amount);
+  if (shortened.includes('k')) {
+    return `$${shortened}`;
+  } else if (shortened.includes('M')) {
+    return `$${shortened}`;
+  } else if (shortened.includes('B')) {
+    return `$${shortened}`;
+  }
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+export function formatNumber(num: number): string {
+  return shortenNumber(num);
+}
+
 export function transformOrderDetailItoOrderI(
   OrderDetails: OrderDetails[]
 ): Order[] {
   return OrderDetails.map((orderDetail) => ({
+    ...orderDetail,
     id: orderDetail.id.toString(),
-    customerName: orderDetail.user.email,
-    type: "online",
-    status: "pending",
-    product: "product",
-    amount: orderDetail.total,
-    date: orderDetail.createdAt.toString(),
+    user: { email: orderDetail.user.email },
+    total: orderDetail.total,
+    createdAt: orderDetail.createdAt.toString(),
   }));
 }
 
 export function transformProductsIntoInventoryProducts(
   products: Product[]
 ): Array<InventoryProduct> {
-  return products.map((product) => ({
-    id: product.id.toString() || "",
-    name: product.name || "",
-    category:
-      typeof product.category === "string"
-        ? product.category
-        : product.category?.name || "",
-    number: 20,
-  }));
+  const transformed = products.map((product) => {
+    return {
+      id: product.id,
+      name: product.name || "",
+      category:
+        typeof product.category === "string"
+          ? product.category
+          : product.category?.name || "",
+      number: product.productSkus?.reduce((sum, sku) => sum + sku.quantity, 0) || 0,
+    };
+  });
+  return transformed;
 }

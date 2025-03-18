@@ -1,12 +1,10 @@
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, CreditCard } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../../../components/ui/dialog";
-
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import {
@@ -14,94 +12,198 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import { Button } from "../../../components/ui/button";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { Checkbox } from "../../../components/ui/checkbox";
+interface AddCardModalProps {
+  onClose: () => void;
+  open: boolean;
+}
 
-function AddProduct() {
+interface CardFormData {
+  cardNumber: string;
+  expiryDate: string;
+  cvc: string;
+  name: string;
+  country: string;
+  saveCard: boolean;
+}
+
+function AddCardModal({ onClose, open }: AddCardModalProps) {
+  const [formData, setFormData] = useState<CardFormData>({
+    cardNumber: "",
+    expiryDate: "",
+    cvc: "",
+    name: "",
+    country: "",
+    saveCard: true,
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Here you would typically make an API call to save the card
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      toast.success("Card added successfully");
+      onClose();
+    } catch (error) {
+      toast.error("Failed to add card");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const formatCardNumber = (value: string) => {
+    return value
+      .replace(/\s/g, "")
+      .match(/.{1,4}/g)
+      ?.join(" ")
+      .substr(0, 19) || "";
+  };
+
   return (
-    //@ts-expect-error unknown className
-    <Dialog className="p-10">
-      <DialogTrigger>
-        <button className="w-full flex items-center justify-center border-2 m-2  border-dashed border-blue-500 rounded-lg h-48">
-          <CirclePlus size={40} color="#3b82f6" />
-        </button>
-      </DialogTrigger>
-      <DialogContent>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-3xl text-center">
-            Add new Payment
-          </DialogTitle>
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-blue-100 rounded-full">
+              <CreditCard className="h-6 w-6 text-blue-600" />
+            </div>
+            <DialogTitle className="text-2xl font-semibold">Add New Card</DialogTitle>
+          </div>
         </DialogHeader>
-        <div className="w-[90%] mx-auto my-10">
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="cardNumber" className="mb-1">
-              card number
-            </Label>
-            <Input type="number" id="cardNumber" placeholder="card number" />
-          </div>
-          <div className="flex items-center mt-4 gap-5">
+
+        <form onSubmit={handleSubmit} className="space-y-6 py-4">
+          <div className="space-y-4">
             <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="expDate" className="mb-1">
-                Exp date
-              </Label>
-              <Input type="date" id="expDate" placeholder="Exp date" />
+              <Label htmlFor="cardNumber">Card Number</Label>
+              <div className="relative">
+                <Input
+                  id="cardNumber"
+                  name="cardNumber"
+                  placeholder="1234 5678 9012 3456"
+                  value={formatCardNumber(formData.cardNumber)}
+                  onChange={handleInputChange}
+                  maxLength={19}
+                  className="pl-12"
+                  required
+                />
+                <CreditCard className="absolute left-4 top-3 h-4 w-4 text-gray-400" />
+              </div>
             </div>
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="cvc" className="mb-1">
-                cvc
-              </Label>
-              <Input type="number" id="cvc" placeholder="cvc" />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="expiryDate">Expiry Date</Label>
+                <Input
+                  id="expiryDate"
+                  name="expiryDate"
+                  placeholder="MM/YY"
+                  value={formData.expiryDate}
+                  onChange={handleInputChange}
+                  maxLength={5}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="cvc">CVC</Label>
+                <Input
+                  id="cvc"
+                  name="cvc"
+                  type="password"
+                  placeholder="•••"
+                  value={formData.cvc}
+                  onChange={handleInputChange}
+                  maxLength={4}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="name">Name on Card</Label>
+              <Input
+                id="name"
+                name="name"
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="country">Country or Region</Label>
+              <Select value={formData.country} onValueChange={(value) => setFormData(prev => ({ ...prev, country: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select country/region" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="us">United States</SelectItem>
+                    <SelectItem value="uk">United Kingdom</SelectItem>
+                    <SelectItem value="ca">Canada</SelectItem>
+                    <SelectItem value="au">Australia</SelectItem>
+                    <SelectItem value="rw">Rwanda</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-          <div className="grid w-full items-center gap-1.5 mt-4">
-            <Label htmlFor="name" className="mb-1">
-              Name on the card
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="saveCard"
+              name="saveCard"
+              checked={formData.saveCard}
+              onChange={handleInputChange}
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <Label htmlFor="saveCard" className="text-sm text-gray-600">
+              Securely save card for future payments
             </Label>
-            <Input type="text" id="name" placeholder="Owner's name" />
           </div>
-          <div className="grid w-full  items-center gap-1.5 mt-4">
-            <Label className="mb-1">country or region</Label>
-            <Select>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a country/region" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>country/region</SelectLabel>
-                  <SelectItem value="male">Rwanda/kigali</SelectItem>
-                  <SelectItem value="female">Rwanda/Rubavu</SelectItem>
-                  <SelectItem value="other">other</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center space-x-2 mt-6">
-            <Checkbox id="terms" />
-            <label
-              htmlFor="terms"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+
+          <div className="space-y-4">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting}
             >
-              Securely save my information for 1-click checkout
-            </label>
+              {isSubmitting ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  Processing...
+                </div>
+              ) : (
+                "Add Card"
+              )}
+            </Button>
+            <p className="text-xs text-gray-500 text-center">
+              Your card information will be stored securely. We do not store your full card details on our servers.
+            </p>
           </div>
-
-          <button className="bg-[#373F51] mt-6 w-full text-white text-center py-2 font-semibold">
-            Add card
-          </button>
-
-          <p className="text-gray-400 text-xs text-center leading-4 mt-5">
-            By confirming your subscription, you allow The Outdoor Inn Crowd
-            Limited to charge your card for this payment and future payments in
-            accordance with their terms. You can always cancel your subscription
-          </p>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default AddProduct;
+export default AddCardModal;
