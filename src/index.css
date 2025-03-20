@@ -79,6 +79,35 @@
   body {
     @apply bg-background text-foreground;
   }
+
+   /* Custom font class */
+   .font-inter {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  }
+  
+  /* Custom animations */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  
+  .opacity-hover {
+    @apply hover:opacity-90 active:opacity-75 transition-opacity duration-200;
+  }
+  
+  /* Glass effect */
+  .glass {
+    @apply backdrop-blur-md bg-white/80 dark:bg-black/30 border border-white/20;
+  }
+  
+  .glass-card {
+    @apply rounded-2xl glass shadow-sm;
+  }
+  
+
+  
+  .caption {
+    @apply text-xs text-muted-foreground;
+  }
 }
 @theme{
   --font-display : 'Montserrat', sans-serif;

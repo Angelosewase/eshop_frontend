@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL ='http://localhost:5000';
 
 let handleAuthError: () => void = () => {
   console.warn('Auth error handler not set');
@@ -51,6 +51,7 @@ api.interceptors.response.use(
         status: error.response?.status,
         data: error.response?.data,
         timestamp: new Date().toISOString(),
+        error: error.message,
       });
     }
 

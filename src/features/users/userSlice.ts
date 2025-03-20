@@ -23,7 +23,7 @@ interface UpdateUserRequest {
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/',
+    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/',
     credentials: "include",
     prepareHeaders: prepareAuthHeaders,
   }),
@@ -34,7 +34,16 @@ export const userApi = createApi({
         url: "users/me",
         method: "GET"
       }),
-      providesTags: ['User']
+      providesTags: ['User'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(userApi.util.updateQueryData('getCurrentUser', undefined, () => data));
+        } catch (error) {
+          console.error("error fetching users/me ==>")
+          console.error(error);
+        }
+      }
     }),
     updateUser: builder.mutation<UserResponse, { id: number; data: UpdateUserRequest }>({
       query: ({ id, data }) => ({

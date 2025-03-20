@@ -5,11 +5,13 @@ import { HeaderCategoriesDropDown } from "./modals";
 import { useGetCurrentUserQuery } from "../../features/users/userSlice";
 import { useAppSelector } from "../../hooks/Reduxhooks";
 import { selectCartItemsCount } from "../../features/cart/cartSlice";
+import { toast } from "sonner";
 
 function WebHeader() {
   const { data: userData, isLoading } = useGetCurrentUserQuery();
   const cartItemsCount = useAppSelector(selectCartItemsCount);
   const navigate = useNavigate();
+
 
   return (
     <div className="w-full ">

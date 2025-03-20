@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {  Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/Reduxhooks";
 import { toast } from "sonner";
 import { registerUser } from "../../features/auth/authSlice";
@@ -25,23 +25,23 @@ function SignUp() {
 
   React.useEffect(() => {
     if (user) {
-      console.log('User registered:', user);
+      console.log("User registered:", user);
       setTimeout(() => {
-        navigate('/auth/login');
+        navigate("/auth/login");
       }, 100);
     }
   }, [user, navigate]);
 
   React.useEffect(() => {
-    const loadingToastId = 'register-loading';
+    const loadingToastId = "register-loading";
 
     if (loading) {
       toast.loading("Creating your account...", { id: loadingToastId });
     } else {
       toast.dismiss(loadingToastId);
       if (error) {
-        console.error('Registration error:', error);
-        toast.error(error.message);
+        console.error("Registration error:", error);
+        toast.error(error);
       }
     }
 
@@ -64,7 +64,7 @@ function SignUp() {
 
     if (emptyFields.length > 0) {
       toast.error("Please fill in all required fields", {
-        description: emptyFields.join(", ")
+        description: emptyFields.join(", "),
       });
       return false;
     }
@@ -72,14 +72,14 @@ function SignUp() {
     const emailOrPhoneRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$|^\+?[1-9]\d{1,14}$/;
     if (!emailOrPhoneRegex.test(formState.emailPhoneNumberString)) {
       toast.error("Invalid input", {
-        description: "Please enter a valid email address or phone number"
+        description: "Please enter a valid email address or phone number",
       });
       return false;
     }
 
     if (formState.password !== formState.confirmPassword) {
       toast.error("Password mismatch", {
-        description: "Passwords don't match"
+        description: "Passwords don't match",
       });
       return false;
     }
@@ -100,7 +100,7 @@ function SignUp() {
       })
     );
 
-    if (result.meta.requestStatus === 'fulfilled') {
+    if (result.meta.requestStatus === "fulfilled") {
       toast.success("Registration successful! Please login.");
     }
   }

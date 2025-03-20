@@ -31,7 +31,7 @@ import { NotfoundPage } from "./pages";
 import { AuthLayout, Login, SignUp } from "./pages/auth";
 import { useEffect, useState } from "react";
 import cartSync from "./features/cart/cartSync";
-import errorHandler, { ErrorCategory } from "./utils/errorHandler";
+import errorHandler from "./utils/errorHandler";
 
 const routes = createBrowserRouter([
   { path: "*", element: <NotfoundPage /> },
@@ -117,7 +117,6 @@ const routes = createBrowserRouter([
 ]);
 
 function App() {
-  const [isCartInitialized, setIsCartInitialized] = useState(false);
   const [initError, setInitError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -127,11 +126,8 @@ function App() {
         const hasLocalItems = storedCart && JSON.parse(storedCart).length > 0;
 
         if (hasLocalItems) {
-          // Only initialize if there are existing items
           await cartSync.initializeCart();
         }
-
-        setIsCartInitialized(true);
       } catch (error) {
         const err = error instanceof Error ? error : new Error('Unknown error checking cart');
         setInitError(err);

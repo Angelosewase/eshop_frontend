@@ -1,21 +1,35 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Trash2, Minus, Plus, ShoppingBag, ArrowLeft, ChevronRight } from "lucide-react";
+import {
+  Trash2,
+  Minus,
+  Plus,
+  ShoppingBag,
+  ArrowLeft,
+  ChevronRight,
+} from "lucide-react";
 import { toast } from "sonner";
 import CartService from "../../features/cart/cartService";
 import { useGetCartQuery } from "../../features/cart/cartApiSlice";
 
-const CartProduct = ({ id, image, name, productSku, quantity, productSkuId }: {
-  id: number,
-  image: string,
-  name: string,
+const CartProduct = ({
+  id,
+  image,
+  name,
+  productSku,
+  quantity,
+  productSkuId,
+}: {
+  id: number;
+  image: string;
+  name: string;
   productSku: {
-    id: number,
-    price: string | number,
-    quantity: number
-  },
-  quantity: number,
-  productSkuId?: number
+    id: number;
+    price: string | number;
+    quantity: number;
+  };
+  quantity: number;
+  productSkuId?: number;
 }) => {
   const [itemQuantity, setItemQuantity] = useState(quantity);
   const [isRemoving, setIsRemoving] = useState(false);
@@ -23,20 +37,25 @@ const CartProduct = ({ id, image, name, productSku, quantity, productSkuId }: {
 
   // Format price for display - converts cents to dollars with safety checks
   const formatPrice = (cents: string | number | null | undefined) => {
-    if (cents === undefined || cents === null) return '$0.00';
-    const amount = typeof cents === 'string' ? parseFloat(cents) : Number(cents);
-    if (isNaN(amount)) return '$0.00';
+    if (cents === undefined || cents === null) return "$0.00";
+    const amount =
+      typeof cents === "string" ? parseFloat(cents) : Number(cents);
+    if (isNaN(amount)) return "$0.00";
     const dollars = amount / 100;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(dollars);
   };
 
   // Calculate subtotal with proper type conversion and safety checks
-  const calculateSubtotal = (price: string | number | null | undefined, qty: number) => {
+  const calculateSubtotal = (
+    price: string | number | null | undefined,
+    qty: number
+  ) => {
     if (price === undefined || price === null) return 0;
-    const priceAsNumber = typeof price === 'string' ? parseFloat(price) : Number(price);
+    const priceAsNumber =
+      typeof price === "string" ? parseFloat(price) : Number(price);
     return isNaN(priceAsNumber) ? 0 : priceAsNumber * qty;
   };
 
@@ -51,8 +70,8 @@ const CartProduct = ({ id, image, name, productSku, quantity, productSkuId }: {
         setItemQuantity(newQuantity);
         await CartService.updateQuantity(id, newQuantity);
       } catch (error) {
-        console.error('Error updating quantity:', error);
-        toast.error('Failed to update quantity. Please try again.');
+        console.error("Error updating quantity:", error);
+        toast.error("Failed to update quantity. Please try again.");
         // Revert to previous quantity
         setItemQuantity(quantity);
       } finally {
@@ -77,14 +96,18 @@ const CartProduct = ({ id, image, name, productSku, quantity, productSkuId }: {
       await CartService.removeFromCart(id);
       toast.success("Item removed from cart");
     } catch (error) {
-      console.error('Error removing item:', error);
-      toast.error('Failed to remove item. Please try again.');
+      console.error("Error removing item:", error);
+      toast.error("Failed to remove item. Please try again.");
       setIsRemoving(false);
     }
   };
 
   return (
-    <div className={`group flex flex-col sm:flex-row items-center gap-4 p-4 mb-4 bg-white rounded-lg border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-md ${isRemoving ? 'opacity-0 scale-95' : 'opacity-100'}`}>
+    <div
+      className={`group flex flex-col sm:flex-row items-center gap-4 p-4 mb-4 bg-white rounded-lg border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-md ${
+        isRemoving ? "opacity-0 scale-95" : "opacity-100"
+      }`}
+    >
       {/* Product Image */}
       <div className="w-full sm:w-20 h-20 flex-shrink-0 bg-gray-50 rounded-md overflow-hidden">
         <img
@@ -97,8 +120,12 @@ const CartProduct = ({ id, image, name, productSku, quantity, productSkuId }: {
       {/* Product Details */}
       <div className="flex-1 flex flex-col sm:flex-row items-center sm:items-start gap-3">
         <div className="flex-1">
-          <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{name}</h3>
-          <p className="text-sm text-gray-500 mt-1">Unit Price: {formatPrice(productSku?.price)}</p>
+          <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+            {name}
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Unit Price: {formatPrice(productSku?.price)}
+          </p>
         </div>
 
         {/* Quantity Controls */}
@@ -169,28 +196,38 @@ const CartProduct = ({ id, image, name, productSku, quantity, productSkuId }: {
   );
 };
 
-const CheckoutProcessDetails = ({ total }: { total: string | number | null | undefined }) => {
+const CheckoutProcessDetails = ({
+  total,
+}: {
+  total: string | number | null | undefined;
+}) => {
   // Format price for display - converts cents to dollars with safety checks
   const formatPrice = (cents: string | number | null | undefined) => {
-    if (cents === undefined || cents === null) return '$0.00';
-    const amount = typeof cents === 'string' ? parseFloat(cents) : Number(cents);
-    if (isNaN(amount)) return '$0.00';
+    if (cents === undefined || cents === null) return "$0.00";
+    const amount =
+      typeof cents === "string" ? parseFloat(cents) : Number(cents);
+    if (isNaN(amount)) return "$0.00";
     const dollars = amount / 100;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(dollars);
   };
 
-  const safeParseFloat = (value: string | number | null | undefined): number => {
+  const safeParseFloat = (
+    value: string | number | null | undefined
+  ): number => {
     if (value === undefined || value === null) return 0;
-    const parsed = typeof value === 'string' ? parseFloat(value) : Number(value);
+    const parsed =
+      typeof value === "string" ? parseFloat(value) : Number(value);
     return isNaN(parsed) ? 0 : parsed;
   };
 
   return (
     <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-6 max-w-md w-full">
-      <h2 className="font-semibold text-xl mb-6 pb-2 border-b border-gray-100">Order Summary</h2>
+      <h2 className="font-semibold text-xl mb-6 pb-2 border-b border-gray-100">
+        Order Summary
+      </h2>
 
       <div className="space-y-4 mb-6">
         <div className="flex justify-between">
@@ -226,7 +263,18 @@ const CheckoutProcessDetails = ({ total }: { total: string | number | null | und
       <div className="mt-4 pt-4 border-t border-gray-100">
         <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
           <span>Secure Checkout</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-gray-400"
+          >
             <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
@@ -242,13 +290,14 @@ const Cart = () => {
 
   // Format price for display - converts cents to dollars with safety checks
   const formatPrice = (cents: string | number | null | undefined) => {
-    if (cents === undefined || cents === null) return '$0.00';
-    const amount = typeof cents === 'string' ? parseFloat(cents) : Number(cents);
-    if (isNaN(amount)) return '$0.00';
+    if (cents === undefined || cents === null) return "$0.00";
+    const amount =
+      typeof cents === "string" ? parseFloat(cents) : Number(cents);
+    if (isNaN(amount)) return "$0.00";
     const dollars = amount / 100;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(dollars);
   };
 
@@ -256,7 +305,7 @@ const Cart = () => {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        console.log('Fetching cart in Cart component');
+        console.log("Fetching cart in Cart component");
         // This will fetch the cart from the server for authenticated users
         // or load from localStorage for guest users
         await CartService.initializeCart();
@@ -264,7 +313,7 @@ const Cart = () => {
         // Refetch cart data if using RTK Query
         refetch();
       } catch (error) {
-        console.error('Error fetching cart:', error);
+        console.error("Error fetching cart:", error);
       }
     };
 
@@ -272,14 +321,14 @@ const Cart = () => {
   }, [refetch]);
 
   const handleClearCart = async () => {
-    if (window.confirm('Are you sure you want to clear your cart?')) {
+    if (window.confirm("Are you sure you want to clear your cart?")) {
       setIsClearing(true);
       try {
         await CartService.clearCart();
-        toast.success('Cart cleared successfully');
+        toast.success("Cart cleared successfully");
       } catch (error) {
-        console.error('Error clearing cart:', error);
-        toast.error('Failed to clear cart. Please try again.');
+        console.error("Error clearing cart:", error);
+        toast.error("Failed to clear cart. Please try again.");
       } finally {
         setIsClearing(false);
       }
@@ -302,8 +351,13 @@ const Cart = () => {
             <ShoppingBag size={64} className="text-gray-300" />
           </div>
           <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
-          <p className="text-gray-500 mb-6">Looks like you haven't added any items to your cart yet.</p>
-          <Link to="/products" className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+          <p className="text-gray-500 mb-6">
+            Looks like you haven't added any items to your cart yet.
+          </p>
+          <Link
+            to="/products"
+            className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" /> Continue Shopping
           </Link>
         </div>
@@ -313,7 +367,9 @@ const Cart = () => {
           <div className="lg:w-2/3">
             <div className="bg-white rounded-lg shadow-sm p-1 mb-4">
               <div className="flex justify-between items-center p-4 border-b">
-                <h2 className="font-semibold text-lg">Cart Items ({cartData.items.length})</h2>
+                <h2 className="font-semibold text-lg">
+                  Cart Items ({cartData.items.length})
+                </h2>
                 <button
                   onClick={handleClearCart}
                   disabled={isClearing}
@@ -381,7 +437,7 @@ const Cart = () => {
               </Link>
 
               <Link
-                to="/products"
+                to="/explore"
                 className="w-full mt-3 border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center"
               >
                 <ArrowLeft size={16} className="mr-1" /> Continue Shopping

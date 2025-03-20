@@ -9,7 +9,7 @@ function WebLayout({ showFooter = true }: { showFooter?: boolean }) {
   useValidatePath()
   return (
     <div
-      className={`h-screen w-full bg-gray-100 flex flex-col justify-center ${
+      className={` w-full   flex flex-col justify-center ${
         loading ? "opacity-50" : ""
       }`}
     >

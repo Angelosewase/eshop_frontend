@@ -28,34 +28,6 @@ const heroSlides = [
     link: "/products?category=luxury"
   }
 ];
-
-const featuredCategories = [
-  {
-    id: 1,
-    name: "Women's Fashion",
-    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=2071",
-    link: "/products?category=women"
-  },
-  {
-    id: 2,
-    name: "Men's Collection",
-    image: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=1974",
-    link: "/products?category=men"
-  },
-  {
-    id: 3,
-    name: "Accessories",
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1999",
-    link: "/products?category=accessories"
-  },
-  {
-    id: 4,
-    name: "New Season",
-    image: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?q=80&w=2070",
-    link: "/products?category=new-season"
-  }
-];
-
 function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -76,9 +48,9 @@ function Hero() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-2    ">
       {/* Hero Slider */}
-      <div className="relative h-[600px] rounded-2xl overflow-hidden mb-12">
+      <div className="relative h-[600px]  rounded-2xl overflow-hidden ">
         {/* Slides */}
         <div className="relative w-full h-full">
           {heroSlides.map((slide, index) => (
@@ -93,7 +65,7 @@ function Hero() {
                 alt={slide.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 flex items-center">
+              <div className="absolute inset-0 left-[10%] flex items-center ">
                 <div className="container mx-auto px-4">
                   <div className="max-w-2xl text-white">
                     <h2 className="text-sm font-medium mb-2 opacity-90">{slide.subtitle}</h2>
@@ -142,32 +114,6 @@ function Hero() {
         </div>
       </div>
 
-      {/* Featured Categories */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {featuredCategories.map((category) => (
-          <Link
-            key={category.id}
-            to={category.link}
-            className="group relative h-[300px] rounded-xl overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
-            <img
-              src={category.image}
-              alt={category.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <h3 className="text-xl font-semibold text-white mb-2">{category.name}</h3>
-                <span className="inline-flex items-center text-white text-sm font-medium">
-                  Shop Now
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
     </div>
   );
 }

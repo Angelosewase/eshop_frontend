@@ -120,9 +120,9 @@ function AddProduct() {
       });
       // Close the dialog
       setOpen(false);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Create product error:', error);
-      if (error.data?.error) {
+      if ((error as Error).data?.error) {
         toast.error(`Failed to create product: ${error.data.error}`);
       } else {
         toast.error('Failed to create product');
@@ -169,10 +169,7 @@ function AddProduct() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="product name"
                 className="bg-gray-200 mt-1"
-                value={formState.product.name}
-                onChange={handleChange}
-
-              />
+                              />
             </div>
             <div className="mt-2">
               <label htmlFor="description" className="">Product description</label>

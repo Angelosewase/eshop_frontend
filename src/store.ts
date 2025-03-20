@@ -62,7 +62,7 @@ export const store = configureStore({
 setAuthErrorHandler(() => {
   store.dispatch(clearAuth());
   // Optionally redirect to login
-  window.location.href = '/login';
+  window.location.href = 'auth/login';
 });
 
 // Set the store in storeAccess with error handling
