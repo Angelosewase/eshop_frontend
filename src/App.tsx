@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AdminLayout, WebLayout } from "./components/custom/layouts";
+import { ProtectedRoute } from "./components/custom/ProtectedRoute";
 import {
   Customers,
   Home,
@@ -9,35 +10,46 @@ import {
   Payments,
   Settings,
   Support,
+  NewProduct,
+  Products,
 } from "./pages/admin";
 import {
   Home as WebHome,
   Contact,
   Cart,
   Deals,
-  Orders as OrdersWeb,
+  Orders as WebOrders,
   ProductDetails,
-  Products,
   Explore,
   CheckOut,
+  Profile,
+  OrderConfirmation,
+  PaymentMethods,
 } from "./pages/web";
 
 import { NotfoundPage } from "./pages";
-import { AuthTester, Login, SignUp } from "./pages/auth";
+import { AuthLayout, Login, SignUp } from "./pages/auth";
+import { useEffect, useState } from "react";
+import cartSync from "./features/cart/cartSync";
+import errorHandler, { ErrorCategory } from "./utils/errorHandler";
 
 const routes = createBrowserRouter([
   { path: "*", element: <NotfoundPage /> },
-  { 
-    path:"/auth",
-    element :<AuthTester />,
-    children:[
+  {
+    path: "/auth",
+    element: <AuthLayout />,
+    children: [
       { path: "/auth/login", element: <Login /> },
       { path: "/auth/signup", element: <SignUp /> },
     ]
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/admin/",
@@ -54,6 +66,14 @@ const routes = createBrowserRouter([
       {
         path: "/admin/inventory",
         element: <Inventory />,
+      },
+      {
+        path: "/admin/products",
+        element: <Products />,
+      },
+      {
+        path: "/admin/products/new",
+        element: <NewProduct />,
       },
       {
         path: "/admin/support",
@@ -77,48 +97,66 @@ const routes = createBrowserRouter([
     path: "/",
     element: <WebLayout />,
     children: [
-      {
-        path: "/",
-        element: <WebHome />,
-      },
-      {
-        path: "/contact",
-        element: <Contact />,
-      },
-      {
-        path: "/cart",
-        element: <Cart />,
-      },
-      {
-        path: "/Orders",
-        element: <OrdersWeb />,
-      },
-      {
-        path: "/Deals",
-        element: <Deals />,
-      },
-      {
-        path: "/product",
-        element: <ProductDetails />,
-      },
-      {
-        path: "/products",
-        element: <Products />,
-      },
-      {
-        path: "/explore",
-        element: <Explore />,
-      },
-      {
-        path: "/checkout",
-        element: <CheckOut />,
-      },
+      { path: "", element: <WebHome /> },
+      { path: "explore", element: <Explore /> },
+      { path: "product/:id", element: <ProductDetails /> },
+      { path: "cart", element: <Cart /> },
+      { path: "deals", element: <Deals /> },
+      { path: "orders", element: <WebOrders /> },
+      { path: "contact", element: <Contact /> },
+      { path: "profile", element: <Profile /> },
+      { path: "checkout", element: <CheckOut /> },
+      { path: "order-confirmation", element: <OrderConfirmation /> },
+      { path: "payment-methods", element: <PaymentMethods /> },
     ],
   },
+  {
+    path: "/profile",
+    element: <Profile />,
+  }
 ]);
 
 function App() {
-  return <RouterProvider router={routes}  />;
+  const [isCartInitialized, setIsCartInitialized] = useState(false);
+  const [initError, setInitError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const checkExistingCart = async () => {
+      try {
+        const storedCart = localStorage.getItem('cart');
+        const hasLocalItems = storedCart && JSON.parse(storedCart).length > 0;
+
+        if (hasLocalItems) {
+          // Only initialize if there are existing items
+          await cartSync.initializeCart();
+        }
+
+        setIsCartInitialized(true);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error('Unknown error checking cart');
+        setInitError(err);
+        errorHandler.handleCartError(
+          error,
+          'checkExistingCart',
+          null,
+          true
+        );
+      }
+    };
+
+    checkExistingCart();
+  }, []);
+
+  if (initError) {
+    errorHandler.handleCartError(
+      'Application continuing with cart initialization error: ' + initError.message,
+      'App.useEffect',
+      null,
+      false
+    );
+  }
+
+  return <RouterProvider router={routes} />;
 }
 
 export default App;

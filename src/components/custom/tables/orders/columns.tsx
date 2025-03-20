@@ -1,33 +1,29 @@
 import { ColumnDef, Row } from "@tanstack/react-table";
+import { formatCurrency } from "../../../../lib/utils";
 
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
- 
 } from "../../../ui/dialog";
 
-export type Order = {
-  id: string;
-  customerName: string;
-  type: "online" | "offline";
-  status: "pending" | "processing" | "success" | "failed";
-  product: string;
-  amount: number;
-  date: string;
-};
+import { OrderDetails } from "../../../../features/orders/ordersSlice";
+
+export type Order = OrderDetails;
 
 import {
   ArrowUpFromLine,
   Copy,
-  Grip,
-  Image,
-  Mail,
   MoreHorizontal,
-  Phone,
   Printer,
   Redo2,
+  CheckCircle2,
+  XCircle,
+  Clock,
   User,
+  Calendar,
+  CreditCard,
+  Package
 } from "lucide-react";
 
 import { Button } from "../../..//ui/button";
@@ -41,6 +37,8 @@ import {
 } from "../../..//ui/dropdown-menu";
 import { Checkbox } from "../../../ui/checkbox";
 import { DataTableColumnHeader } from "../ColumnHeader";
+import ViewOrderModal from "../../modals/ViewOrderModal";
+import { Badge } from "../../../ui/badge";
 
 export const columns: ColumnDef<Order>[] = [
   {
@@ -72,79 +70,111 @@ export const columns: ColumnDef<Order>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className="text-start  font-medium">{row.getValue("id")}</div>
-      );
-    },
-  },
-  {
-    accessorKey: "customerName",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Customer Name" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="text-start  font-medium">
-          {row.getValue("customerName")}
+        <div className="flex items-center">
+          <Package className="h-4 w-4 text-muted-foreground mr-2" />
+          <span className="font-medium">#{row.getValue("id")}</span>
         </div>
       );
     },
   },
   {
-    accessorKey: "type",
+    accessorKey: "user.email",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Type" />
+      <DataTableColumnHeader column={column} title="Customer" />
     ),
     cell: ({ row }) => {
       return (
-        <div className="text-start  font-medium">{row.getValue("type")}</div>
+        <div className="flex items-center">
+          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
+            <User className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <div className="font-medium">{row.original.user.email}</div>
+            <div className="text-xs text-muted-foreground">
+              Customer ID: {row.original.user.id}
+            </div>
+          </div>
+        </div>
       );
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: "payment.status",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
+      const status = row.getValue("payment.status") as string || "pending";
+
+      const getStatusColor = (status: string) => {
+        switch (status) {
+          case 'paid':
+            return 'bg-green-100 text-green-800 border-green-200';
+          case 'pending':
+            return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+          case 'cancelled':
+            return 'bg-red-100 text-red-800 border-red-200';
+          default:
+            return 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+      };
+
+      const getStatusIcon = (status: string) => {
+        switch (status) {
+          case 'paid':
+            return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+          case 'pending':
+            return <Clock className="h-4 w-4 text-yellow-600" />;
+          case 'cancelled':
+            return <XCircle className="h-4 w-4 text-red-600" />;
+          default:
+            return <Clock className="h-4 w-4 text-gray-600" />;
+        }
+      };
+
       return (
-        <div className="text-start  font-medium">{row.getValue("status")}</div>
+        <Badge className={`px-2 py-1 ${getStatusColor(status)}`}>
+          <span className="flex items-center gap-1.5">
+            {getStatusIcon(status)}
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </span>
+        </Badge>
       );
     },
   },
   {
-    accessorKey: "product",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Product" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="text-start  font-medium">{row.getValue("product")}</div>
-      );
-    },
-  },
-  {
-    accessorKey: "amount",
+    accessorKey: "total",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Amount" />
     ),
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-start font-medium">{formatted}</div>;
+      const amount = parseFloat(row.getValue("total"));
+      return (
+        <div className="font-medium text-right">
+          {formatCurrency(amount)}
+        </div>
+      );
     },
   },
   {
-    accessorKey: "date",
+    accessorKey: "createdAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
       return (
-        <div className="text-start  font-medium">{row.getValue("date")}</div>
+        <div className="flex items-center">
+          <Calendar className="h-4 w-4 text-muted-foreground mr-2" />
+          <div>
+            <div className="font-medium">
+              {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+            </div>
+          </div>
+        </div>
       );
     },
   },
@@ -160,95 +190,32 @@ function Actions({ row }: { row: Row<Order> }) {
   const order = row.original;
 
   return (
-    <Dialog>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(order.id)}
-          >
-            Copy order ID
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenu>
-            <DialogTrigger asChild>
-              <span className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
-                View order details
-              </span>
-            </DialogTrigger>
-          </DropdownMenu>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <DialogContent className="p-0 rounded-sm">
-        <div className="w-full">
-          <div className="flex justify-between items-center pr-10 border-b border-gray-500">
-            <div className="flex items-center gap-2 py-3  px-2 font-semibold text-lg">
-              <Grip /> Order #1232
-            </div>
-            <div className="flex items-center gap-3">
-              <Redo2 />
-            </div>
-          </div>
-          <div className="mt-5">
-            <div className="text-gray-500 text-sm flex items-center gap-4 my-1 px-3">
-              <User size={20} />
-              <p>Esther Howard</p>
-            </div>
-            <div className="text-gray-500 text-sm flex items-center gap-4 my-1 px-3">
-              <Mail size={20} />
-              <p>EstherHoward@gmail.com</p>
-            </div>
-            <div className="text-gray-500 text-sm flex items-center gap-4 my-1 px-3">
-              <Phone size={20} />
-              <p>+25072556798</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-2 text-gray-500">
-          <div className="flex items-end gap-5 px-4">
-            <button className="border-b border-white hover:border-gray-500">
-              Order items
-            </button>
-            <button className="border-b border-white hover:border-gray-500">
-              delivery
-            </button>
-          </div>
-          <div className="px-2  pt-3 pb-8 border-t border-b border-gray-500">
-            <div className="flex items-center gap-3 text-base leading-5 p-3 ">
-              <Image size={35} />
-              <p>
-                Breathe Right strips x2 Lolem Ipsum Sulut Amet sulut Amet
-                black-white
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center mt-2 justify-between px-5 py-2 font-semibold">
-            <p>Total</p>
-            <p className="text-black">$1223</p>
-          </div>
-        </div>
-        <div className="w-full grid grid-cols-3 items-center h-10">
-          <button className="   flex text-black hover:bg-gray-500 items-center h-10 justify-center gap-2 text-sm bg-[#AAB2BA3D]/20">
-            <ArrowUpFromLine />
-            <p>upload</p>
-          </button>
-          <button className="  flex text-black hover:bg-gray-500 items-center justify-center gap-2 h-10 bg-[#AAB2BA3D]/20">
-            <Copy />
-            <p>duplicate</p>
-          </button>
-          <button className=" flex text-black hover:bg-gray-500 items-center justify-center gap-2 h-10 bg-[#AAB2BA3D]/20">
-            <Printer />
-            <p>print</p>
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuItem
+          onClick={() => navigator.clipboard.writeText(order.id.toString())}
+        >
+          <Copy className="h-4 w-4 mr-2" />
+          Copy order ID
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <ViewOrderModal order={order} />
+        <DropdownMenuItem>
+          <Printer className="h-4 w-4 mr-2" />
+          Print order
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Redo2 className="h-4 w-4 mr-2" />
+          Refresh order status
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -6,7 +6,6 @@ import {
 } from "../../../components/ui/dialog";
 import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
-import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
 import { Label } from "../../ui/label";
 import {
   Select,
@@ -17,84 +16,157 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../ui/select";
-import {  useState } from "react";
-import {
-  useCreateProductMutation,
-} from "../../../features/inventory/productSlice";
+import { useState } from "react";
+import { useCreateProductMutation } from "../../../features/inventory/productSlice";
+import { useGetCategoriesQuery } from "../../../features/inventory/categorySlice";
 import { toast } from "sonner";
 
-export interface productFullData {
-  product: {
-    name: string;
-    description?: string;
-    summary?: string;
-    cover?: string;
-    categoryId: number;
-    subCategories?: number[];
-  };
-  variants: Array<{
-    size: string;
-    // color: string;
-    price: string;
-    quantity: number;
-  }>;
-}
-
-
-const initialState : productFullData = {
-  product:{
-    name:"",
-    description:"",
-    summary:"",
-    cover:"",
-    categoryId:-1, 
-    subCategories:[]
-  },
-  variants:[]
-}
+// Maximum safe integer for PostgreSQL INT4 type
+const MAX_INT32 = 2147483647;
 
 function AddProduct() {
-  const [formState, setFormState] = useState<productFullData>(initialState);
-  const [createProduct, { isLoading, isError, isSuccess }] =
-    useCreateProductMutation();
+  const [createProduct] = useCreateProductMutation();
+  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery();
+  const [open, setOpen] = useState(false);
 
-  async function handleSubmit() {
-    if (formState) await createProduct(formState);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    categoryId: "",
+    cover: "",
+    productSkus: [{
+      price: "",
+      quantity: "",
+      sizeAttribute: { value: "" },
+      colorAttribute: { value: "" }
+    }]
+  });
 
-    if (isError) {
-      toast.error("failed to create the product");
+  const validateForm = () => {
+    // Check for empty name
+    if (!formData.name.trim()) {
+      toast.error('Product name is required');
+      return false;
     }
-    if (isSuccess) {
-      toast.dismiss();
-      toast.success("product created successfully");
+    
+    // Check for category
+    if (!formData.categoryId) {
+      toast.error('Please select a category');
+      return false;
     }
-    setFormState(initialState);
-  }
+    
+    // Check for SKU details
+    const sku = formData.productSkus[0];
+    
+    // Check price
+    if (!sku.price || isNaN(parseFloat(sku.price)) || parseFloat(sku.price) <= 0) {
+      toast.error('Price must be a positive number');
+      return false;
+    }
+    
+    // Check quantity
+    if (!sku.quantity || isNaN(Number(sku.quantity)) || Number(sku.quantity) <= 0) {
+      toast.error('Quantity must be a positive number');
+      return false;
+    }
+    
+    // Check if quantity is within INT4 range
+    if (Number(sku.quantity) > MAX_INT32) {
+      toast.error(`Quantity cannot exceed ${MAX_INT32}`);
+      return false;
+    }
+    
+    // Check attributes
+    if (!sku.sizeAttribute.value || !sku.colorAttribute.value) {
+      toast.error('Please select size and color');
+      return false;
+    }
+    
+    return true;
+  };
 
-  function handleChange (e :React.ChangeEvent<HTMLInputElement>| React.ChangeEvent<HTMLTextAreaElement>) {
-    setFormState({...formState , [e.target.name]:e.target.value})
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      await createProduct({
+        ...formData,
+        categoryId: Number(formData.categoryId),
+        productSkus: formData.productSkus.map(sku => ({
+          ...sku,
+          price: sku.price.toString(),
+          quantity: Math.min(Number(sku.quantity), MAX_INT32),
+          sku: `${formData.name.slice(0, 3).toUpperCase()}-${sku.sizeAttribute.value || 'NA'}-${sku.colorAttribute.value.slice(1, 4) || 'NA'}`,
+          id: 0
+        }))
+      }).unwrap();
+      toast.success('Product created successfully');
+      // Reset form
+      setFormData({
+        name: "",
+        description: "",
+        categoryId: "",
+        cover: "",
+        productSkus: [{
+          price: "",
+          quantity: "",
+          sizeAttribute: { value: "" },
+          colorAttribute: { value: "" }
+        }]
+      });
+      // Close the dialog
+      setOpen(false);
+    } catch (error: any) {
+      console.error('Create product error:', error);
+      if (error.data?.error) {
+        toast.error(`Failed to create product: ${error.data.error}`);
+      } else {
+        toast.error('Failed to create product');
+      }
+    }
+  };
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numValue = parseInt(value, 10);
+    
+    // Don't allow values that are too large
+    if (numValue > MAX_INT32) {
+      toast.error(`Quantity cannot exceed ${MAX_INT32}`);
+      return;
+    }
+
+    setFormData({
+      ...formData,
+      productSkus: formData.productSkus.map(sku => ({
+        ...sku,
+        quantity: value
+      }))
+    });
+  };
 
   return (
-    //@ts-expect-error unknown className
-    <Dialog className="p-10 w-[800px]">
-      <DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <button className="hover:bg-cyan-400 p-2 rounded-full">
           <Plus size={15} />
         </button>
       </DialogTrigger>
-      <DialogContent className="min-w-[80vw] h-[92vh] flex  gap-4">
-        <div className="flex-1  flex flex-col gap-2">
+      <DialogContent className="min-w-[80vw] h-[92vh] flex gap-4">
+        <form onSubmit={handleSubmit} className="flex gap-4 w-full">
           <div className="h-[68%] bg-gray-100 py-4 px-6 flex flex-col">
             <h1 className="text-lg font-semibold">General information</h1>
             <div className="mt-2">
-              <label htmlFor="name" className="">
-                product name
-              </label>
+              <label htmlFor="name" className="">Product name</label>
               <Input
                 type="text"
                 id="name"
-                name= "name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="product name"
                 className="bg-gray-200 mt-1"
                 value={formState.product.name}
@@ -102,148 +174,140 @@ function AddProduct() {
 
               />
             </div>
-            <div className="mt-2 ">
-              <label htmlFor="name" className="">
-                product description
-              </label>
+            <div className="mt-2">
+              <label htmlFor="description" className="">Product description</label>
               <Textarea
-                id="name"
-                placeholder="product description "
-                name="description"
-                value={formState.product.description
-                }
-                onChange={(e)=> handleChange(e)}
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="product description"
                 className="bg-gray-200 mt-1 h-[160px] items-start pl-1"
               />
             </div>
-            <div className="mt-3 flex ">
-              <div className="flex-1">
-                <div className="">
-                  <h1 className="font-semibold -mt-1">Size:</h1>
-                  <p className="text-sm mb-1 ">pick available size </p>
-                </div>
-                {["XS", "X", "M", "L", "XL"].map((size) => (
-                  <button
-                    key={size}
-                    className="rounded border-2 mx-1 py-1 mt-2 px-2 text-xs border-gray-400 hover:bg-[#373F51] hover:text-white hover:border-none"
-                  >
-                    {size}
-                  </button>
-                ))}
+
+            <div className="flex-1">
+              <div className="">
+                <h1 className="font-semibold -mt-1">Size:</h1>
+                <p className="text-sm mb-1">pick available size</p>
               </div>
-              <div className="flex-1">
-                <div className="">
-                  <h1 className="font-semibold -mt-1">Gender:</h1>
-                  <p className="text-sm mb-1 ">pick available gender </p>
-                </div>
-                <RadioGroup defaultValue="male" className="flex gap-2 mt-4">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="male" id="male" />
-                    <Label htmlFor="male">male</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="female" id="female" />
-                    <Label htmlFor="female">female</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="unisex" id="unisex" />
-                    <Label htmlFor="unisex">unisex</Label>
-                  </div>
-                </RadioGroup>
+              {["XS", "S", "M", "L", "XL"].map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => setFormData({
+                    ...formData,
+                    productSkus: formData.productSkus.map(sku => ({
+                      ...sku,
+                      sizeAttribute: { value: size }
+                    }))
+                  })}
+                  className={`rounded border-2 mx-1 py-1 mt-2 px-2 text-xs ${formData.productSkus[0].sizeAttribute.value === size
+                    ? 'bg-[#373F51] text-white border-[#373F51]'
+                    : 'border-gray-400 hover:bg-[#373F51] hover:text-white hover:border-none'
+                    }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+            <div className="flex-1">
+              <div className="">
+                <h1 className="font-semibold -mt-1">Color:</h1>
+                <p className="text-sm mb-1">pick available color</p>
               </div>
+              {["#000000", "#FF0000", "#00FF00", "#0000FF"].map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => setFormData({
+                    ...formData,
+                    productSkus: formData.productSkus.map(sku => ({
+                      ...sku,
+                      colorAttribute: { value: color }
+                    }))
+                  })}
+                  className={`w-4 h-4 rounded-full mx-1 my-3 ${formData.productSkus[0].colorAttribute.value === color
+                    ? 'ring-2 ring-offset-2 ring-[#373F51]'
+                    : ''
+                    }`}
+                  style={{ backgroundColor: color }}
+                />
+              ))}
             </div>
           </div>
-          <div className="bg-gray-100 flex-1  py-4 px-6">
+
+          <div className="bg-gray-100 flex-1 py-4 px-6">
             <h1 className="font-semibold">Pricing and Stock</h1>
             <div className="grid grid-cols-2 gap-3 mt-2">
               <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="pricing">Base pricing</Label>
+                <Label htmlFor="price">Price</Label>
                 <Input
                   type="number"
-                  id="pricing"
-                  placeholder="Base pricing"
+                  id="price"
+                  value={formData.productSkus[0].price}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    productSkus: formData.productSkus.map(sku => ({
+                      ...sku,
+                      price: e.target.value
+                    }))
+                  })}
+                  placeholder="Price"
                   className="bg-gray-200"
+                  min="0.01"
+                  step="0.01"
                 />
               </div>
               <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="stock">stock</Label>
+                <Label htmlFor="quantity">Stock</Label>
                 <Input
                   type="number"
-                  id="stock"
-                  placeholder="stock"
+                  id="quantity"
+                  value={formData.productSkus[0].quantity}
+                  onChange={handleQuantityChange}
+                  placeholder="Stock quantity"
                   className="bg-gray-200"
+                  min="1"
+                  max={MAX_INT32}
                 />
-              </div>
-              <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="discount">Discount</Label>
-                <Input
-                  type="number"
-                  id="discount"
-                  placeholder="discount"
-                  className="bg-gray-200"
-                />
-              </div>
-              <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="percentageType">Email</Label>
-                <Select>
-                  <SelectTrigger className="w-full bg-gray-200">
-                    <SelectValue placeholder="Select discount type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>discount type</SelectLabel>
-                      <SelectItem value="male">percentage</SelectItem>
-                      <SelectItem value="female">amount</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           </div>
-        </div>
-        <div className="w-5/12 bg-gray-100 p-4 flex flex-col">
-          <h1 className="font-semibold text-lg product media ">Media</h1>
-          <div className="mt-2 p-4 h-[400px]   flex flex-col ">
-            <div className="flex-1 bg-gray-200"></div>
-            <div className="h-20 mt-2 grid grid-cols-3 gap-4">
-              <div className="h-full w-full  bg-gray-200"></div>
-              <div className="h-full w-full  bg-gray-200"></div>
-              <button className=" flex items-center justify-center border-2  bg-gray-200  border-dashed border-blue-500 rounded-lg ">
-                <Plus size={40} color="#3b82f6" />
-              </button>
-            </div>
-          </div>
-          <div className="flex-1 p-4 ">
+
+          <div className="w-5/12 bg-gray-100 p-4 flex flex-col">
             <h1 className="font-semibold text-lg">Category</h1>
-            <div className="grid w-full  items-center gap-1.5 mt-2">
-              <Label htmlFor="productCategory">Product category</Label>
-              <Select>
-                <SelectTrigger className="w-full bg-gray-200 ">
-                  <SelectValue placeholder="Select category type" />
+            <div className="grid w-full items-center gap-1.5 mt-2">
+              <Label htmlFor="category">Product category</Label>
+              <Select
+                value={formData.categoryId}
+                onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+              >
+                <SelectTrigger className="w-full bg-gray-200">
+                  <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>product category </SelectLabel>
-                    <SelectItem value="category1">category 1</SelectItem>
-                    <SelectItem value="category2">category 2</SelectItem>
+                    <SelectLabel>Product category</SelectLabel>
+                    {categoriesLoading ? (
+                      <SelectItem value="loading" disabled>Loading categories...</SelectItem>
+                    ) : categories && categories.length > 0 ? (
+                      categories.map(category => (
+                        <SelectItem key={category.id} value={category.id.toString()}>
+                          {category.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="none" disabled>No categories found</SelectItem>
+                    )}
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
-            <button
-              className="w-full mt-4 py-2 bg-primary rounded text-white"
-              onClick={handleSubmit}
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
-                </div>
-              ) : (
-                "Submit"
-              )}
+            <button type="submit" className="w-full mt-4 py-2 bg-primary rounded text-white">
+              Create Product
             </button>
           </div>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

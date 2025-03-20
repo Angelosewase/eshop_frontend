@@ -1,9 +1,16 @@
 import { Phone, Search, ShoppingCart, User } from "lucide-react";
 import Logo from "./Logo";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HeaderCategoriesDropDown } from "./modals";
+import { useGetCurrentUserQuery } from "../../features/users/userSlice";
+import { useAppSelector } from "../../hooks/Reduxhooks";
+import { selectCartItemsCount } from "../../features/cart/cartSlice";
 
 function WebHeader() {
+  const { data: userData, isLoading } = useGetCurrentUserQuery();
+  const cartItemsCount = useAppSelector(selectCartItemsCount);
+  const navigate = useNavigate();
+
   return (
     <div className="w-full ">
       <WebHeaderTop />
@@ -45,9 +52,14 @@ function WebHeader() {
             </form>
           </div>
           <div className="flex items-center justify-self-end gap-5 ">
-            <Link className="flex items-center gap-2" to={"/cart"}>
+            <Link className="flex items-center gap-2 relative" to={"/cart"}>
               <ShoppingCart className="size-6" />
               Cart
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemsCount > 9 ? '9+' : cartItemsCount}
+                </span>
+              )}
             </Link>
 
             <Link
@@ -57,10 +69,27 @@ function WebHeader() {
               contact
             </Link>
 
-            <button className="py-1 flex items-center gap-1  px-3 ">
-              <User />
-              Profile
-            </button>
+            {isLoading ? (
+              <div className="py-1 px-3 flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+              </div>
+            ) : userData ? (
+              <button
+                onClick={() => navigate('/profile')}
+                className="py-1 flex items-center gap-2 px-3 hover:bg-gray-100 rounded-lg"
+              >
+                <User className="size-5" />
+                <span>{userData.firstName}</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/auth/login')}
+                className="py-1 flex items-center gap-2 px-3 hover:bg-gray-100 rounded-lg"
+              >
+                <User className="size-5" />
+                <span>Sign In</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

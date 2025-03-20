@@ -1,5 +1,5 @@
-import { Search, User } from "lucide-react";
-import { NotificationSheet } from "./modals";
+import { Search } from "lucide-react";
+import { NotificationSheet, ProfileModal } from "./modals";
 
 function PageHeaderWithIcons({ title }: { title: string }) {
   return (
@@ -10,9 +10,7 @@ function PageHeaderWithIcons({ title }: { title: string }) {
       <div className="flex gap-2 items-center">
         <Search size={20} className="hover:cursor-pointer" />
         <NotificationSheet />
-        <button className="p-2 rounded-full bg-blue-200 hover:cursor-pointer">
-          <User size={20} />
-        </button>
+        <ProfileModal />
       </div>
     </div>
   );

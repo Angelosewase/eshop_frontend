@@ -1,4 +1,17 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { prepareAuthHeaders } from "../../utils/api";
+
+export interface OrderItem {
+  id: number;
+  productId: number;
+  quantity: number;
+  price: number;
+  product: {
+    id: number;
+    name: string;
+    image: string;
+  };
+}
 
 export interface OrderDetails {
   id: number;
@@ -11,60 +24,68 @@ export interface OrderDetails {
     id: number;
     email: string;
   };
-  items: unknown;
-  payment: unknown;
+  items: OrderItem[];
+  payment: {
+    status: 'paid' | 'pending' | 'cancelled' | 'refunded';
+  };
 }
 
-export interface OrderItem {
-  id: number;
-  orderId: number;
-  productId: number;
-  productsSkuId: number;
-  quantity: number;
-  createdAt: Date;
-  updatedAt: Date;
-  product: unknown;
-  productSku: unknown;
+interface OrderResponse {
+  success: boolean;
+  data: OrderDetails[];
+  total: number;
+  message?: string;
+}
+
+interface SingleOrderResponse {
+  success: boolean;
+  data: OrderDetails;
 }
 
 export const orderApi = createApi({
   reducerPath: "orders",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000",
+    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/',
     credentials: "include",
+    prepareHeaders: prepareAuthHeaders,
   }),
-
+  tagTypes: ['Order'],
   endpoints: (builder) => ({
-    getOrders: builder.query<
-      {
-        success: boolean;
-        data: OrderDetails[];
-        total: number;
-        message?: string;
-      },
-      void
-    >({
-      query: () => "/orders",
+    getOrders: builder.query<OrderResponse, void>({
+      query: () => "orders",
+      providesTags: ['Order']
     }),
-    getOrder: builder.query<{ success: boolean; data: OrderDetails }, void>({
-      query: (id) => `/orders/${id}`,
+    getUserOrders: builder.query<OrderResponse, void>({
+      query: () => "orders/user",
+      providesTags: ['Order']
     }),
-    createOrder: builder.mutation({
+    getOrder: builder.query<SingleOrderResponse, number>({
+      query: (id) => `orders/${id}`,
+      providesTags: ['Order']
+    }),
+    createOrder: builder.mutation<OrderResponse, any>({
       query: (data) => ({
-        url: "/orders",
+        url: "orders",
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ['Order']
     }),
-    updateOrder: builder.mutation({
-      query: (data) => ({
-        url: `/orders/${data.id}`,
+    updateOrder: builder.mutation<OrderResponse, { id: number; data: any }>({
+      query: ({ id, data }) => ({
+        url: `orders/${id}`,
         method: "PUT",
         body: data,
       }),
+      invalidatesTags: ['Order']
     }),
   }),
 });
 
-
-export const { useCreateOrderMutation, useGetOrdersQuery, useUpdateOrderMutation, useGetOrderQuery } = orderApi;
+export const {
+  useCreateOrderMutation,
+  useGetOrdersQuery,
+  useGetUserOrdersQuery,
+  useUpdateOrderMutation,
+  useGetOrderQuery
+} = orderApi;

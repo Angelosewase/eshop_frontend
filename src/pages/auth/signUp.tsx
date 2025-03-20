@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/Reduxhooks";
 import { toast } from "sonner";
 import { registerUser } from "../../features/auth/authSlice";
-import { AxiosError } from "axios";
+import React from "react";
 
 function SignUp() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [formState, setFormState] = useState({
     firstName: "",
     lastName: "",
@@ -16,10 +17,38 @@ function SignUp() {
   });
 
   const { user, loading, error } = useAppSelector((state) => state.auth);
+
   function handleFormState(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setFormState({ ...formState, [name]: value });
   }
+
+  React.useEffect(() => {
+    if (user) {
+      console.log('User registered:', user);
+      setTimeout(() => {
+        navigate('/auth/login');
+      }, 100);
+    }
+  }, [user, navigate]);
+
+  React.useEffect(() => {
+    const loadingToastId = 'register-loading';
+
+    if (loading) {
+      toast.loading("Creating your account...", { id: loadingToastId });
+    } else {
+      toast.dismiss(loadingToastId);
+      if (error) {
+        console.error('Registration error:', error);
+        toast.error(error.message);
+      }
+    }
+
+    return () => {
+      toast.dismiss(loadingToastId);
+    };
+  }, [loading, error]);
 
   function validateInputs() {
     const requiredFields = [
@@ -34,25 +63,23 @@ function SignUp() {
       .map((field) => field.key);
 
     if (emptyFields.length > 0) {
-      toast.error("Uh oh! Something went wrong.", {
-        description: `Please fill in all the required fields (${emptyFields.join(
-          ", "
-        )})`,
+      toast.error("Please fill in all required fields", {
+        description: emptyFields.join(", ")
       });
       return false;
     }
 
     const emailOrPhoneRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$|^\+?[1-9]\d{1,14}$/;
     if (!emailOrPhoneRegex.test(formState.emailPhoneNumberString)) {
-      toast.error("Uh oh! Something went wrong.", {
-        description: "Please enter a valid email address or phone number",
+      toast.error("Invalid input", {
+        description: "Please enter a valid email address or phone number"
       });
       return false;
     }
 
     if (formState.password !== formState.confirmPassword) {
-      toast.error("Uh oh! Something went wrong.", {
-        description: "Passwords don't match",
+      toast.error("Password mismatch", {
+        description: "Passwords don't match"
       });
       return false;
     }
@@ -60,26 +87,11 @@ function SignUp() {
     return true;
   }
 
-  if (user != null) {
-    toast.success("sign successful!");
-  }
-  if (loading) {
-    toast.dismiss();
-    toast.message("Loading...");
-  } else if (error) {
-    toast.dismiss();
-    toast.error("Uh oh! Something went wrong.", {
-      description:
-        "There was a problem with your request." +
-        (error as AxiosError).message,
-    });
-    console.log(error);
-    
-  }
-
-  function handleSubmit() {
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     if (!validateInputs()) return;
-    dispatch(
+
+    const result = await dispatch(
       registerUser({
         firstName: formState.firstName,
         lastName: formState.lastName,
@@ -87,11 +99,15 @@ function SignUp() {
         password: formState.password,
       })
     );
+
+    if (result.meta.requestStatus === 'fulfilled') {
+      toast.success("Registration successful! Please login.");
+    }
   }
 
   return (
     <div className="w-1/3 h-full items-center pt-[50px] flex flex-col">
-      <form action="" className="w-[70%]" onSubmit={(e) => e.preventDefault()}>
+      <form className="w-[70%]" onSubmit={handleSubmit}>
         <h1 className="text-4xl font-semibold mb-2">E-shop</h1>
         <h2 className="font-semibold">Sign up</h2>
 
@@ -169,7 +185,7 @@ function SignUp() {
         </div>
         <button
           className="bg-primary text-white text-center text-lg flex items-center justify-center w-full p-3 mt-4"
-          onClick={handleSubmit}
+          type="submit"
         >
           Sign up
         </button>

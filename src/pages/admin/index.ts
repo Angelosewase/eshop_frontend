@@ -6,3 +6,5 @@ export { default as Payments } from "./Payments";
 export { default as Support } from "./Support";
 export { default as Settings } from "./Settings";
 export { default as Notifications } from "./Notifications";
+export { default as NewProduct } from "./NewProduct";
+export { default as Products } from "./Products";

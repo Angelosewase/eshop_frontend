@@ -36,9 +36,7 @@ export const useValidatePath = () => {
   }, [dispatch, user]);
 
   useEffect(() => {
-    if (isLoggedIn && isUserAdmin) {
-      navigate("/admin");
-    } else if (isLoggedIn) {
+    if (isLoggedIn && !isUserAdmin) {
       navigate("/");
     }
   }, [isLoggedIn, isUserAdmin, navigate]);
