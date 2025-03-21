@@ -4,6 +4,10 @@ import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import ProfileImage from "../ui-elements/Profile-Image";
 import { logOut } from "../../features/auth/authSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import cartService from "../../features/cart/cartService";
+import { AppDispatch } from "../../store/store";
 
 interface ProfileHeaderProps {
   name: string;
@@ -16,21 +20,25 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   email,
   profileImage,
 }) => {
-  const handleProfileImageChange = (file: File) => {
-    // In a real app, this would upload the file to a server
-    console.log("Profile image changed:", file);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
+  const handleProfileImageChange = (file: File) => {
+    console.log("Profile image changed:", file);
     toast.message("Profile image changed");
   };
 
   const handleLogout = async () => {
-    // In a real app, this would handle the logout process
-    try{
-      await logOut();
-      toast.message("You have been logged out");
-    }catch(error){
-      console.log(error)
-      toast.error("Error logging out");
+    try {
+      await cartService.clearCart();
+      await dispatch(logOut());
+
+      toast.success("Successfully logged out");
+
+      navigate("/auth/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to log out. Please try again.");
     }
   };
 

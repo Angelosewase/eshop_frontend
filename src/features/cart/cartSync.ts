@@ -120,13 +120,20 @@ export const cartSync = {
       // Then add each local item to the server cart
       console.log("➕ Adding local items to server cart");
       for (const item of localItems) {
+        if (!item.productSku?.id) {
+          console.warn("⚠️ Skipping item without valid productSku:", item);
+          continue;
+        }
+
         console.log("Adding item to server cart:", item);
-        await dispatch(
-          cartApi.endpoints.addToCart.initiate({
-            productSkuId: item.productsSkuId,
+        try {
+          await dispatch(cartApi.endpoints.addToCart.initiate({
+            productSkuId: item.productSku.id,
             quantity: item.quantity
-          }),
-        );
+          }));
+        } catch (error) {
+          console.error("Failed to add item to cart:", error);
+        }
       }
 
       console.log("✅ Cart sync completed successfully");
@@ -190,13 +197,20 @@ export const cartSync = {
 
               // Then sync with server
               for (const item of localItems) {
+                if (!item.productSku?.id) {
+                  console.warn("⚠️ Skipping item without valid productSku:", item);
+                  continue;
+                }
+
                 console.log("Adding item to server cart:", item);
-                await dispatch(
-                  cartApi.endpoints.addToCart.initiate({
-                    productSkuId: item.productsSkuId,
+                try {
+                  await dispatch(cartApi.endpoints.addToCart.initiate({
+                    productSkuId: item.productSku.id,
                     quantity: item.quantity
-                  }),
-                );
+                  }));
+                } catch (error) {
+                  console.error("Failed to add item to cart:", error);
+                }
               }
             } else {
               console.log("ℹ️ No items in localStorage, using empty cart");
@@ -218,13 +232,20 @@ export const cartSync = {
 
             // Then sync with server
             for (const item of localItems) {
+              if (!item.productSku?.id) {
+                console.warn("⚠️ Skipping item without valid productSku:", item);
+                continue;
+              }
+
               console.log("Adding item to server cart:", item);
-              await dispatch(
-                cartApi.endpoints.addToCart.initiate({
-                  productSkuId: item.productsSkuId,
+              try {
+                await dispatch(cartApi.endpoints.addToCart.initiate({
+                  productSkuId: item.productSku.id,
                   quantity: item.quantity
-                }),
-              );
+                }));
+              } catch (error) {
+                console.error("Failed to add item to cart:", error);
+              }
             }
           } else {
             console.log("ℹ️ No items in localStorage, using empty cart");

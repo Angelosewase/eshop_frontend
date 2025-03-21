@@ -1,8 +1,3 @@
-type Headers = {
-  set: (name: string, value: string) => void;
-  get: (name: string) => string | null;
-};
-
 let authErrorHandler: (() => void) | null = null;
 
 export const setAuthErrorHandler = (handler: () => void) => {
@@ -18,7 +13,6 @@ export const handleAuthError = () => {
 /**
  * Prepares headers for API requests by adding the authentication token if available
  * @param headers - The headers object to modify
- * @param api - The BaseQueryApi object
  * @returns The modified headers object
  */
 export const prepareAuthHeaders = (headers: Headers) => {

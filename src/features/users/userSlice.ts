@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Customer } from "../../components/custom/tables/customers/columns";
-import { RootState } from "../../store/store";
+import { prepareAuthHeaders } from "../../utils/api";
+import { toast } from "sonner";
 
 interface User {
   id: number;
@@ -25,13 +26,7 @@ export const userApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/",
     credentials: "include",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
+    prepareHeaders: (headers) => prepareAuthHeaders(headers),
   }),
   tagTypes: ["User"],
   endpoints: (builder) => ({
@@ -52,8 +47,8 @@ export const userApi = createApi({
             ),
           );
         } catch (error) {
-          console.error("error fetching users/me ==>");
-          console.error(error);
+          console.error("error fetching current user: ", error);
+          toast.error("Error fetching current user");
         }
       },
     }),

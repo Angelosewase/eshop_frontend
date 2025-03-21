@@ -39,7 +39,7 @@ export const cartApi = createApi({
     }),
     addToCart: builder.mutation<CartResponse, AddToCartRequest>({
       query: (body) => ({
-        url: "cart/items",
+        url: "cart/add",
         method: "POST",
         body,
       }),
@@ -50,16 +50,17 @@ export const cartApi = createApi({
       { itemId: number; body: UpdateCartItemRequest }
     >({
       query: ({ itemId, body }) => ({
-        url: `cart/items/${itemId}`,
+        url: `cart/update`,
         method: "PUT",
-        body,
+        body: { ...body, itemId },
       }),
       invalidatesTags: ["Cart"],
     }),
     removeFromCart: builder.mutation<CartResponse, number>({
       query: (itemId) => ({
-        url: `cart/items/${itemId}`,
+        url: `cart/remove`,
         method: "DELETE",
+        body: { itemId },
       }),
       invalidatesTags: ["Cart"],
     }),

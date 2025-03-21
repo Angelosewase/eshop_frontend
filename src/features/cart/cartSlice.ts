@@ -78,9 +78,15 @@ const cartSlice = createSlice({
       .addMatcher(
         cartApi.endpoints.getCart.matchFulfilled,
         (state, action) => {
-          state.items = action.payload.items;
-          state.itemCount = action.payload.items.length;
-          state.total = action.payload.total;
+          if (action.payload && Array.isArray(action.payload.items)) {
+            state.items = action.payload.items;
+            state.itemCount = action.payload.items.length;
+            state.total = action.payload.total || 0;
+          } else {
+            state.items = [];
+            state.itemCount = 0;
+            state.total = 0;
+          }
           state.isInitialized = true;
           state.error = null;
         },
@@ -89,6 +95,9 @@ const cartSlice = createSlice({
         cartApi.endpoints.getCart.matchRejected,
         (state, action) => {
           state.error = action.error.message || "Failed to fetch cart";
+          state.items = [];
+          state.itemCount = 0;
+          state.total = 0;
         },
       );
   },

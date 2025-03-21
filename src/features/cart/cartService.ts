@@ -10,6 +10,8 @@ import { cartApi } from "./cartApiSlice";
 import cartSync from "./cartSync";
 
 class CartService {
+  constructor() { }
+
   /**
    * Initialize the cart based on authentication status
    * Only fetches the cart, doesn't create an empty one
@@ -49,48 +51,32 @@ class CartService {
 
       if (authenticated) {
         console.group("📡 Making API Call to Add to Cart");
-        console.log("Preparing API request with:", {
+        const payload = {
+          productId,
           productSkuId,
-          quantity,
-          endpoint: "cart/add",
-          method: "POST",
-        });
+          quantity
+        };
+        console.log("Preparing API request payload:", payload);
 
-        try {
-          const result = await dispatch(
-            cartApi.endpoints.addToCart.initiate({
-              productSkuId,
-              quantity,
-            }),
-          );
+        const result = await dispatch(
+          cartApi.endpoints.addToCart.initiate(payload)
+        );
 
-          console.log("API Response:", {
-            success: result.data ? "Yes" : "No",
-            status: result.status,
-            data: result.data,
-            error: result.error,
-          });
+        console.log("API Response:", result);
 
-          if (!result.data) {
-            console.error("❌ API call failed or returned no data");
-            throw new Error("Failed to add item to cart via API");
-          }
-        } catch (apiError) {
-          console.error("❌ API call error:", apiError);
-          throw apiError;
-        } finally {
-          console.groupEnd(); // End API call group
+        if (!result.data) {
+          console.error("❌ API call failed:", result.error);
+          throw new Error(result.error?.data?.message || "Failed to add item to cart");
         }
+
+        console.log("✅ Item added to cart successfully");
+        console.groupEnd();
       } else {
         console.log("🔒 User not authenticated - Adding to local cart only");
 
-        // Get current state
         const state = getState();
-
-        // Try to get product details from various sources
         let productDetails: any = null;
 
-        // 1. Try to get from Redux state
         if (state.productApi?.queries) {
           const productQuery = Object.values(state.productApi.queries).find(
             (query: any) => query?.data?.id === productId
@@ -100,79 +86,36 @@ class CartService {
             productDetails = productQuery.data;
           }
         }
-        else {
-          console.log("Using minimal product information");
 
-          productDetails = {
-            id: productId,
-            name: `Product ${productId}`,
-            price: 0,
-            images: [],
-          };
-
-          // Try to extract more information from the DOM if available
-          try {
-            const nameElement = document.querySelector(
-              `[data-product-id="${productId}"] .product-name, h1.product-title`,
-            );
-            if (nameElement) {
-              productDetails.name =
-                nameElement.textContent || productDetails.name;
-            }
-
-            const priceElement = document.querySelector(
-              `[data-product-id="${productId}"] .product-price`,
-            );
-            if (priceElement) {
-              const priceAttr = priceElement.getAttribute("data-price");
-              const priceText = priceElement.textContent;
-
-              if (priceAttr) {
-                productDetails.price = parseInt(priceAttr);
-              } else if (priceText) {
-                // Try to extract price from text (e.g., "$10.99")
-                const priceMatch = priceText?.match(/\d+(\.\d+)?/);
-                if (priceMatch) {
-                  productDetails.price = parseFloat(priceMatch[0]) * 100; // Convert to cents
-                }
-              }
-            }
-
-            const imageElement = document.querySelector(
-              `[data-product-id="${productId}"] img`,
-            );
-            if (imageElement) {
-              const src = imageElement.getAttribute("src");
-              if (src) {
-                productDetails.images = [src];
-              }
-            }
-          } catch (error) {
-            console.warn("Error extracting product details from DOM:", error);
-          }
-        }
-
-        // Create cart item
         const cartItem: CartItem = {
-          id: productId,
-          cartId: 0, // temporary ID for local cart
-          productId: productId,
+          id: Date.now(), // temporary ID for local cart
+          cartId: 0,
+          productId,
           productsSkuId: productSkuId,
           quantity,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          productSku: {
+            id: productSkuId,
+            productId,
+            sizeAttributeId: 0, // Default value since we don't have this info for local cart
+            colorAttributeId: 0, // Default value since we don't have this info for local cart
+            sku: `SKU-${productId}-${productSkuId}`, // Generate a temporary SKU
+            price: productDetails?.price?.toString() || "0",
+            quantity: productDetails?.quantity || 0,
+            createdAt: new Date(),
+          }
         };
 
         console.log("Adding item to local cart:", cartItem);
         dispatch(addToLocalCart(cartItem));
-
         console.log("✅ Item added to local cart successfully");
       }
     } catch (error) {
       console.error("❌ Error in addToCart:", error);
       throw error;
     } finally {
-      console.groupEnd(); // End main group
+      console.groupEnd();
     }
   }
 
@@ -192,48 +135,20 @@ class CartService {
       console.log("User authenticated:", authenticated);
 
       if (authenticated) {
-        console.log(
-          "🔍 Removing item from cart via API for authenticated user",
-        );
-
+        console.log("🔍 Removing item from cart via API for authenticated user");
         const result = await dispatch(
-          cartApi.endpoints.removeFromCart.initiate(itemId),
+          cartApi.endpoints.removeFromCart.initiate(itemId)
         );
-
-        console.log("API removeCartItem result:", result);
 
         if (!result.data) {
-          console.warn("⚠️ API returned no data for removeCartItem");
+          throw new Error("Failed to remove item from cart");
         }
 
-        // Check if this was the last item in the cart
-        const state = getState();
-        if (
-          state.cart?.items.length === 1 &&
-          state.cart.items[0].id === itemId
-        ) {
-          console.log("🗑️ Last item removed, cart will be deleted");
-        }
+        console.log("✅ Item removed successfully");
       } else {
         console.log("🔍 Removing item from cart locally for guest user");
-
-        // For local cart, we need to find the cart item with this ID
-        const state = getState();
-        const cartItem = state.cart?.items.find(
-          (item: CartItem) => item.id === itemId,
-        );
-
-        if (cartItem) {
-          dispatch(removeFromLocalCart({ id: itemId }));
-          console.log("✅ Item removed from local cart successfully");
-
-          // Check if this was the last item in the cart
-          if (state.cart?.items.length === 1) {
-            console.log("🗑️ Last item removed, cart will be deleted");
-          }
-        } else {
-          console.warn("⚠️ Item not found in local cart:", itemId);
-        }
+        dispatch(removeFromLocalCart({ id: itemId }));
+        console.log("✅ Item removed from local cart successfully");
       }
     } catch (error) {
       console.error("❌ Error removing item from cart:", error);
@@ -258,34 +173,22 @@ class CartService {
 
       if (authenticated) {
         console.log("🔍 Updating item quantity via API for authenticated user");
-
         const result = await dispatch(
           cartApi.endpoints.updateCartItem.initiate({
             itemId,
-            body: { quantity },
-          }),
+            body: { quantity }
+          })
         );
-
-        console.log("API updateCartItem result:", result);
 
         if (!result.data) {
-          console.warn("⚠️ API returned no data for updateCartItem");
+          throw new Error("Failed to update item quantity");
         }
+
+        console.log("✅ Quantity updated successfully");
       } else {
         console.log("🔍 Updating item quantity locally for guest user");
-
-        // For local cart, we need to find the cart item with this ID
-        const state = getState();
-        const cartItem = state.cart?.items.find(
-          (item: CartItem) => item.id === itemId,
-        );
-
-        if (cartItem) {
-          dispatch(updateLocalQuantity({ id: itemId, quantity }));
-          console.log("✅ Item quantity updated in local cart successfully");
-        } else {
-          console.warn("⚠️ Item not found in local cart:", itemId);
-        }
+        dispatch(updateLocalQuantity({ id: itemId, quantity }));
+        console.log("✅ Item quantity updated in local cart successfully");
       }
     } catch (error) {
       console.error("❌ Error updating item quantity:", error);
@@ -312,17 +215,11 @@ class CartService {
 
       if (authenticated) {
         console.log("🔍 Clearing cart via API for authenticated user");
-
-        const result = await dispatch(
-          cartApi.endpoints.clearCart.initiate(),
-        );
-
-        console.log("API clearCart result:", result);
+        await dispatch(cartApi.endpoints.clearCart.initiate());
+        console.log("✅ Cart cleared successfully");
       } else {
         console.log("🔍 Clearing cart locally for guest user");
-
         dispatch(clearLocalCart());
-
         console.log("✅ Local cart cleared successfully");
       }
     } catch (error) {
@@ -352,4 +249,5 @@ class CartService {
   }
 }
 
-export default new CartService();
+const cartService = new CartService();
+export default cartService;

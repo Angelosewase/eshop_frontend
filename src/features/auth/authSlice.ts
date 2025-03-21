@@ -115,6 +115,7 @@ export const logOut = createAsyncThunk("auth/logout", async () => {
     console.log("🔐 User logged out successfully");
   } catch (error) {
     console.error("❌ Logout error:", error);
+    // Still remove token even if API call fails
     localStorage.removeItem("auth_token");
   }
 });
