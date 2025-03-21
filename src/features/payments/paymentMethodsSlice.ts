@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { prepareAuthHeaders } from "../../utils/api";
+import { RootState } from "../../store/store";
 
 export interface PaymentMethod {
   id: number;
@@ -35,49 +35,67 @@ export interface SinglePaymentMethodResponse {
 export const paymentMethodsApi = createApi({
   reducerPath: "paymentMethods",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/',
+    baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/",
     credentials: "include",
-    prepareHeaders: prepareAuthHeaders,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
-  tagTypes: ['PaymentMethod'],
+  tagTypes: ["PaymentMethod"],
   endpoints: (builder) => ({
     getUserPaymentMethods: builder.query<PaymentMethodsResponse, void>({
       query: () => "payment/methods",
-      providesTags: ['PaymentMethod']
+      providesTags: ["PaymentMethod"],
     }),
     getPaymentMethod: builder.query<SinglePaymentMethodResponse, number>({
       query: (id) => `payment/methods/${id}`,
-      providesTags: ['PaymentMethod']
+      providesTags: ["PaymentMethod"],
     }),
-    addPaymentMethod: builder.mutation<SinglePaymentMethodResponse, PaymentMethodRequest>({
+    addPaymentMethod: builder.mutation<
+      SinglePaymentMethodResponse,
+      PaymentMethodRequest
+    >({
       query: (data) => ({
         url: "payment/methods",
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ['PaymentMethod']
+      invalidatesTags: ["PaymentMethod"],
     }),
-    updatePaymentMethod: builder.mutation<SinglePaymentMethodResponse, { id: number; data: Partial<PaymentMethodRequest> }>({
+    updatePaymentMethod: builder.mutation<
+      SinglePaymentMethodResponse,
+      { id: number; data: Partial<PaymentMethodRequest> }
+    >({
       query: ({ id, data }) => ({
         url: `payment/methods/${id}`,
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ['PaymentMethod']
+      invalidatesTags: ["PaymentMethod"],
     }),
-    deletePaymentMethod: builder.mutation<{ success: boolean; message: string }, number>({
+    deletePaymentMethod: builder.mutation<
+      { success: boolean; message: string },
+      number
+    >({
       query: (id) => ({
         url: `payment/methods/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ['PaymentMethod']
+      invalidatesTags: ["PaymentMethod"],
     }),
-    setDefaultPaymentMethod: builder.mutation<SinglePaymentMethodResponse, number>({
+    setDefaultPaymentMethod: builder.mutation<
+      SinglePaymentMethodResponse,
+      number
+    >({
       query: (id) => ({
         url: `payment/methods/${id}/default`,
         method: "PUT",
       }),
-      invalidatesTags: ['PaymentMethod']
+      invalidatesTags: ["PaymentMethod"],
     }),
   }),
 });
@@ -88,5 +106,5 @@ export const {
   useAddPaymentMethodMutation,
   useUpdatePaymentMethodMutation,
   useDeletePaymentMethodMutation,
-  useSetDefaultPaymentMethodMutation
-} = paymentMethodsApi; 
+  useSetDefaultPaymentMethodMutation,
+} = paymentMethodsApi;

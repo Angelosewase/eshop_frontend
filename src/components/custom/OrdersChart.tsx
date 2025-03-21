@@ -1,6 +1,15 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -25,51 +34,68 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
   const totalOrders = orders.length;
 
   // Group orders by date with improved error handling
-  const ordersByDate = orders.reduce((acc, order) => {
-    let dateStr;
-    try {
-      // Ensure we have a valid date object
-      const orderDate = order.createdAt instanceof Date
-        ? order.createdAt
-        : new Date(order.createdAt);
+  const ordersByDate = orders.reduce(
+    (acc, order) => {
+      let dateStr;
+      try {
+        // Ensure we have a valid date object
+        const orderDate =
+          order.createdAt instanceof Date
+            ? order.createdAt
+            : new Date(order.createdAt);
 
-      // Check if date is valid
-      if (isNaN(orderDate.getTime())) {
-        console.warn("Invalid date in order:", order);
+        // Check if date is valid
+        if (isNaN(orderDate.getTime())) {
+          console.warn("Invalid date in order:", order);
+          dateStr = "Unknown";
+        } else {
+          dateStr = orderDate.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
+        }
+      } catch (e) {
+        console.error("Error formatting date for order:", order, e);
         dateStr = "Unknown";
-      } else {
-        dateStr = orderDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
-    } catch (e) {
-      console.error("Error formatting date for order:", order, e);
-      dateStr = "Unknown";
-    }
 
-    if (!acc[dateStr]) {
-      acc[dateStr] = {
-        date: dateStr,
-        orders: 0,
-        revenue: 0,
-        paid: 0,
-        pending: 0,
-        cancelled: 0
-      };
-    }
+      if (!acc[dateStr]) {
+        acc[dateStr] = {
+          date: dateStr,
+          orders: 0,
+          revenue: 0,
+          paid: 0,
+          pending: 0,
+          cancelled: 0,
+        };
+      }
 
-    acc[dateStr].orders += 1;
-    acc[dateStr].revenue += order.total;
+      acc[dateStr].orders += 1;
+      acc[dateStr].revenue += order.total;
 
-    const status = order.payment?.status || "pending";
-    if (status === 'paid') {
-      acc[dateStr].paid += order.total;
-    } else if (status === 'pending') {
-      acc[dateStr].pending += order.total;
-    } else if (status === 'cancelled') {
-      acc[dateStr].cancelled += order.total;
-    }
+      const status = order.payment?.status || "pending";
+      if (status === "paid") {
+        acc[dateStr].paid += order.total;
+      } else if (status === "pending") {
+        acc[dateStr].pending += order.total;
+      } else if (status === "cancelled") {
+        acc[dateStr].cancelled += order.total;
+      }
 
-    return acc;
-  }, {} as Record<string, { date: string; orders: number; revenue: number; paid: number; pending: number; cancelled: number }>);
+      return acc;
+    },
+    {} as Record<
+      string,
+      {
+        date: string;
+        orders: number;
+        revenue: number;
+        paid: number;
+        pending: number;
+        cancelled: number;
+      }
+    >,
+  );
 
   // Convert to array and sort by date
   const chartData = Object.values(ordersByDate);
@@ -113,7 +139,10 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0 flex items-center justify-center" style={{ height: '250px' }}>
+        <CardContent
+          className="p-0 flex items-center justify-center"
+          style={{ height: "250px" }}
+        >
           <div className="text-center text-muted-foreground">
             <p>No order data available to display</p>
             <p className="text-sm mt-2">Create some orders to see the chart</p>
@@ -133,7 +162,9 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold">{formatCurrency(totalRevenue)}</p>
-            <p className="text-sm text-muted-foreground">{formatNumber(totalOrders)} orders</p>
+            <p className="text-sm text-muted-foreground">
+              {formatNumber(totalOrders)} orders
+            </p>
           </div>
         </div>
       </CardHeader>
@@ -155,18 +186,30 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
                   >
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <XAxis dataKey="date" />
-                    <YAxis
-                      tickFormatter={(value) => `$${value}`}
-                      width={60}
-                    />
+                    <YAxis tickFormatter={(value) => `$${value}`} width={60} />
                     <Tooltip
-                      formatter={(value) => [`$${value}`, '']}
+                      formatter={(value) => [`$${value}`, ""]}
                       labelFormatter={(label) => `Date: ${label}`}
                     />
                     <Legend />
-                    <Bar dataKey="paid" name="Paid" fill="#16a34a" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="pending" name="Pending" fill="#eab308" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="cancelled" name="Cancelled" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                    <Bar
+                      dataKey="paid"
+                      name="Paid"
+                      fill="#16a34a"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="pending"
+                      name="Pending"
+                      fill="#eab308"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="cancelled"
+                      name="Cancelled"
+                      fill="#ef4444"
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               );
@@ -176,7 +219,9 @@ export default function OrdersChart({ orders }: OrdersChartProps) {
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center text-muted-foreground">
                     <p>Error rendering chart</p>
-                    <p className="text-sm mt-2">Please try refreshing the page</p>
+                    <p className="text-sm mt-2">
+                      Please try refreshing the page
+                    </p>
                     <pre className="text-xs mt-4 text-left bg-gray-100 p-2 rounded max-w-full overflow-auto">
                       {JSON.stringify(recentChartData, null, 2)}
                     </pre>

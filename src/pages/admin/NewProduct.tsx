@@ -1,5 +1,4 @@
-import React from 'react';
-import { AddInventoryProduct } from '../../components/custom/modals';
+import { AddInventoryProduct } from "../../components/custom/modals";
 
 export default function NewProduct() {
   return (
@@ -10,4 +9,4 @@ export default function NewProduct() {
       <AddInventoryProduct />
     </div>
   );
-} 
+}

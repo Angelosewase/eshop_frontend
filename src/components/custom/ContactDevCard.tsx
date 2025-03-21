@@ -1,5 +1,4 @@
 import { MessageSquare, ExternalLink } from "lucide-react";
-import { cn } from "../../lib/utils";
 
 function ContactDevCard() {
   return (
@@ -10,8 +9,8 @@ function ContactDevCard() {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-medium text-white text-xs">Need Help?</h3>
-          <a 
-            href="mailto:support@eshop.com" 
+          <a
+            href="mailto:support@eshop.com"
             className="inline-flex items-center text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
           >
             Contact Support

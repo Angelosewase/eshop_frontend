@@ -1,47 +1,16 @@
-import { ColumnDef, Row } from "@tanstack/react-table";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-
-} from "../../../ui/dialog";
-
-import { OrderStatus } from './OrderStatus';
+import { ColumnDef } from "@tanstack/react-table";
+import { formatPrice } from "../../../../lib/utils";
 import { Actions } from "./Actions";
 
-export type Order = {
+export interface Order {
   id: string;
   customerName: string;
-  type: "online" | "offline";
-  status: "pending" | "processing" | "success" | "failed";
+  type: string;
+  status: "paid" | "pending" | "cancelled" | "refunded";
   product: string;
   amount: number;
   date: string;
-};
-
-import {
-  ArrowUpFromLine,
-  Copy,
-  Grip,
-  Image,
-  Mail,
-  MoreHorizontal,
-  Phone,
-  Printer,
-  Redo2,
-  User,
-} from "lucide-react";
-
-import { Button } from "../../..//ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../../..//ui/dropdown-menu";
+}
 import { Checkbox } from "../../../ui/checkbox";
 import { DataTableColumnHeader } from "../ColumnHeader";
 
@@ -79,7 +48,19 @@ export const columns: ColumnDef<Order>[] = [
       );
     },
   },
-
+  {
+    accessorKey: "customerName",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Customer" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="text-start  font-medium">
+          {row.getValue("customerName")}
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "type",
     header: ({ column }) => (
@@ -97,8 +78,21 @@ export const columns: ColumnDef<Order>[] = [
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
+      const status = row.getValue("status") as string;
       return (
-        <div className="text-start  font-medium">{row.getValue("status")}</div>
+        <div
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            status === "paid"
+              ? "bg-green-100 text-green-800"
+              : status === "pending"
+                ? "bg-yellow-100 text-yellow-800"
+                : status === "cancelled"
+                  ? "bg-red-100 text-red-800"
+                  : "bg-gray-100 text-gray-800"
+          }`}
+        >
+          {status}
+        </div>
       );
     },
   },
@@ -118,15 +112,7 @@ export const columns: ColumnDef<Order>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Amount" />
     ),
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-start font-medium">{formatted}</div>;
-    },
+    cell: ({ row }) => formatPrice(row.getValue("amount")),
   },
   {
     accessorKey: "date",

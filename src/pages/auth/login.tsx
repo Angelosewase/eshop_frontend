@@ -24,18 +24,20 @@ function Login() {
 
   React.useEffect(() => {
     if (user) {
-      console.log('User authenticated:', { role: user.role, id: user.id });
+      console.log("User authenticated:", { role: user.role, id: user.id });
 
       // Navigate based on role and saved location
       const timeoutId = setTimeout(() => {
-        if (user.role === 'ADMIN') {
+        if (user.role === "ADMIN") {
           const savedPath = location.state?.from?.pathname;
-          const targetPath = savedPath?.startsWith('/admin') ? savedPath : '/admin';
-          console.log('Redirecting admin to:', targetPath);
+          const targetPath = savedPath?.startsWith("/admin")
+            ? savedPath
+            : "/admin";
+          console.log("Redirecting admin to:", targetPath);
           navigate(targetPath, { replace: true });
         } else {
-          console.log('Redirecting user to home');
-          navigate('/', { replace: true });
+          console.log("Redirecting user to home");
+          navigate("/", { replace: true });
         }
       }, 500); // Give time for state to settle
 
@@ -44,7 +46,7 @@ function Login() {
   }, [user, navigate, location]);
 
   React.useEffect(() => {
-    const loadingToastId = 'login-loading';
+    const loadingToastId = "login-loading";
 
     if (loading) {
       toast.loading("Logging in...", { id: loadingToastId });
@@ -69,22 +71,25 @@ function Login() {
     }
 
     try {
-      const result = await dispatch(loginUser({
-        emailPhoneNumberString: formState.emailPhoneNumberString,
-        password: formState.password
-      }));
+      const result = await dispatch(
+        loginUser({
+          emailPhoneNumberString: formState.emailPhoneNumberString,
+          password: formState.password,
+        }),
+      );
 
-      if (result.meta.requestStatus === 'fulfilled') {
+      if (result.meta.requestStatus === "fulfilled") {
         const userData = result.payload;
-        console.log('Login successful:', userData);
+        console.log("Login successful:", userData);
         toast.success("Login successful!");
-      } else if (result.meta.requestStatus === 'rejected') {
-        const errorMessage = (result.payload as { message: string })?.message || "Login failed";
-        console.error('Login failed:', errorMessage);
+      } else if (result.meta.requestStatus === "rejected") {
+        const errorMessage =
+          (result.payload as { message: string })?.message || "Login failed";
+        console.error("Login failed:", errorMessage);
         toast.error(errorMessage);
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       toast.error("An unexpected error occurred");
     }
   }
@@ -142,10 +147,7 @@ function Login() {
         </div>
       </form>
 
-      <Link
-        to="/"
-        className="font-bold text-sm mt-auto mb-4 mr-auto ml-[15%]"
-      >
+      <Link to="/" className="font-bold text-sm mt-auto mb-4 mr-auto ml-[15%]">
         Back to website
       </Link>
       <div>

@@ -1,4 +1,4 @@
-import { CirclePlus, CreditCard } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -47,9 +47,10 @@ function AddCardModal({ onClose, open }: AddCardModalProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
@@ -59,7 +60,7 @@ function AddCardModal({ onClose, open }: AddCardModalProps) {
 
     try {
       // Here you would typically make an API call to save the card
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
       toast.success("Card added successfully");
       onClose();
     } catch (error) {
@@ -70,11 +71,13 @@ function AddCardModal({ onClose, open }: AddCardModalProps) {
   };
 
   const formatCardNumber = (value: string) => {
-    return value
-      .replace(/\s/g, "")
-      .match(/.{1,4}/g)
-      ?.join(" ")
-      .substr(0, 19) || "";
+    return (
+      value
+        .replace(/\s/g, "")
+        .match(/.{1,4}/g)
+        ?.join(" ")
+        .substr(0, 19) || ""
+    );
   };
 
   return (
@@ -85,7 +88,9 @@ function AddCardModal({ onClose, open }: AddCardModalProps) {
             <div className="p-2 bg-blue-100 rounded-full">
               <CreditCard className="h-6 w-6 text-blue-600" />
             </div>
-            <DialogTitle className="text-2xl font-semibold">Add New Card</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold">
+              Add New Card
+            </DialogTitle>
           </div>
         </DialogHeader>
 
@@ -150,7 +155,12 @@ function AddCardModal({ onClose, open }: AddCardModalProps) {
 
             <div>
               <Label htmlFor="country">Country or Region</Label>
-              <Select value={formData.country} onValueChange={(value) => setFormData(prev => ({ ...prev, country: value }))}>
+              <Select
+                value={formData.country}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, country: value }))
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select country/region" />
                 </SelectTrigger>
@@ -182,11 +192,7 @@ function AddCardModal({ onClose, open }: AddCardModalProps) {
           </div>
 
           <div className="space-y-4">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -197,7 +203,8 @@ function AddCardModal({ onClose, open }: AddCardModalProps) {
               )}
             </Button>
             <p className="text-xs text-gray-500 text-center">
-              Your card information will be stored securely. We do not store your full card details on our servers.
+              Your card information will be stored securely. We do not store
+              your full card details on our servers.
             </p>
           </div>
         </form>

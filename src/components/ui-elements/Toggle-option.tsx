@@ -1,5 +1,5 @@
-import { Switch } from '../ui/switch';
-import { cn } from '../../lib/utils';
+import { Switch } from "../ui/switch";
+import { cn } from "../../lib/utils";
 
 interface ToggleOptionProps {
   label: string;

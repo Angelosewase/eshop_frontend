@@ -1,8 +1,6 @@
 import React from "react";
 import { useGetCurrentUserQuery } from "../../features/users/userSlice";
 import { useNavigate } from "react-router-dom";
-// import { useAppDispatch } from "../../hooks/Reduxhooks";
-// import { logOut } from "../../features/auth/authSlice";
 import ProfileHeader from "../../components/custom/ProfileHeader";
 import PersonalInfo from "../../components/custom/Persona-info";
 import PrivacyControls from "../../components/custom/private-controls";
@@ -12,7 +10,6 @@ import SecuritySettings from "../../components/custom/SecuitySettings";
 export default function Profile() {
   const { data: userData, error, isLoading } = useGetCurrentUserQuery();
   const navigate = useNavigate();
-  // const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     console.log("Current API Response:", {
@@ -20,15 +17,6 @@ export default function Profile() {
       dataKeys: userData ? Object.keys(userData) : [],
     });
   }, [userData]);
-
-  // const handleLogout = async () => {
-  //   try {
-  //     await dispatch(logOut()).unwrap();
-  //     navigate("/auth/login");
-  //   } catch (err) {
-  //     console.error("Failed to logout:", err);
-  //   }
-  // };
 
   if (isLoading) {
     return (
@@ -107,7 +95,7 @@ export default function Profile() {
         <CommunicationPreferences />
 
         <footer className="mt-16 text-center text-xs text-muted-foreground">
-          <p>© 2023 YourStore. All rights reserved.</p>
+          <p>© 2025 YourStore. All rights reserved.</p>
           <div className="mt-2 space-x-4">
             <a href="#" className="hover:underline">
               Privacy Policy

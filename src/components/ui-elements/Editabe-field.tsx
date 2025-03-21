@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Check, X, Pencil } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import React, { useState } from "react";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Check, X, Pencil } from "lucide-react";
+import { cn } from "../../lib/utils";
 
 interface EditableFieldProps {
   label: string;
@@ -20,12 +20,12 @@ const EditableField: React.FC<EditableFieldProps> = ({
   label,
   value,
   onSave,
-  type = 'text',
+  type = "text",
   placeholder,
   disabled = false,
   required = false,
   className,
-  validate
+  validate,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentValue, setCurrentValue] = useState(value);
@@ -33,10 +33,10 @@ const EditableField: React.FC<EditableFieldProps> = ({
 
   const handleSave = () => {
     if (required && !currentValue) {
-      setError('This field is required');
+      setError("This field is required");
       return;
     }
-    
+
     if (validate) {
       const validationError = validate(currentValue);
       if (validationError) {
@@ -61,10 +61,10 @@ const EditableField: React.FC<EditableFieldProps> = ({
       <div className="flex justify-between items-center mb-1">
         <label className="text-sm font-medium">{label}</label>
         {!isEditing && !disabled && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8 w-8 p-0" 
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
             onClick={() => setIsEditing(true)}
           >
             <Pencil className="h-4 w-4" />
@@ -72,7 +72,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
           </Button>
         )}
       </div>
-      
+
       {isEditing ? (
         <div className="animate-scale-in">
           <Input
@@ -89,7 +89,12 @@ const EditableField: React.FC<EditableFieldProps> = ({
               <Check className="h-4 w-4 mr-1" />
               Save
             </Button>
-            <Button size="sm" variant="outline" onClick={handleCancel} className="h-8">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleCancel}
+              className="h-8"
+            >
               <X className="h-4 w-4 mr-1" />
               Cancel
             </Button>
@@ -97,7 +102,9 @@ const EditableField: React.FC<EditableFieldProps> = ({
         </div>
       ) : (
         <div className="py-2 px-3 rounded-md bg-secondary/50 min-h-[2.5rem] flex items-center">
-          <span className={cn("text-sm", !currentValue && "text-muted-foreground")}>
+          <span
+            className={cn("text-sm", !currentValue && "text-muted-foreground")}
+          >
             {currentValue || placeholder || "Not set"}
           </span>
         </div>

@@ -1,21 +1,21 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { productApi } from "./features/inventory/productSlice";
-import { orderApi } from "./features/orders/ordersSlice";
-import { userApi } from "./features/users/userSlice";
-import { categoryApi } from "./features/inventory/categorySlice";
-import { dashboardApi } from "./features/dashboard/dashboardSlice";
-import { notificationApi } from "./features/notifications/notificationSlice";
-import { productsApi } from "./features/products/productsSlice";
-import { paymentsApi } from "./features/payments/paymentsSlice";
-import { paymentMethodsApi } from "./features/payments/paymentMethodsSlice";
-import { activityApi } from "./features/activity/activitySlice";
-import { cartApiSlice } from "./features/cart/cartApiSlice";
-import { setStore } from "./features/cart/storeAccess";
-import { setAuthErrorHandler } from "./api";
+import { productApi } from "../features/inventory/productSlice";
+import { orderApi } from "../features/orders/ordersSlice";
+import { userApi } from "../features/users/userSlice";
+import { categoryApi } from "../features/inventory/categorySlice";
+import { dashboardApi } from "../features/dashboard/dashboardSlice";
+import { notificationApi } from "../features/notifications/notificationSlice";
+import { productsApi } from "../features/products/productsSlice";
+import { paymentsApi } from "../features/payments/paymentsSlice";
+import { paymentMethodsApi } from "../features/payments/paymentMethodsSlice";
+import { activityApi } from "../features/activity/activitySlice";
+import { cartApi } from "../features/cart/cartApiSlice";
+import { setStore } from "../features/cart/storeAccess";
+import { setAuthErrorHandler } from "../utils/api";
 
 // Import reducers
-import authReducer, { clearAuth } from "./features/auth/authSlice";
-import cartReducer from "./features/cart/cartSlice";
+import authReducer, { clearAuth } from "../features/auth/authSlice";
+import cartReducer from "../features/cart/cartSlice";
 
 // Create the store
 export const store = configureStore({
@@ -32,16 +32,16 @@ export const store = configureStore({
     [paymentsApi.reducerPath]: paymentsApi.reducer,
     [paymentMethodsApi.reducerPath]: paymentMethodsApi.reducer,
     [activityApi.reducerPath]: activityApi.reducer,
-    [cartApiSlice.reducerPath]: cartApiSlice.reducer,
+    [cartApi.reducerPath]: cartApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       // Add serializability check options to handle potential issues
       serializableCheck: {
         // Ignore these action types
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
         // Ignore these field paths in state
-        ignoredPaths: ['some.path.to.ignore'],
+        ignoredPaths: ["some.path.to.ignore"],
       },
     }).concat(
       productApi.middleware,
@@ -54,7 +54,7 @@ export const store = configureStore({
       paymentsApi.middleware,
       paymentMethodsApi.middleware,
       activityApi.middleware,
-      cartApiSlice.middleware
+      cartApi.middleware,
     ),
 });
 
@@ -62,15 +62,15 @@ export const store = configureStore({
 setAuthErrorHandler(() => {
   store.dispatch(clearAuth());
   // Optionally redirect to login
-  window.location.href = 'auth/login';
+  window.location.href = "auth/login";
 });
 
 // Set the store in storeAccess with error handling
 try {
   setStore(store);
-  console.log('Store successfully set in storeAccess from store.ts');
+  console.log("Store successfully set in storeAccess from store.ts");
 } catch (error) {
-  console.error('Failed to set store in storeAccess:', error);
+  console.error("Failed to set store in storeAccess:", error);
 }
 
 // Export types

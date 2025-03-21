@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -27,23 +26,23 @@ import { Input } from "../../../../components/ui/input";
 import React from "react";
 import { DataTableViewOptions } from "../DataTableViewOptions";
 import { DataTablePagination } from "../DataTablePagination";
+import { Order } from "../../../../features/orders/ordersSlice";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps {
+  columns: any[];
+  data: Order[];
 }
 
-export default function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const [paginationState, setPaginationState] = React.useState<PaginationState>({
-    pageSize: 7,
-    pageIndex: 0
-  });
+export default function DataTable({ columns, data }: DataTableProps) {
+  const [paginationState, setPaginationState] = React.useState<PaginationState>(
+    {
+      pageSize: 7,
+      pageIndex: 0,
+    },
+  );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
 
   const [columnVisibility, setColumnVisibility] =
@@ -69,14 +68,16 @@ export default function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange:setPaginationState
+    onPaginationChange: setPaginationState,
   });
   return (
     <div className="p-1">
       <div className="flex items-center py-4  border-b border-black mb-3">
         <Input
           placeholder="Filter customer name..."
-          value={(table.getColumn("customerName")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("customerName")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             table.getColumn("customerName")?.setFilterValue(event.target.value)
           }
@@ -95,9 +96,9 @@ export default function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                     </TableHead>
                   );
                 })}
@@ -115,7 +116,7 @@ export default function DataTable<TData, TValue>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

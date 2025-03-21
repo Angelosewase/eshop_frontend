@@ -1,7 +1,5 @@
-import {
-  CustomersTable,
-} from "../../components/custom/tables/customers";
-import columns from "../../components/custom/tables/customers/columns";
+import { CustomersTable } from "../../components/custom/tables/customers";
+import { columns } from "../../components/custom/tables/customers/columns";
 import { useGetCustomersQuery } from "../../features/users/userSlice";
 import { Card } from "../../components/ui/card";
 import { Users, UserPlus, UserCheck, UserX } from "lucide-react";
@@ -27,30 +25,33 @@ function Customers() {
   // Process the data to ensure all required fields are present
   useEffect(() => {
     if (data?.users) {
-      const processed = data.users.map(customer => ({
+      const processed = data.users.map((customer) => ({
         ...customer,
         // Ensure required fields are never undefined
-        phoneNumber: customer.phoneNumber || null,
-        email: customer.email || "No email provided"
+        phone: customer.phone || "",
+        email: customer.email || "No email provided",
       }));
       setProcessedCustomers(processed);
     }
   }, [data]);
 
-  const filteredCustomers = processedCustomers.filter(customer => {
-    const matchesSearch = searchTerm === "" ||
+  const filteredCustomers = processedCustomers.filter((customer) => {
+    const matchesSearch =
+      searchTerm === "" ||
       customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesRole = filterRole === "all" || customer.role.toLowerCase() === filterRole.toLowerCase();
+    const matchesRole =
+      filterRole === "all" ||
+      customer.role.toLowerCase() === filterRole.toLowerCase();
 
     return matchesSearch && matchesRole;
   });
 
   const stats = {
     total: processedCustomers.length,
-    active: processedCustomers.filter(user => user.role === "USER").length,
-    admins: processedCustomers.filter(user => user.role === "ADMIN").length,
+    active: processedCustomers.filter((user) => user.role === "USER").length,
+    admins: processedCustomers.filter((user) => user.role === "ADMIN").length,
   };
 
   // Handle customer deletion
@@ -58,7 +59,7 @@ function Customers() {
     // In a real application, you would call an API to delete the customer
     // For now, we'll just update the local state
     const updatedCustomers = processedCustomers.filter(
-      customer => customer.id !== customerId
+      (customer) => customer.id !== Number(customerId),
     );
     setProcessedCustomers(updatedCustomers);
 

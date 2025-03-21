@@ -1,8 +1,9 @@
-import React from 'react';
-import { Button } from '../ui/button';
-import { LogOut } from 'lucide-react';
-import { toast } from 'sonner';
-import ProfileImage from '../ui-elements/Profile-Image';
+import React from "react";
+import { Button } from "../ui/button";
+import { LogOut } from "lucide-react";
+import { toast } from "sonner";
+import ProfileImage from "../ui-elements/Profile-Image";
+import { logOut } from "../../features/auth/authSlice";
 
 interface ProfileHeaderProps {
   name: string;
@@ -13,26 +14,32 @@ interface ProfileHeaderProps {
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   name,
   email,
-  profileImage
+  profileImage,
 }) => {
   const handleProfileImageChange = (file: File) => {
     // In a real app, this would upload the file to a server
-    console.log('Profile image changed:', file);
-    
+    console.log("Profile image changed:", file);
+
     toast.message("Profile image changed");
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // In a real app, this would handle the logout process
-    toast.message("You have been logged out");
+    try{
+      await logOut();
+      toast.message("You have been logged out");
+    }catch(error){
+      console.log(error)
+      toast.error("Error logging out");
+    }
   };
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between glass-card p-6 mb-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row items-center">
         <ProfileImage
-          src={profileImage} 
-          size="lg" 
+          src={profileImage}
+          size="lg"
           onImageChange={handleProfileImageChange}
           className="mb-4 sm:mb-0 sm:mr-6"
         />
@@ -41,10 +48,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           <p className="text-muted-foreground">{email}</p>
         </div>
       </div>
-      <Button 
-        variant="outline" 
-        size="sm" 
-        className="mt-4 sm:mt-0" 
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-4 sm:mt-0"
         onClick={handleLogout}
       >
         <LogOut className="mr-2 h-4 w-4" />
@@ -55,3 +62,4 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 };
 
 export default ProfileHeader;
+

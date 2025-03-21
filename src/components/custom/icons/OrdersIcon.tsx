@@ -1,5 +1,3 @@
-import React from "react";
-
 interface OrdersIconProps {
   size?: number;
   color?: string;

@@ -44,4 +44,4 @@ export function Actions({ row }: { row: Row<Order> }) {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}

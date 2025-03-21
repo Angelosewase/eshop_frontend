@@ -22,12 +22,6 @@ interface CategoryResponse {
   limit?: number;
 }
 
-interface CategoryQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-}
-
 interface CategoryApiResponse {
   success: boolean;
   data: Category[];
@@ -35,7 +29,8 @@ interface CategoryApiResponse {
   message: string;
 }
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/';
+const apiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/";
 
 export const categoryApi = createApi({
   reducerPath: "categoryApi",
@@ -43,14 +38,14 @@ export const categoryApi = createApi({
     baseUrl: apiBaseUrl,
     credentials: "include",
   }),
-  tagTypes: ['Category'],
+  tagTypes: ["Category"],
   endpoints: (builder) => ({
     getCategories: builder.query<Category[], void>({
       query: () => {
-        const endpoint = 'categories';
+        const endpoint = "categories";
         return {
           url: endpoint,
-          method: "GET"
+          method: "GET",
         };
       },
       transformResponse: (response: CategoryApiResponse) => {
@@ -59,38 +54,41 @@ export const categoryApi = createApi({
       transformErrorResponse: (error) => {
         return error;
       },
-      providesTags: ['Category']
+      providesTags: ["Category"],
     }),
 
     getCategory: builder.query<CategoryResponse, number>({
       query: (id) => `categories/${id}`,
-      providesTags: ['Category']
+      providesTags: ["Category"],
     }),
 
     createCategory: builder.mutation<CategoryResponse, Partial<Category>>({
       query: (data) => ({
         url: "categories",
         method: "POST",
-        body: data
+        body: data,
       }),
-      invalidatesTags: ['Category']
+      invalidatesTags: ["Category"],
     }),
 
-    updateCategory: builder.mutation<CategoryResponse, { id: number; data: Partial<Category> }>({
+    updateCategory: builder.mutation<
+      CategoryResponse,
+      { id: number; data: Partial<Category> }
+    >({
       query: ({ id, data }) => ({
         url: `categories/${id}`,
         method: "PUT",
-        body: data
+        body: data,
       }),
-      invalidatesTags: ['Category']
+      invalidatesTags: ["Category"],
     }),
     deleteCategory: builder.mutation<CategoryResponse, number>({
       query: (id) => ({
         url: `categories/${id}`,
-        method: "DELETE"
+        method: "DELETE",
       }),
-      invalidatesTags: ['Category']
-    })
+      invalidatesTags: ["Category"],
+    }),
   }),
 });
 
@@ -99,5 +97,5 @@ export const {
   useGetCategoryQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
-  useDeleteCategoryMutation
-} = categoryApi; 
+  useDeleteCategoryMutation,
+} = categoryApi;

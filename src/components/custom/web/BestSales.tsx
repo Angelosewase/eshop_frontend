@@ -5,11 +5,12 @@ import { LoadingSpinner } from "../../ui/loading-spinner";
 function BestSales() {
   const { data, error, isLoading } = useGetProductsQuery({ limit: 6 });
 
-  if (isLoading) return (
-    <div className="mt-14 flex items-center justify-center h-32">
-      <LoadingSpinner size="md" />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="mt-14 flex items-center justify-center h-32">
+        <LoadingSpinner size="md" />
+      </div>
+    );
   if (error) return <div className="mt-14">Error loading best sales</div>;
   if (!data?.products?.length) return null;
 

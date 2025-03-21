@@ -43,12 +43,13 @@ const columns: ColumnDef<Complain>[] = [
   {
     id: "description",
     cell: ({ row }) => {
-     const data = row.original;
+      const data = row.original;
       return (
         <div className="text-start  font-medium -ml-10">
           <div className="">
             <div className="font-bold">
-              {data.customerName}-<span className="text-gray-500 font-normal">{data.email}</span>
+              {data.customerName}-
+              <span className="text-gray-500 font-normal">{data.email}</span>
             </div>
             <div className="text-sm text-gray-700 text-nowrap truncate">
               {data.description}

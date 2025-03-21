@@ -1,5 +1,5 @@
-import React from 'react';
-import { cn } from '../../lib/utils';
+import React from "react";
+import { cn } from "../../lib/utils";
 
 interface SectionCardProps {
   title: string;
@@ -9,18 +9,15 @@ interface SectionCardProps {
   tag?: string;
 }
 
-const SectionCard: React.FC<SectionCardProps> = ({ 
-  title, 
-  description, 
-  children, 
+const SectionCard: React.FC<SectionCardProps> = ({
+  title,
+  description,
+  children,
   className,
-  tag
+  tag,
 }) => {
   return (
-    <div className={cn(
-      'glass-card p-6 animate-fade-in mb-6',
-      className
-    )}>
+    <div className={cn("glass-card p-6 animate-fade-in mb-6", className)}>
       <div className="mb-6">
         {tag && (
           <span className="inline-block px-2.5 py-1 text-xs font-medium rounded-full bg-secondary text-secondary-foreground mb-2">

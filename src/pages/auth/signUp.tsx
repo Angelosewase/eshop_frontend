@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {  Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/Reduxhooks";
 import { toast } from "sonner";
 import { registerUser } from "../../features/auth/authSlice";
@@ -97,7 +97,7 @@ function SignUp() {
         lastName: formState.lastName,
         emailPhoneNumberString: formState.emailPhoneNumberString,
         password: formState.password,
-      })
+      }),
     );
 
     if (result.meta.requestStatus === "fulfilled") {
@@ -163,7 +163,7 @@ function SignUp() {
               id="password"
               name="password"
               className="border-2 rounded-sm p-2 outline-none border-black placeholder:text-black placeholder:font-light"
-              placeholder="*********"
+              placeholder="Enter your password"
               value={formState.password}
               onChange={handleFormState}
             />
@@ -177,7 +177,7 @@ function SignUp() {
               id="confirmPassword"
               name="confirmPassword"
               className="border-2 rounded-sm p-2 outline-none border-black placeholder:text-black placeholder:font-light"
-              placeholder="*********"
+              placeholder="Confirm your password"
               value={formState.confirmPassword}
               onChange={handleFormState}
             />

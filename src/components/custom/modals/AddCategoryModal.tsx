@@ -18,7 +18,7 @@ function AddCategoryModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    description: ""
+    description: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,7 +52,9 @@ function AddCategoryModal() {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               placeholder="Enter category name"
               required
             />
@@ -62,7 +64,9 @@ function AddCategoryModal() {
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Enter category description"
               className="h-32"
             />
@@ -79,4 +83,4 @@ function AddCategoryModal() {
   );
 }
 
-export default AddCategoryModal; 
+export default AddCategoryModal;

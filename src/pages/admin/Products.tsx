@@ -1,12 +1,15 @@
-import React from 'react';
-import { useGetProductsQuery, useDeleteProductMutation } from '../../features/inventory/productSlice';
-import { toast } from 'sonner';
-import { Link } from 'react-router-dom';
+import React from "react";
+import {
+  useGetProductsQuery,
+  useDeleteProductMutation,
+} from "../../features/inventory/productSlice";
+import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import { LoadingSpinner } from "../../components/ui/loading-spinner";
 
 export default function Products() {
   const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(10);
+  const limit = 10;
 
   const { data, error, isLoading } = useGetProductsQuery({ page, limit });
   const [deleteProduct] = useDeleteProductMutation();
@@ -14,17 +17,18 @@ export default function Products() {
   const handleDelete = async (id: string) => {
     try {
       await deleteProduct(Number(id)).unwrap();
-      toast.success('Product deleted successfully');
+      toast.success("Product deleted successfully");
     } catch (error) {
-      toast.error('Failed to delete product');
+      toast.error("Failed to delete product");
     }
   };
 
-  if (isLoading) return (
-    <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-      <LoadingSpinner size="lg" />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   if (error) return <div>Error loading products</div>;
 
   return (
@@ -43,7 +47,7 @@ export default function Products() {
         {data?.products?.map((product) => (
           <div key={product.id} className="border p-4 rounded">
             <img
-              src={product.cover || '/placeholder.png'}
+              src={product.cover || "/placeholder.png"}
               alt={product.name}
               className="w-full h-48 object-cover mb-2"
             />
@@ -66,7 +70,7 @@ export default function Products() {
                 </button>
               </div>
               <span className="text-gray-500">
-                ${product.productSkus?.[0]?.price || 'N/A'}
+                ${product.productSkus?.[0]?.price || "N/A"}
               </span>
             </div>
           </div>
@@ -75,7 +79,7 @@ export default function Products() {
 
       <div className="mt-4 flex justify-between items-center">
         <button
-          onClick={() => setPage(p => Math.max(1, p - 1))}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
           className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
         >
@@ -83,7 +87,7 @@ export default function Products() {
         </button>
         <span>Page {page}</span>
         <button
-          onClick={() => setPage(p => p + 1)}
+          onClick={() => setPage((p) => p + 1)}
           disabled={!data?.products?.length}
           className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
         >
@@ -92,4 +96,4 @@ export default function Products() {
       </div>
     </div>
   );
-} 
+}

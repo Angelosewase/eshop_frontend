@@ -5,14 +5,15 @@ import { LoadingSpinner } from "../../ui/loading-spinner";
 function PopularProducts() {
   const { data, error, isLoading } = useGetProductsQuery({
     page: 2, // Get different products than BestSales
-    limit: 6
+    limit: 6,
   });
 
-  if (isLoading) return (
-    <div className="mt-14 flex items-center justify-center h-32">
-      <LoadingSpinner size="md" />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="mt-14 flex items-center justify-center h-32">
+        <LoadingSpinner size="md" />
+      </div>
+    );
   if (error) return <div className="mt-14">Error loading popular products</div>;
   if (!data?.products?.length) return null;
 

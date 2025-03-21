@@ -13,23 +13,33 @@ import {
   User,
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import {
   useGetNotificationsQuery,
   useMarkNotificationAsReadMutation,
   useMarkAllNotificationsAsReadMutation,
   useDeleteNotificationMutation,
-  Notification
+  Notification,
 } from "../../features/notifications/notificationSlice";
 import { PageHeaderWithIcons } from "../../components/custom";
 import { LoadingSpinner } from "../../components/ui/loading-spinner";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Badge } from "../../components/ui/badge";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import { toast } from "sonner";
 import { Skeleton } from "../../components/ui/skeleton";
@@ -41,17 +51,15 @@ function Notifications() {
   const [pageSize] = useState(10);
 
   // Fetch notifications with the useGetNotificationsQuery hook
-  const {
-    data,
-    isLoading,
-    isFetching,
-    error,
-    refetch
-  } = useGetNotificationsQuery();
+  const { data, isLoading, isFetching, error, refetch } =
+    useGetNotificationsQuery();
 
-  const [markAsRead, { isLoading: isMarkingAsRead }] = useMarkNotificationAsReadMutation();
-  const [markAllAsRead, { isLoading: isMarkingAllAsRead }] = useMarkAllNotificationsAsReadMutation();
-  const [deleteNotification, { isLoading: isDeleting }] = useDeleteNotificationMutation();
+  const [markAsRead, { isLoading: isMarkingAsRead }] =
+    useMarkNotificationAsReadMutation();
+  const [markAllAsRead, { isLoading: isMarkingAllAsRead }] =
+    useMarkAllNotificationsAsReadMutation();
+  const [deleteNotification, { isLoading: isDeleting }] =
+    useDeleteNotificationMutation();
 
   // Refetch data when tab changes
   useEffect(() => {
@@ -96,18 +104,18 @@ function Notifications() {
 
     // Filter by tab
     if (activeTab === "unread") {
-      filtered = filtered.filter(notification => !notification.isRead);
+      filtered = filtered.filter((notification) => !notification.isRead);
     } else if (activeTab === "read") {
-      filtered = filtered.filter(notification => notification.isRead);
+      filtered = filtered.filter((notification) => notification.isRead);
     }
 
     // Filter by search term
     if (searchTerm.trim() !== "") {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
-        notification =>
+        (notification) =>
           notification.title.toLowerCase().includes(term) ||
-          notification.message.toLowerCase().includes(term)
+          notification.message.toLowerCase().includes(term),
       );
     }
 
@@ -123,15 +131,15 @@ function Notifications() {
   // Get notification icon based on type
   const getNotificationIcon = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'order':
+      case "order":
         return <ShoppingCart className="h-5 w-5 text-blue-600" />;
-      case 'user':
+      case "user":
         return <User className="h-5 w-5 text-green-600" />;
-      case 'system':
+      case "system":
         return <Settings className="h-5 w-5 text-purple-600" />;
-      case 'warning':
+      case "warning":
         return <AlertTriangle className="h-5 w-5 text-amber-600" />;
-      case 'error':
+      case "error":
         return <AlertTriangle className="h-5 w-5 text-red-600" />;
       default:
         return <Info className="h-5 w-5 text-blue-600" />;
@@ -143,15 +151,15 @@ function Notifications() {
     if (isRead) return "bg-gray-50";
 
     switch (type.toLowerCase()) {
-      case 'order':
+      case "order":
         return "bg-blue-50";
-      case 'user':
+      case "user":
         return "bg-green-50";
-      case 'system':
+      case "system":
         return "bg-purple-50";
-      case 'warning':
+      case "warning":
         return "bg-amber-50";
-      case 'error':
+      case "error":
         return "bg-red-50";
       default:
         return "bg-blue-50";
@@ -171,7 +179,7 @@ function Notifications() {
 
   const filteredNotifications = getFilteredNotifications();
   const paginatedNotifications = getPaginatedNotifications();
-  const unreadCount = data?.data?.filter(n => !n.isRead).length || 0;
+  const unreadCount = data?.data?.filter((n) => !n.isRead).length || 0;
   const totalPages = Math.ceil(filteredNotifications.length / pageSize);
 
   // Handle page navigation
@@ -199,7 +207,9 @@ function Notifications() {
                 <Bell className="h-5 w-5" />
                 Notifications
                 {unreadCount > 0 && (
-                  <Badge className="ml-2 bg-blue-500">{unreadCount} unread</Badge>
+                  <Badge className="ml-2 bg-blue-500">
+                    {unreadCount} unread
+                  </Badge>
                 )}
               </CardTitle>
               <CardDescription>
@@ -256,10 +266,14 @@ function Notifications() {
             </Button>
           </div>
 
-          <Tabs value={activeTab} onValueChange={(value) => {
-            setActiveTab(value);
-            setPage(1); // Reset to first page on tab change
-          }} className="flex-1 flex flex-col">
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => {
+              setActiveTab(value);
+              setPage(1); // Reset to first page on tab change
+            }}
+            className="flex-1 flex flex-col"
+          >
             <TabsList className="grid grid-cols-3 mb-4">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="unread">Unread</TabsTrigger>
@@ -318,7 +332,13 @@ function Notifications() {
           {filteredNotifications.length > 0 && (
             <div className="flex justify-between items-center mt-4 pt-3 border-t">
               <div className="text-sm text-gray-500">
-                Showing {Math.min(filteredNotifications.length, (page - 1) * pageSize + 1)} to {Math.min(filteredNotifications.length, page * pageSize)} of {filteredNotifications.length} notifications
+                Showing{" "}
+                {Math.min(
+                  filteredNotifications.length,
+                  (page - 1) * pageSize + 1,
+                )}{" "}
+                to {Math.min(filteredNotifications.length, page * pageSize)} of{" "}
+                {filteredNotifications.length} notifications
               </div>
               <div className="flex gap-2">
                 <Button
@@ -371,7 +391,7 @@ const NotificationList = ({
   onDelete,
   getNotificationIcon,
   getNotificationBgColor,
-  formatDate
+  formatDate,
 }: NotificationListProps) => {
   if (isLoading) {
     return (
@@ -400,7 +420,8 @@ const NotificationList = ({
         <AlertTriangle className="h-4 w-4 text-red-600" />
         <AlertTitle>Error loading notifications</AlertTitle>
         <AlertDescription>
-          There was a problem loading your notifications. Please try again later.
+          There was a problem loading your notifications. Please try again
+          later.
         </AlertDescription>
       </Alert>
     );
@@ -419,7 +440,10 @@ const NotificationList = ({
   }
 
   return (
-    <div className="space-y-3 overflow-y-auto pr-2 flex-1" style={{ maxHeight: 'calc(100vh - 350px)' }}>
+    <div
+      className="space-y-3 overflow-y-auto pr-2 flex-1"
+      style={{ maxHeight: "calc(100vh - 350px)" }}
+    >
       {notifications.map((notification) => (
         <div
           key={notification.id}
@@ -431,12 +455,18 @@ const NotificationList = ({
             </div>
             <div className="flex-1">
               <div className="flex justify-between items-start">
-                <h3 className={`font-medium ${!notification.isRead ? 'text-gray-900' : 'text-gray-600'}`}>
+                <h3
+                  className={`font-medium ${!notification.isRead ? "text-gray-900" : "text-gray-600"}`}
+                >
                   {notification.title}
                 </h3>
-                <span className="text-xs text-gray-500">{formatDate(notification.createdAt)}</span>
+                <span className="text-xs text-gray-500">
+                  {formatDate(notification.createdAt)}
+                </span>
               </div>
-              <p className={`text-sm mt-1 ${!notification.isRead ? 'text-gray-700' : 'text-gray-500'}`}>
+              <p
+                className={`text-sm mt-1 ${!notification.isRead ? "text-gray-700" : "text-gray-500"}`}
+              >
                 {notification.message}
               </p>
             </div>

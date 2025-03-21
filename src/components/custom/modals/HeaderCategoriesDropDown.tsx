@@ -1,5 +1,4 @@
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { Button } from "../../ui/button";
 import { ChevronDown } from "lucide-react";
 
 // You can expand this interface based on your needs

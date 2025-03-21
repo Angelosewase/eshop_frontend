@@ -1,13 +1,13 @@
-import axios from 'axios';
+import axios from "axios";
 const baseAxios = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/',
-  withCredentials: true
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/",
+  withCredentials: true,
 });
 
 // Add a request interceptor to include auth token from localStorage if available
 baseAxios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -15,7 +15,7 @@ baseAxios.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default baseAxios;

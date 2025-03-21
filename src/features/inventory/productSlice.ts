@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { ProductSku as BaseProductSku } from "../../lib/types";
 
 export interface Product {
   id: number;
@@ -15,22 +16,12 @@ export interface Product {
     id: number;
     name: string;
   }> | null;
-  productSkus: Array<ProductSku> | null;
+  productSkus: Array<BaseProductSku> | null;
   reviews?: Array<Review> | null;
   averageRating?: number | null;
-}
-
-interface ProductSku {
-  id: number;
-  sku: string;
-  price: string;
-  quantity: number;
-  sizeAttribute: Attribute | null;
-  colorAttribute: Attribute | null;
-}
-
-interface Attribute {
-  value: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
 }
 
 interface Review {
@@ -38,14 +29,6 @@ interface Review {
   rating: number;
   comment?: string | null;
   userId: number;
-}
-
-interface ProductResponse {
-  message: string;
-  products?: Product[];
-  total?: number;
-  page?: number;
-  limit?: number;
 }
 
 interface ProductQueryParams {
@@ -65,10 +48,10 @@ interface ProductsResponse {
 export const productApi = createApi({
   reducerPath: "productApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/',
+    baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/",
     credentials: "include",
   }),
-  tagTypes: ['Product'],
+  tagTypes: ["Product"],
   endpoints: (builder) => ({
     getProducts: builder.query<ProductsResponse, ProductQueryParams>({
       query: (params) => ({
@@ -78,46 +61,49 @@ export const productApi = createApi({
           page: params?.page || 1,
           limit: params?.limit || 12,
           categoryId: params?.categoryId,
-          search: params?.search
-        }
+          search: params?.search,
+        },
       }),
-      providesTags: ['Product']
+      providesTags: ["Product"],
     }),
 
     // Get single product
     getProduct: builder.query<Product, number>({
       query: (id) => ({
         url: `products/${id}`,
-        method: "GET"
+        method: "GET",
       }),
-      providesTags: ['Product']
+      providesTags: ["Product"],
     }),
 
     createProduct: builder.mutation<Product, Partial<Product>>({
       query: (product) => ({
         url: "products/with-skus",
         method: "POST",
-        body: product
+        body: product,
       }),
-      invalidatesTags: ['Product']
+      invalidatesTags: ["Product"],
     }),
-    updateProduct: builder.mutation<Product, { id: number; product: Partial<Product> }>({
+    updateProduct: builder.mutation<
+      Product,
+      { id: number; product: Partial<Product> }
+    >({
       query: ({ id, product }) => ({
         url: `products/${id}`,
         method: "PUT",
-        body: product
+        body: product,
       }),
-      invalidatesTags: ['Product']
+      invalidatesTags: ["Product"],
     }),
 
     // Delete product
     deleteProduct: builder.mutation<void, number>({
       query: (id) => ({
         url: `products/${id}`,
-        method: "DELETE"
+        method: "DELETE",
       }),
-      invalidatesTags: ['Product']
-    })
+      invalidatesTags: ["Product"],
+    }),
   }),
 });
 
@@ -126,5 +112,5 @@ export const {
   useGetProductQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
-  useDeleteProductMutation
+  useDeleteProductMutation,
 } = productApi;

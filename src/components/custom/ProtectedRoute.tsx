@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store';
-import { verifyIsLoggedIn } from '../../features/auth/authSlice';
-import { LoadingSpinner } from '../ui/loading-spinner';
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store/store";
+import { verifyIsLoggedIn } from "../../features/auth/authSlice";
+import { LoadingSpinner } from "../ui/loading-spinner";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -20,9 +20,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       try {
         await dispatch(verifyIsLoggedIn()).unwrap();
       } catch (error) {
-        console.error('Auth verification failed:', error);
+        console.error("Auth verification failed:", error);
         // Redirect to login but save the attempted location
-        navigate('/auth/login', { state: { from: location } });
+        navigate("/auth/login", { state: { from: location } });
       }
     };
 
@@ -41,18 +41,18 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   // If there's no user after loading is complete, redirect to login
   if (!user) {
-    console.log('No user found, redirecting to login');
-    navigate('/auth/login', { state: { from: location } });
+    console.log("No user found, redirecting to login");
+    navigate("/auth/login", { state: { from: location } });
     return null;
   }
 
   // Check for admin role
-  if (user.role !== 'ADMIN') {
-    console.log('User is not admin, redirecting to home');
-    navigate('/', { replace: true });
+  if (user.role !== "ADMIN") {
+    console.log("User is not admin, redirecting to home");
+    navigate("/", { replace: true });
     return null;
   }
 
   // If we have a user and they're an admin, render the protected content
   return <>{children}</>;
-}; 
+};

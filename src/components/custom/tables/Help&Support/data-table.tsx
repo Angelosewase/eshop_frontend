@@ -13,11 +13,8 @@ import {
 } from "@tanstack/react-table";
 
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-
 import React from "react";
 import { DataTablePagination } from "../DataTablePagination";
-import { Plus } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -32,11 +29,11 @@ export default function DataTable<TData, TValue>({
     {
       pageSize: 6,
       pageIndex: 0,
-    }
+    },
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
 
   const [columnVisibility, setColumnVisibility] =
@@ -80,7 +77,7 @@ export default function DataTable<TData, TValue>({
                     <TableCell key={cell.id} className=" p-3 items-start">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

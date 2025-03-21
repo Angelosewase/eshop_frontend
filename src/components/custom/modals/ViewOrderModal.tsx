@@ -1,10 +1,6 @@
 import { OrderDetails } from "../../../features/orders/ordersSlice";
 import { formatCurrency } from "../../../lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "../../ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "../../ui/dialog";
 import {
   ArrowUpFromLine,
   Copy,
@@ -13,12 +9,11 @@ import {
   User,
   Calendar,
   CreditCard,
-  MapPin,
   Package,
   Truck,
   CheckCircle2,
   XCircle,
-  Clock
+  Clock,
 } from "lucide-react";
 import { Badge } from "../../ui/badge";
 import { Separator } from "../../ui/separator";
@@ -34,24 +29,24 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'paid':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800 border-red-200';
+      case "paid":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "cancelled":
+        return "bg-red-100 text-red-800 border-red-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'paid':
+      case "paid":
         return <CheckCircle2 className="h-4 w-4 text-green-600" />;
-      case 'pending':
+      case "pending":
         return <Clock className="h-4 w-4 text-yellow-600" />;
-      case 'cancelled':
+      case "cancelled":
         return <XCircle className="h-4 w-4 text-red-600" />;
       default:
         return <Clock className="h-4 w-4 text-gray-600" />;
@@ -74,10 +69,10 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
               <div>
                 <h2 className="text-xl font-semibold">Order #{order.id}</h2>
                 <p className="text-sm text-muted-foreground">
-                  {new Date(order.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                  {new Date(order.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </p>
               </div>
@@ -86,7 +81,8 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
               <Badge className={`px-3 py-1 ${getStatusColor(paymentStatus)}`}>
                 <span className="flex items-center gap-1.5">
                   {getStatusIcon(paymentStatus)}
-                  {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
+                  {paymentStatus.charAt(0).toUpperCase() +
+                    paymentStatus.slice(1)}
                 </span>
               </Badge>
               <Button variant="ghost" size="icon" className="rounded-full">
@@ -113,10 +109,10 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
               <div>
                 <p className="text-sm text-muted-foreground">Order Date</p>
                 <p className="font-medium">
-                  {new Date(order.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                  {new Date(order.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </p>
               </div>
@@ -126,7 +122,7 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
               <div>
                 <p className="text-sm text-muted-foreground">Payment Method</p>
                 <p className="font-medium capitalize">
-                  {(order.payment as any)?.method || 'Credit Card'}
+                  {(order.payment as any)?.method || "Credit Card"}
                 </p>
               </div>
             </div>
@@ -149,7 +145,10 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
 
           <div className="space-y-6">
             {order.items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between py-3 border-b border-dashed last:border-0">
+              <div
+                key={item.id}
+                className="flex items-center justify-between py-3 border-b border-dashed last:border-0"
+              >
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border">
                     <img
@@ -158,7 +157,8 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = 'https://via.placeholder.com/64?text=No+Image';
+                        target.src =
+                          "https://via.placeholder.com/64?text=No+Image";
                       }}
                     />
                   </div>
@@ -166,7 +166,8 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
                     <h4 className="font-medium">{item.product.name}</h4>
                     <div className="flex items-center gap-3 mt-1">
                       <p className="text-sm text-muted-foreground">
-                        {formatCurrency(Number(item.price || 0))} × {item.quantity}
+                        {formatCurrency(Number(item.price || 0))} ×{" "}
+                        {item.quantity}
                       </p>
                       {(item.product as any).sku && (
                         <p className="text-xs text-muted-foreground px-2 py-0.5 bg-gray-100 rounded">
@@ -177,7 +178,9 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
                   </div>
                 </div>
                 <p className="font-medium">
-                  {formatCurrency(Number(item.price || 0) * Number(item.quantity || 0))}
+                  {formatCurrency(
+                    Number(item.price || 0) * Number(item.quantity || 0),
+                  )}
                 </p>
               </div>
             ))}
@@ -187,7 +190,9 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-medium">{formatCurrency(order.total)}</span>
+                <span className="font-medium">
+                  {formatCurrency(order.total)}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Shipping</span>
@@ -210,15 +215,24 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
 
         {/* Action Buttons */}
         <div className="grid grid-cols-3 border-t">
-          <Button variant="ghost" className="flex items-center justify-center gap-2 py-6 rounded-none hover:bg-gray-50">
+          <Button
+            variant="ghost"
+            className="flex items-center justify-center gap-2 py-6 rounded-none hover:bg-gray-50"
+          >
             <ArrowUpFromLine className="h-4 w-4" />
             <span>Upload</span>
           </Button>
-          <Button variant="ghost" className="flex items-center justify-center gap-2 py-6 rounded-none hover:bg-gray-50 border-x">
+          <Button
+            variant="ghost"
+            className="flex items-center justify-center gap-2 py-6 rounded-none hover:bg-gray-50 border-x"
+          >
             <Copy className="h-4 w-4" />
             <span>Duplicate</span>
           </Button>
-          <Button variant="ghost" className="flex items-center justify-center gap-2 py-6 rounded-none hover:bg-gray-50">
+          <Button
+            variant="ghost"
+            className="flex items-center justify-center gap-2 py-6 rounded-none hover:bg-gray-50"
+          >
             <Printer className="h-4 w-4" />
             <span>Print</span>
           </Button>
@@ -226,4 +240,4 @@ export default function ViewOrderModal({ order }: ViewOrderModalProps) {
       </DialogContent>
     </Dialog>
   );
-} 
+}

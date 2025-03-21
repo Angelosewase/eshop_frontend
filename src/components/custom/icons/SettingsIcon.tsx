@@ -1,5 +1,3 @@
-import React from "react";
-
 interface DashboardIconProps {
   size?: number;
   color?: string;
