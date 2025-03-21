@@ -521,7 +521,7 @@ const Checkout = () => {
           )}
           <button
             onClick={handlePlaceOrder}
-            disabled={isLoading}
+            disabled={isOrderLoading || isLoading}
             className="w-full mt-6 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm hover:shadow flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {isOrderLoading ? (
