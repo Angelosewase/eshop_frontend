@@ -17,6 +17,30 @@ export type InventoryProduct = {
   number: number;
 };
 
+const ActionCell = ({ row }: { row: any }) => {
+  const [deleteProduct] = useDeleteProductMutation();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { data: product } = useGetProductQuery(row.original.id);
+
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      await deleteProduct(row.original.id);
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <div>
+      {/* Add your action cell content here */}
+    </div>
+  );
+};
+
 const columns: ColumnDef<InventoryProduct>[] = [
   {
     id: "select",
@@ -105,113 +129,7 @@ const columns: ColumnDef<InventoryProduct>[] = [
     header: () => (
       <span className="font-medium text-gray-500">Actions</span>
     ),
-    cell: ({ row }) => {
-      const [deleteProduct] = useDeleteProductMutation();
-      const product = row.original;
-      const [viewModalOpen, setViewModalOpen] = useState(false);
-      const [editModalOpen, setEditModalOpen] = useState(false);
-
-      // Ensure we have a valid product ID for the query
-      const productId = Number(product.id);
-      const skipQuery = (!viewModalOpen && !editModalOpen) || isNaN(productId);
-
-      const { data: fullProduct } = useGetProductQuery(productId, {
-        skip: skipQuery
-      });
-
-      if (isNaN(productId)) {
-        console.error('Invalid product ID in table row:', product.id);
-      }
-
-      // Only show modals if we have valid product data
-      const showModals = fullProduct && typeof fullProduct.id === 'number' && !isNaN(Number(fullProduct.id));
-
-      const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this product?')) {
-          try {
-            const productId = Number(product.id);
-            if (isNaN(productId)) {
-              console.error('Invalid product ID:', product.id);
-              return;
-            }
-
-            await deleteProduct(productId).unwrap();
-            toast.success('Product deleted successfully');
-          } catch (error: any) {
-            console.error('Failed to delete product:', error);
-            toast.error('Failed to delete product');
-          }
-        }
-      };
-
-      const handleViewClick = () => {
-        // Ensure product ID is valid before opening the modal
-        if (typeof product.id === 'number' && !isNaN(product.id)) {
-          setViewModalOpen(true);
-        } else {
-          console.error('Invalid product ID for view:', product.id);
-          toast.error('Cannot view product: Invalid ID');
-        }
-      };
-
-      const handleEditClick = () => {
-        if (typeof product.id === 'number' && !isNaN(product.id)) {
-          setEditModalOpen(true);
-        } else {
-          console.error('Invalid product ID for edit:', product.id);
-          toast.error('Cannot edit product: Invalid ID');
-        }
-      };
-
-      return (
-        <>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-              onClick={handleEditClick}
-              title="Edit Product"
-            >
-              <Pen size={16} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-              onClick={handleViewClick}
-              title="View Product"
-            >
-              <SquareArrowOutUpRight size={16} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-              onClick={handleDelete}
-              title="Delete Product"
-            >
-              <FolderX size={16} />
-            </Button>
-          </div>
-
-          {showModals && (
-            <>
-              <ViewProductModal
-                product={fullProduct}
-                open={viewModalOpen}
-                onOpenChange={setViewModalOpen}
-              />
-              <EditProductModal
-                product={fullProduct}
-                open={editModalOpen}
-                onOpenChange={setEditModalOpen}
-              />
-            </>
-          )}
-        </>
-      );
-    },
+    cell: ({ row }) => <ActionCell row={row} />
   },
 ];
 

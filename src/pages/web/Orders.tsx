@@ -12,39 +12,28 @@ function Orders() {
   const { data: userOrdersData, isLoading, error } = useGetUserOrdersQuery();
   const user = useAppSelector(state => state.auth.user);
 
-  // Transform API orders to the format expected by the table
-  const transformOrders = (apiOrders: any[]): Order[] => {
-    if (!apiOrders) return [];
-
-    return apiOrders.map(order => ({
-      id: order.id.toString(),
-      customerName: user?.firstName + ' ' + user?.lastName || 'You',
-      type: order.paymentMethod || 'online',
-      status: order.payment?.status || 'pending',
-      product: order.items?.[0]?.product?.name || 'Multiple items',
-      amount: order.total || 0,
-      date: new Date(order.createdAt).toLocaleDateString(),
-    }));
-  };
-
-  // Apply filters
+  // Apply filters and transform orders
   useEffect(() => {
-    if (!userOrdersData?.data) {
-      setFilteredOrders([]);
-      return;
-    }
+    if (userOrdersData?.data) {
+      // Transform API orders to the format expected by the table
+      const transformOrders = (apiOrders: any[]): Order[] => {
+        if (!apiOrders) return [];
 
-    const orders = transformOrders(userOrdersData.data);
+        return apiOrders.map(order => ({
+          id: order.id.toString(),
+          customerName: user?.firstName + ' ' + user?.lastName || 'You',
+          type: order.paymentMethod || 'online',
+          status: order.payment?.status || 'pending',
+          product: order.items?.[0]?.product?.name || 'Multiple items',
+          amount: order.total || 0,
+          date: new Date(order.createdAt).toLocaleDateString(),
+        }));
+      };
 
-    if (filterStatus === "All") {
-      setFilteredOrders(orders);
-    } else {
-      const status = filterStatus.toLowerCase();
-      setFilteredOrders(orders.filter(order =>
-        order.status.toLowerCase() === status
-      ));
+      const transformedOrders = transformOrders(userOrdersData.data);
+      setFilteredOrders(transformedOrders);
     }
-  }, [userOrdersData, filterStatus, user]);
+  }, [userOrdersData, user]);
 
   if (isLoading) {
     return (

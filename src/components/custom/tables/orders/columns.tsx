@@ -1,5 +1,20 @@
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { formatCurrency } from "../../../../lib/utils";
+import { OrderDetails } from "../../../../features/orders/ordersSlice";
+import {
+  CheckCircle2,
+  XCircle,
+  Clock,
+  User,
+  Calendar,
+  Package
+} from "lucide-react";
+import { Checkbox } from "../../../ui/checkbox";
+import { DataTableColumnHeader } from "../ColumnHeader";
+import { Badge } from "../../../ui/badge";
+import { Actions } from "./Actions";
+
+export type Order = OrderDetails;
 
 import {
   Dialog,
@@ -7,23 +22,13 @@ import {
   DialogTrigger,
 } from "../../../ui/dialog";
 
-import { OrderDetails } from "../../../../features/orders/ordersSlice";
-
-export type Order = OrderDetails;
-
 import {
   ArrowUpFromLine,
   Copy,
   MoreHorizontal,
   Printer,
   Redo2,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  User,
-  Calendar,
   CreditCard,
-  Package
 } from "lucide-react";
 
 import { Button } from "../../..//ui/button";
@@ -35,10 +40,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../..//ui/dropdown-menu";
-import { Checkbox } from "../../../ui/checkbox";
-import { DataTableColumnHeader } from "../ColumnHeader";
 import ViewOrderModal from "../../modals/ViewOrderModal";
-import { Badge } from "../../../ui/badge";
 
 export const columns: ColumnDef<Order>[] = [
   {
@@ -185,37 +187,3 @@ export const columns: ColumnDef<Order>[] = [
     },
   },
 ];
-
-function Actions({ row }: { row: Row<Order> }) {
-  const order = row.original;
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem
-          onClick={() => navigator.clipboard.writeText(order.id.toString())}
-        >
-          <Copy className="h-4 w-4 mr-2" />
-          Copy order ID
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <ViewOrderModal order={order} />
-        <DropdownMenuItem>
-          <Printer className="h-4 w-4 mr-2" />
-          Print order
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Redo2 className="h-4 w-4 mr-2" />
-          Refresh order status
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
