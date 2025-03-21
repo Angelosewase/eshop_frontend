@@ -119,7 +119,7 @@ interface FormData {
   paymentMethod: "card" | "cash";
 }
 
-const CheckOut = () => {
+const Checkout = () => {
   const navigate = useNavigate();
   const cartItems = useAppSelector(selectCartItems);
   const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
@@ -149,6 +149,13 @@ const CheckOut = () => {
       navigate("/cart");
     }
   }, [cartItems.length, isLoading, navigate]);
+
+  useEffect(() => {
+    if (!isLoading && (!cartData || !cartData.items || cartData.items.length === 0)) {
+      toast.error("Your cart is empty");
+      navigate("/cart");
+    }
+  }, [cartData, isLoading, navigate]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -221,6 +228,18 @@ const CheckOut = () => {
       toast.error("Failed to place order. Please try again.");
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!cartData || !cartData.items || cartData.items.length === 0) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -532,4 +551,4 @@ const CheckOut = () => {
   );
 };
 
-export default CheckOut;
+export default Checkout;
