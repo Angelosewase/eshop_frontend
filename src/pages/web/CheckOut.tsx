@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAppSelector } from "../../hooks/Reduxhooks";
-import { selectCartItems, selectCartTotal } from "../../features/cart/cartSlice";
+import {
+  selectCartItems,
+} from "../../features/cart/cartSlice";
 import { useCreateOrderMutation } from "../../features/orders/ordersSlice";
 import { toast } from "sonner";
 import CartService from "../../features/cart/cartService";
@@ -9,7 +11,6 @@ import { useGetCartQuery } from "../../features/cart/cartApiSlice";
 import {
   CreditCard,
   Truck,
-  Check,
   AlertCircle,
   Plus,
   ChevronRight,
@@ -17,39 +18,45 @@ import {
   User,
   MapPin,
   ShieldCheck,
-  Wallet
+  Wallet,
 } from "lucide-react";
+import { useCreateCheckoutSessionMutation } from "../../features/payments/purchaseApi";
 
 // Format price for display - converts cents to dollars with safety checks
 const formatPrice = (cents: string | number | null | undefined) => {
-  if (cents === undefined || cents === null) return '$0.00';
-  const amount = typeof cents === 'string' ? parseFloat(cents) : Number(cents);
-  if (isNaN(amount)) return '$0.00';
+  if (cents === undefined || cents === null) return "$0.00";
+  const amount = typeof cents === "string" ? parseFloat(cents) : Number(cents);
+  if (isNaN(amount)) return "$0.00";
   const dollars = amount / 100;
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD'
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
   }).format(dollars);
 };
 
 // Calculate subtotal with proper type conversion and safety checks
-const calculateSubtotal = (price: string | number | null | undefined, qty: number) => {
+const calculateSubtotal = (
+  price: string | number | null | undefined,
+  qty: number
+) => {
   if (price === undefined || price === null) return 0;
-  const priceAsNumber = typeof price === 'string' ? parseFloat(price) : Number(price);
+  const priceAsNumber =
+    typeof price === "string" ? parseFloat(price) : Number(price);
   return isNaN(priceAsNumber) ? 0 : priceAsNumber * qty;
 };
 
 const safeParseFloat = (value: string | number | null | undefined): number => {
   if (value === undefined || value === null) return 0;
-  const parsed = typeof value === 'string' ? parseFloat(value) : Number(value);
+  const parsed = typeof value === "string" ? parseFloat(value) : Number(value);
   return isNaN(parsed) ? 0 : parsed;
 };
 
 const OrderSummary = ({ cartData }: { cartData: any }) => {
+
   return (
     <div className="bg-gray-50 rounded-lg p-6">
       <h2 className="text-lg font-medium mb-4">Order Summary</h2>
-      
+
       {/* Cart Items */}
       <div className="space-y-4 mb-6">
         {cartData.items.map((item: any) => (
@@ -59,8 +66,14 @@ const OrderSummary = ({ cartData }: { cartData: any }) => {
               <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500">Unit price: {formatPrice(item.productSku.price)}</p>
-              <p className="text-sm font-medium">{formatPrice(calculateSubtotal(item.productSku.price, item.quantity))}</p>
+              <p className="text-sm text-gray-500">
+                Unit price: {formatPrice(item.productSku.price)}
+              </p>
+              <p className="text-sm font-medium">
+                {formatPrice(
+                  calculateSubtotal(item.productSku.price, item.quantity)
+                )}
+              </p>
             </div>
           </div>
         ))}
@@ -98,47 +111,50 @@ const OrderSummary = ({ cartData }: { cartData: any }) => {
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const cartItems = useAppSelector(selectCartItems);
-  const cartTotal = useAppSelector(selectCartTotal);
+  // const cartTotal = useAppSelector(selectCartTotal);
   const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
   const { data: cartData, isLoading } = useGetCartQuery();
-  const user = useAppSelector(state => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
+    firstName: user?.name || "",
+    lastName: user?.name || "",
     email: user?.email || "",
-    phone: user?.phoneNumber || "",
+    phone: "",
     address: "",
     city: "",
     postalCode: "",
     country: "Rwanda",
-    paymentMethod: "card"
+    paymentMethod: "card",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-
 
   useEffect(() => {
     CartService.initializeCart();
   }, []);
 
-  // Redirect to cart if cart is empty
+  const [createStripeCheckout ]  = useCreateCheckoutSessionMutation();
+
+
   useEffect(() => {
     if (cartItems.length === 0 && !isLoading) {
       navigate("/cart");
     }
   }, [cartItems.length, isLoading, navigate]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // Clear error when field is edited
     if (errors[name]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -149,19 +165,27 @@ export default function CheckoutPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+    if (!formData.firstName.trim())
+      newErrors.firstName = "First name is required";
     if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
     if (!formData.address.trim()) newErrors.address = "Address is required";
     if (!formData.city.trim()) newErrors.city = "City is required";
-    if (!formData.postalCode.trim()) newErrors.postalCode = "Postal code is required";
+    if (!formData.postalCode.trim())
+      newErrors.postalCode = "Postal code is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handlePlaceOrder = async () => {
+    try {
+      await  createStripeCheckout("")
+    } catch (error) {
+       toast.error((error as any)?.message  || "failed to create session")
+    }
+
     if (!validateForm()) {
       toast.error("Please fill in all required fields");
       return;
@@ -170,10 +194,10 @@ export default function CheckoutPage() {
     try {
       // Prepare order data
       const orderData = {
-        items: cartItems.map(item => ({
+        items: cartItems.map((item) => ({
           productId: item.id,
           quantity: item.quantity,
-          price: item.price / 100 // Convert back from cents
+          price: item.price / 100, // Convert back from cents
         })),
         shippingAddress: {
           firstName: formData.firstName,
@@ -182,14 +206,20 @@ export default function CheckoutPage() {
           city: formData.city,
           postalCode: formData.postalCode,
           country: formData.country,
-          phone: formData.phone
+          phone: formData.phone,
         },
         paymentMethod: formData.paymentMethod,
-        email: formData.email
+        email: formData.email,
       };
 
       // Create order
-      const response = await createOrder(orderData).unwrap();
+      try {
+        await createOrder(orderData).unwrap();
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to fetch cart data. Please try again.");
+        return;
+      }
 
       // Clear cart after successful order
       await CartService.clearCart();
@@ -212,7 +242,10 @@ export default function CheckoutPage() {
         <div className="lg:w-2/3">
           {/* Back to cart link */}
           <div className="mb-6">
-            <Link to="/cart" className="text-gray-500 hover:text-black flex items-center gap-1 text-sm">
+            <Link
+              to="/cart"
+              className="text-gray-500 hover:text-black flex items-center gap-1 text-sm"
+            >
               <ArrowLeft size={14} />
               <span>Back to Cart</span>
             </Link>
@@ -238,7 +271,11 @@ export default function CheckoutPage() {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${errors.firstName ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
+                      errors.firstName
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="John"
                   />
                   {errors.firstName && (
@@ -258,7 +295,11 @@ export default function CheckoutPage() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${errors.lastName ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
+                      errors.lastName
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="Doe"
                   />
                   {errors.lastName && (
@@ -278,7 +319,11 @@ export default function CheckoutPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
+                      errors.email
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="your@email.com"
                   />
                   {errors.email && (
@@ -298,7 +343,11 @@ export default function CheckoutPage() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${errors.phone ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
+                      errors.phone
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="+250 123 456 789"
                   />
                   {errors.phone && (
@@ -328,7 +377,11 @@ export default function CheckoutPage() {
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${errors.address ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
+                      errors.address
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="123 Main Street, Apt 4B"
                   />
                   {errors.address && (
@@ -349,7 +402,11 @@ export default function CheckoutPage() {
                       name="city"
                       value={formData.city}
                       onChange={handleInputChange}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${errors.city ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
+                        errors.city
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
                       placeholder="Kigali"
                     />
                     {errors.city && (
@@ -369,7 +426,11 @@ export default function CheckoutPage() {
                       name="postalCode"
                       value={formData.postalCode}
                       onChange={handleInputChange}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${errors.postalCode ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
+                        errors.postalCode
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
                       placeholder="00000"
                     />
                     {errors.postalCode && (
@@ -390,7 +451,12 @@ export default function CheckoutPage() {
                     value={formData.country}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none bg-white"
-                    style={{ backgroundImage: "url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M12 15l-4.243-4.243 1.415-1.414L12 12.172l2.828-2.829 1.415 1.414z\"/></svg>')", backgroundRepeat: "no-repeat", backgroundPosition: "right 1rem center" }}
+                    style={{
+                      backgroundImage:
+                        'url(\'data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 15l-4.243-4.243 1.415-1.414L12 12.172l2.828-2.829 1.415 1.414z"/></svg>\')',
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "right 1rem center",
+                    }}
                   >
                     <option value="Rwanda">Rwanda</option>
                     <option value="Kenya">Kenya</option>
@@ -409,7 +475,13 @@ export default function CheckoutPage() {
               </div>
 
               <div className="space-y-4">
-                <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${formData.paymentMethod === "card" ? 'border-blue-500 bg-blue-50 shadow-sm' : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50/30'}`}>
+                <label
+                  className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                    formData.paymentMethod === "card"
+                      ? "border-blue-500 bg-blue-50 shadow-sm"
+                      : "border-gray-200 hover:border-blue-200 hover:bg-blue-50/30"
+                  }`}
+                >
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -421,11 +493,19 @@ export default function CheckoutPage() {
                   <CreditCard className="h-5 w-5 text-blue-600 mr-3" />
                   <div>
                     <span className="font-medium">Credit/Debit Card</span>
-                    <p className="text-xs text-gray-500 mt-1">Pay securely with your card</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Pay securely with your card
+                    </p>
                   </div>
                 </label>
 
-                <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${formData.paymentMethod === "cash" ? 'border-blue-500 bg-blue-50 shadow-sm' : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50/30'}`}>
+                <label
+                  className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                    formData.paymentMethod === "cash"
+                      ? "border-blue-500 bg-blue-50 shadow-sm"
+                      : "border-gray-200 hover:border-blue-200 hover:bg-blue-50/30"
+                  }`}
+                >
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -437,12 +517,17 @@ export default function CheckoutPage() {
                   <Truck className="h-5 w-5 text-green-600 mr-3" />
                   <div>
                     <span className="font-medium">Cash on Delivery</span>
-                    <p className="text-xs text-gray-500 mt-1">Pay when you receive your order</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Pay when you receive your order
+                    </p>
                   </div>
                 </label>
 
                 <div className="mt-4 text-sm">
-                  <Link to="/payment-methods" className="text-blue-600 hover:underline flex items-center">
+                  <Link
+                    to="/payment-methods"
+                    className="text-blue-600 hover:underline flex items-center"
+                  >
                     <Plus className="h-4 w-4 mr-1" />
                     Manage saved payment methods
                   </Link>
@@ -475,7 +560,11 @@ export default function CheckoutPage() {
 
           <div className="mt-6 flex items-start text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
             <ShieldCheck className="h-5 w-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" />
-            <span>Your personal data will be used to process your order, support your experience, and for other purposes described in our privacy policy.</span>
+            <span>
+              Your personal data will be used to process your order, support
+              your experience, and for other purposes described in our privacy
+              policy.
+            </span>
           </div>
         </div>
       </div>

@@ -18,7 +18,6 @@ const CartProduct = ({
   name,
   productSku,
   quantity,
-  productSkuId,
 }: {
   id: number;
   image: string;
@@ -196,98 +195,12 @@ const CartProduct = ({
   );
 };
 
-const CheckoutProcessDetails = ({
-  total,
-}: {
-  total: string | number | null | undefined;
-}) => {
-  // Format price for display - converts cents to dollars with safety checks
-  const formatPrice = (cents: string | number | null | undefined) => {
-    if (cents === undefined || cents === null) return "$0.00";
-    const amount =
-      typeof cents === "string" ? parseFloat(cents) : Number(cents);
-    if (isNaN(amount)) return "$0.00";
-    const dollars = amount / 100;
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(dollars);
-  };
-
-  const safeParseFloat = (
-    value: string | number | null | undefined
-  ): number => {
-    if (value === undefined || value === null) return 0;
-    const parsed =
-      typeof value === "string" ? parseFloat(value) : Number(value);
-    return isNaN(parsed) ? 0 : parsed;
-  };
-
-  return (
-    <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-6 max-w-md w-full">
-      <h2 className="font-semibold text-xl mb-6 pb-2 border-b border-gray-100">
-        Order Summary
-      </h2>
-
-      <div className="space-y-4 mb-6">
-        <div className="flex justify-between">
-          <p className="text-gray-600">Subtotal</p>
-          <span className="font-medium">{formatPrice(total)}</span>
-        </div>
-        <div className="flex justify-between">
-          <p className="text-gray-600">Shipping</p>
-          <span className="text-green-600">Free</span>
-        </div>
-        {safeParseFloat(total) >= 10000 && (
-          <div className="flex justify-between text-green-600">
-            <p>Free Shipping Applied</p>
-            <span>-{formatPrice(0)}</span>
-          </div>
-        )}
-        <div className="pt-4 border-t border-dashed border-gray-200">
-          <div className="flex justify-between">
-            <p className="font-medium">Total</p>
-            <span className="font-bold text-lg">{formatPrice(total)}</span>
-          </div>
-          <p className="text-xs text-gray-500 mt-1">Including VAT</p>
-        </div>
-      </div>
-
-      <Link to="/checkout">
-        <button className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg py-3 px-5 font-medium transition-colors shadow-sm hover:shadow flex items-center justify-center gap-2">
-          Proceed to Checkout
-          <ChevronRight size={16} />
-        </button>
-      </Link>
-
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-          <span>Secure Checkout</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-gray-400"
-          >
-            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Cart = () => {
   const [isClearing, setIsClearing] = useState(false);
   const { data: cartData, isLoading, refetch } = useGetCartQuery();
 
+
+
   // Format price for display - converts cents to dollars with safety checks
   const formatPrice = (cents: string | number | null | undefined) => {
     if (cents === undefined || cents === null) return "$0.00";
@@ -300,23 +213,16 @@ const Cart = () => {
       currency: "USD",
     }).format(dollars);
   };
-
-  // Fetch cart when component mounts
   useEffect(() => {
     const fetchCart = async () => {
       try {
         console.log("Fetching cart in Cart component");
-        // This will fetch the cart from the server for authenticated users
-        // or load from localStorage for guest users
         await CartService.initializeCart();
-
-        // Refetch cart data if using RTK Query
         refetch();
       } catch (error) {
         console.error("Error fetching cart:", error);
       }
     };
-
     fetchCart();
   }, [refetch]);
 
@@ -355,7 +261,7 @@ const Cart = () => {
             Looks like you haven't added any items to your cart yet.
           </p>
           <Link
-            to="/products"
+            to="/explore"
             className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Continue Shopping
