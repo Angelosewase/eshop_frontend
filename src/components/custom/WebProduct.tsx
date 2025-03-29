@@ -1,6 +1,5 @@
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../hooks/Reduxhooks";
 import { toast } from "sonner";
 import { MouseEvent } from "react";
 import CartService from "../../features/cart/cartService";
@@ -53,7 +52,7 @@ function WebProduct({
       await CartService.addToCart(
         id,
         1, // Default quantity
-        defaultSkuId // Must have a valid SKU ID
+        defaultSkuId, // Must have a valid SKU ID
       );
 
       toast.success(`${name} added to cart!`);
@@ -82,10 +81,10 @@ function WebProduct({
       await CartService.addToCart(
         id,
         1, // Default quantity
-        defaultSkuId // Must have a valid SKU ID
+        defaultSkuId, // Must have a valid SKU ID
       );
 
-      navigate('/checkout');
+      navigate("/checkout");
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.error("Failed to add item to cart. Please try again.");
@@ -93,7 +92,10 @@ function WebProduct({
   };
 
   return (
-    <div className="max-w-xs rounded bg-white min-w-[23.86%] mr-4 mb-8" onClick={handleProductClick}>
+    <div
+      className="max-w-xs rounded bg-white min-w-[23.86%] mr-4 mb-8"
+      onClick={handleProductClick}
+    >
       {/* Image Section */}
       <div className="relative rounded-md overflow-hidden">
         <img
@@ -139,14 +141,17 @@ function WebProduct({
             <span className="ml-2 text-sm text-gray-600">({reviews})</span>
           </div>
         </div>
-        <span className="text-lg font-semibold text-gray-800">${price.toFixed(2)}</span>
+        <span className="text-lg font-semibold text-gray-800">
+          ${price.toFixed(2)}
+        </span>
       </div>
       <div className="flex items-center justify-between px-4 pb-3 pt-1">
         <button
-          className={`px-4 py-2 text-sm rounded-lg flex items-center gap-1 ${quantity > 0
-            ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            }`}
+          className={`px-4 py-2 text-sm rounded-lg flex items-center gap-1 ${
+            quantity > 0
+              ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+          }`}
           onClick={handleAddToCart}
           disabled={quantity <= 0}
         >
@@ -154,10 +159,11 @@ function WebProduct({
           Add to cart
         </button>
         <button
-          className={`px-4 py-2 text-sm rounded-lg font-semibold ${quantity > 0
-            ? 'bg-black text-white hover:bg-gray-800'
-            : 'bg-gray-700 text-gray-300 cursor-not-allowed'
-            }`}
+          className={`px-4 py-2 text-sm rounded-lg font-semibold ${
+            quantity > 0
+              ? "bg-black text-white hover:bg-gray-800"
+              : "bg-gray-700 text-gray-300 cursor-not-allowed"
+          }`}
           onClick={handleBuyNow}
           disabled={quantity <= 0}
         >

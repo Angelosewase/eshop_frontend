@@ -5,12 +5,14 @@ import App from "./App.tsx";
 import { Provider } from "react-redux";
 // Import storeInit first to ensure store is properly initialized
 import { verifyStoreInitialized } from "./storeInit";
-import store from "./store.ts";
+import store from "./store/store.ts";
 import { Toaster } from "./components/ui/sonner.tsx";
 
 // Verify store initialization
 if (!verifyStoreInitialized()) {
-  console.error('Store initialization failed. Application may not function correctly.');
+  console.error(
+    "Store initialization failed. Application may not function correctly.",
+  );
 }
 
 try {
@@ -25,10 +27,10 @@ try {
         <App />
         <Toaster />
       </Provider>
-    </StrictMode>
+    </StrictMode>,
   );
 } catch (error) {
-  console.error('Failed to render application:', error);
+  console.error("Failed to render application:", error);
   document.body.innerHTML = `
     <div style="padding: 20px; text-align: center;">
       <h1>Application Failed to Load</h1>

@@ -23,7 +23,7 @@ function EditCategoryModal({ category }: EditCategoryModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: category.name,
-    description: category.description || ""
+    description: category.description || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,7 +31,7 @@ function EditCategoryModal({ category }: EditCategoryModalProps) {
     try {
       await updateCategory({
         id: category.id,
-        data: formData
+        data: formData,
       }).unwrap();
       toast.success("Category updated successfully");
       setIsOpen(false);
@@ -59,7 +59,9 @@ function EditCategoryModal({ category }: EditCategoryModalProps) {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               placeholder="Enter category name"
               required
             />
@@ -69,7 +71,9 @@ function EditCategoryModal({ category }: EditCategoryModalProps) {
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Enter category description"
               className="h-32"
             />
@@ -86,4 +90,4 @@ function EditCategoryModal({ category }: EditCategoryModalProps) {
   );
 }
 
-export default EditCategoryModal; 
+export default EditCategoryModal;

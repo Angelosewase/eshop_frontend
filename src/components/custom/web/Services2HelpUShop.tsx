@@ -32,11 +32,7 @@ const Services2HelpUShopItem = ({
         <p className="text-md  mt-2 text-[#5D6E8B]">{description}</p>
       </div>
       <div>
-        <img
-          src={imgUrl}
-          alt=""
-          className="w-full h-[180px] object-cover "
-        />
+        <img src={imgUrl} alt="" className="w-full h-[180px] object-cover " />
       </div>
     </div>
   );

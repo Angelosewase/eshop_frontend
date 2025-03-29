@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Define the activity item interface
 export interface ActivityItem {
@@ -7,33 +7,37 @@ export interface ActivityItem {
   user: string;
   time: string;
   amount: string | null;
-  status: 'pending' | 'completed' | 'cancelled' | 'info';
+  status: "pending" | "completed" | "cancelled" | "info";
 }
 
 // Create the activity API slice
 export const activityApi = createApi({
-  reducerPath: 'activityApi',
+  reducerPath: "activityApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000/',
-    credentials: 'include',
+    baseUrl: import.meta.env.VITE_API_URL || "http://localhost:3000/",
+    credentials: "include",
   }),
-  tagTypes: ['Activity'],
+  tagTypes: ["Activity"],
   endpoints: (builder) => ({
     getRecentActivity: builder.query<ActivityItem[], void>({
-      query: () => '/activity/recent',
-      providesTags: ['Activity'],
+      query: () => "/activity/recent",
+      providesTags: ["Activity"],
     }),
     getAllActivity: builder.query<ActivityItem[], void>({
-      query: () => '/activity',
-      providesTags: ['Activity'],
+      query: () => "/activity",
+      providesTags: ["Activity"],
     }),
     getActivityByUser: builder.query<ActivityItem[], number>({
       query: (userId) => `/activity/user/${userId}`,
-      providesTags: (result, error, userId) => [{ type: 'Activity', id: userId }],
+      providesTags: (_, __, userId) => [
+        { type: "Activity", id: userId },
+      ],
     }),
     getActivityByStatus: builder.query<ActivityItem[], string>({
       query: (status) => `/activity/status/${status}`,
-      providesTags: (result, error, status) => [{ type: 'Activity', id: status }],
+      providesTags: (_, __, status) => [
+        { type: "Activity", id: status },
+      ],
     }),
   }),
 });
@@ -44,4 +48,4 @@ export const {
   useGetAllActivityQuery,
   useGetActivityByUserQuery,
   useGetActivityByStatusQuery,
-} = activityApi; 
+} = activityApi;

@@ -110,11 +110,13 @@ function WebFooter() {
               </div>
             </div>
           </div>
-          {
-            FooterLinks.map((footerLink, index) => (
-              <FooterLinkDivs key={index} header={footerLink.title} links={footerLink.links} />
-            ))  
-          }
+          {FooterLinks.map((footerLink, index) => (
+            <FooterLinkDivs
+              key={index}
+              header={footerLink.title}
+              links={footerLink.links}
+            />
+          ))}
         </div>
         <hr className="w-full bg-gray-500 h-[2px]" />
       </div>
@@ -153,7 +155,10 @@ const FooterLinkDivs = ({
       <ul className="mt-2">
         {links.map((linkItem, index) => (
           <li key={index} className="">
-            <a href={linkItem.link} className="text-[#696778] hover:underline text-sm -mt-0.5">
+            <a
+              href={linkItem.link}
+              className="text-[#696778] hover:underline text-sm -mt-0.5"
+            >
               {linkItem.name}
             </a>
           </li>

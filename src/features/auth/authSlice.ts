@@ -5,7 +5,8 @@ import cartSync from "../cart/cartSync";
 interface User {
   id: string;
   email: string;
-  name: string;
+  firstName: string | null;
+  lastName: string | null;
   role: "USER" | "ADMIN";
 }
 
@@ -43,14 +44,14 @@ export const getStoredToken = () => {
   const token = localStorage.getItem("auth_token");
   console.log(
     "🔐 Getting stored token:",
-    token ? "Token exists" : "No token found"
+    token ? "Token exists" : "No token found",
   );
   return token;
 };
 export const setStoredToken = (token: string | null) => {
   console.log(
     "🔐 Setting token:",
-    token ? "New token being stored" : "Clearing token"
+    token ? "New token being stored" : "Clearing token",
   );
   if (token) {
     localStorage.setItem("auth_token", token);
@@ -70,7 +71,7 @@ export const validateToken = (token: string | null): boolean => {
     const isValid = parts.length === 3;
     console.log(
       "🔐 Token validation:",
-      isValid ? "Valid token structure" : "Invalid token structure"
+      isValid ? "Valid token structure" : "Invalid token structure",
     );
     return isValid;
   } catch {
@@ -87,7 +88,7 @@ export const loginUser = createAsyncThunk<
   try {
     console.log(
       "🔐 Attempting login with:",
-      credentials.emailPhoneNumberString
+      credentials.emailPhoneNumberString,
     );
     const response = await api.post<LoginResponse>("/auth/login", credentials);
 
@@ -99,13 +100,8 @@ export const loginUser = createAsyncThunk<
     console.log("🔐 Token stored in localStorage");
 
     return response.data;
-  } catch (
-    error: any
-  ) {
-    console.error(
-      "❌ Login failed:",
-      error.response?.data?.message || (error as Error).message
-    );
+  } catch (error: any) {
+    console.error(error);
     return rejectWithValue({
       message: error.response?.data?.message || "Login failed",
     });
@@ -141,14 +137,14 @@ export const verifyIsLoggedIn = createAsyncThunk(
     } catch (error: any) {
       console.error(
         "❌ Verification failed:",
-        error.response?.data?.message || error.message
+        error.response?.data?.message || error.message,
       );
       localStorage.removeItem("auth_token");
       return rejectWithValue(
-        error.response?.data || { message: "Verification failed" }
+        error.response?.data || { message: "Verification failed" },
       );
     }
-  }
+  },
 );
 
 export const registerUser = createAsyncThunk<
@@ -159,11 +155,11 @@ export const registerUser = createAsyncThunk<
   try {
     console.log(
       "🔐 Attempting registration for:",
-      credentials.emailPhoneNumberString
+      credentials.emailPhoneNumberString,
     );
     const response = await api.post<LoginResponse>(
       "/auth/register",
-      credentials
+      credentials,
     );
 
     const { token, user } = response.data;
@@ -184,7 +180,7 @@ export const registerUser = createAsyncThunk<
   } catch (error: any) {
     console.error(
       "❌ Registration failed:",
-      error.response?.data?.message || error.message
+      error.response?.data?.message || error.message,
     );
     return rejectWithValue({
       message: error.response?.data?.message || "Registration failed",
@@ -282,10 +278,13 @@ export const { clearAuth, updateToken } = authSlice.actions;
 
 // Add selector for auth state
 export const selectAuth = (state: { auth: AuthState }) => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  token: state.auth.token,
   user: state.auth.user,
+  token: state.auth.token,
+  isAuthenticated: state.auth.isAuthenticated,
+  error: state.auth.error,
   loading: state.auth.loading,
 });
+
+export const selectUser = (state: { auth: AuthState }) => state.auth.user;
 
 export default authSlice.reducer;

@@ -8,7 +8,10 @@ import {
 } from "../../../components/ui/dialog";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
-import { useGetCurrentUserQuery, useUpdateUserMutation } from "../../../features/users/userSlice";
+import {
+  useGetCurrentUserQuery,
+  useUpdateUserMutation,
+} from "../../../features/users/userSlice";
 import { useAppDispatch } from "../../../hooks/Reduxhooks";
 import { logOut } from "../../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +30,7 @@ function ProfileModal() {
     lastName: "",
     phoneNumber: "",
   });
-  
+
   useEffect(() => {
     if (userData) {
       setFormData({
@@ -50,7 +53,7 @@ function ProfileModal() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
@@ -211,4 +214,4 @@ function ProfileModal() {
   );
 }
 
-export default ProfileModal; 
+export default ProfileModal;

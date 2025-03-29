@@ -12,23 +12,24 @@ import {
   useMarkNotificationAsReadMutation,
   useMarkAllNotificationsAsReadMutation,
   useDeleteNotificationMutation,
-  Notification
+  Notification,
 } from "../../../features/notifications/notificationSlice";
 import { toast } from "sonner";
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from "date-fns";
 import { LoadingSpinner } from "../../ui/loading-spinner";
 
 function NotificationSheet() {
-  const [selectedType, setSelectedType] = useState<'all' | 'unread'>('all');
+  const [selectedType, setSelectedType] = useState<"all" | "unread">("all");
   const { data: notificationsData, isLoading } = useGetNotificationsQuery();
   const [markAsRead] = useMarkNotificationAsReadMutation();
   const [markAllAsRead] = useMarkAllNotificationsAsReadMutation();
   const [deleteNotification] = useDeleteNotificationMutation();
 
   const notifications = notificationsData?.data || [];
-  const filteredNotifications = selectedType === 'all'
-    ? notifications
-    : notifications.filter(n => !n.isRead);
+  const filteredNotifications =
+    selectedType === "all"
+      ? notifications
+      : notifications.filter((n) => !n.isRead);
 
   const handleMarkAsRead = async (notificationId: number) => {
     try {
@@ -62,9 +63,9 @@ function NotificationSheet() {
       <SheetTrigger asChild>
         <button className="relative hover:bg-cyan-400 p-2 rounded-full">
           <Bell size={15} />
-          {notifications.some(n => !n.isRead) && (
+          {notifications.some((n) => !n.isRead) && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-              {notifications.filter(n => !n.isRead).length}
+              {notifications.filter((n) => !n.isRead).length}
             </span>
           )}
         </button>
@@ -80,18 +81,18 @@ function NotificationSheet() {
         </SheetHeader>
         <div className="flex items-end gap-5 border-b mt-4 border-gray-300">
           <button
-            className={`border-b-2 ${selectedType === 'all' ? 'border-primary' : 'border-white'} hover:border-primary transition-colors`}
-            onClick={() => setSelectedType('all')}
+            className={`border-b-2 ${selectedType === "all" ? "border-primary" : "border-white"} hover:border-primary transition-colors`}
+            onClick={() => setSelectedType("all")}
           >
             All
           </button>
           <button
-            className={`border-b-2 ${selectedType === 'unread' ? 'border-primary' : 'border-white'} hover:border-primary transition-colors`}
-            onClick={() => setSelectedType('unread')}
+            className={`border-b-2 ${selectedType === "unread" ? "border-primary" : "border-white"} hover:border-primary transition-colors`}
+            onClick={() => setSelectedType("unread")}
           >
             Unread
           </button>
-          {notifications.some(n => !n.isRead) && (
+          {notifications.some((n) => !n.isRead) && (
             <button
               onClick={handleMarkAllAsRead}
               className="ml-auto text-sm text-primary hover:text-primary/80 transition-colors"
@@ -135,7 +136,9 @@ function NotificationItem({
   onDelete: (id: number) => void;
 }) {
   return (
-    <div className={`flex items-center gap-4 mt-4 hover:bg-gray-200 px-2 py-3 rounded ${!notification.isRead ? 'bg-blue-50' : ''}`}>
+    <div
+      className={`flex items-center gap-4 mt-4 hover:bg-gray-200 px-2 py-3 rounded ${!notification.isRead ? "bg-blue-50" : ""}`}
+    >
       <div className="flex-1">
         <div className="flex justify-between items-start">
           <div>
@@ -163,7 +166,9 @@ function NotificationItem({
         </div>
         <div className="flex justify-between items-center mt-2">
           <span className="text-xs text-gray-500">
-            {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+            {formatDistanceToNow(new Date(notification.createdAt), {
+              addSuffix: true,
+            })}
           </span>
           <span className="text-xs px-2 py-1 rounded-full bg-gray-100">
             {notification.type}

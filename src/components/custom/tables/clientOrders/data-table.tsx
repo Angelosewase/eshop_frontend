@@ -36,13 +36,15 @@ export default function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [paginationState, setPaginationState] = React.useState<PaginationState>({
-    pageSize: 5,
-    pageIndex: 0
-  });
+  const [paginationState, setPaginationState] = React.useState<PaginationState>(
+    {
+      pageSize: 5,
+      pageIndex: 0,
+    },
+  );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
 
   const [columnVisibility, setColumnVisibility] =
@@ -68,15 +70,14 @@ export default function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange:setPaginationState
+    onPaginationChange: setPaginationState,
   });
   return (
     <div className="p-1">
       <div className="flex items-center    border-b border-black mb-3">
-       <div className="mb-2 ml-auto">
-
-        <DataTableViewOptions table={table} />
-       </div>
+        <div className="mb-2 ml-auto">
+          <DataTableViewOptions table={table} />
+        </div>
       </div>
       <div className="rounded-md ">
         <Table>
@@ -90,7 +91,7 @@ export default function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -109,7 +110,7 @@ export default function DataTable<TData, TValue>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

@@ -12,16 +12,27 @@ import {
 import { useState } from "react";
 import { WebProduct } from "../../components/custom";
 
-function Deal() {
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  imgUrl: string;
+  description: string;
+  reviews: number;
+  rating: number;
+  quantity: number;
+}
+
+function Products() {
   return (
     <div className="w-full mt-5">
       <div className="text-lg font-semibold">
         home /<span className="text-gray-500">products</span>
       </div>
 
-      <div className="flex flex-1  gap-2 items-center justify-between mt-8">
-        <DealsFilter />
-        <DealsSortBy />
+      <div className="flex flex-1 gap-2 items-center justify-between mt-8">
+        <ProductsFilter />
+        <ProductsSortBy />
       </div>
 
       <ProductsDisplay />
@@ -29,9 +40,9 @@ function Deal() {
   );
 }
 
-export default Deal;
+export default Products;
 
-const DealsSortBy = () => {
+const ProductsSortBy = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -71,7 +82,7 @@ const DealsSortBy = () => {
   );
 };
 
-const DealsFilter = () => {
+const ProductsFilter = () => {
   const [priceRange, setPriceRange] = useState(0);
 
   return (
@@ -126,8 +137,7 @@ const DealsFilter = () => {
   );
 };
 
-
-const products = [
+const products: Product[] = [
   {
     id: 1,
     name: "Product 1",
@@ -190,41 +200,42 @@ const products = [
   },
 ];
 
-
 const ProductsDisplay = () => {
-return(  <div className="mt-14 ">
-  <section className="flex  overflow-auto flex-wrap">
-    <style>
-      {`
-        section::-webkit-scrollbar {
-          width: 0.1rem;
-          height: 0.1rem;
-        }
-        section::-webkit-scrollbar-track {
-          background: #f1f1f1;
-        }
-        section::-webkit-scrollbar-thumb {
-          background: #888;
-          border-radius: 10px;
-        }
-        section::-webkit-scrollbar-thumb:hover {
-          background: #555;
-        }
-      `}
-    </style>
-    {products.map((product) => (
-      <WebProduct
-        id={product.id}
-        key={product.id}
-        name={product.name}
-        imgUrl={product.imgUrl}
-        description={product.description}
-        reviews={product.reviews}
-        price={product.price}
-        rating={product.rating}
-        quantity={product.quantity}
-      />
-    ))}
-  </section>
-</div>)
-}
+  return (
+    <div className="mt-14">
+      <section className="flex overflow-auto flex-wrap">
+        <style>
+          {`
+            section::-webkit-scrollbar {
+              width: 0.1rem;
+              height: 0.1rem;
+            }
+            section::-webkit-scrollbar-track {
+              background: #f1f1f1;
+            }
+            section::-webkit-scrollbar-thumb {
+              background: #888;
+              border-radius: 10px;
+            }
+            section::-webkit-scrollbar-thumb:hover {
+              background: #555;
+            }
+          `}
+        </style>
+        {products.map((product) => (
+          <WebProduct
+            key={product.id}
+            id={product.id}
+            name={product.name}
+            imgUrl={product.imgUrl}
+            description={product.description}
+            reviews={product.reviews}
+            price={product.price}
+            rating={product.rating}
+            quantity={product.quantity}
+          />
+        ))}
+      </section>
+    </div>
+  );
+};

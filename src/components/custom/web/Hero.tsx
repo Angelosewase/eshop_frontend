@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const heroSlides = [
   {
@@ -8,25 +8,28 @@ const heroSlides = [
     title: "New Arrivals",
     subtitle: "Spring Collection 2024",
     description: "Discover the latest trends and styles",
-    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070",
-    link: "/products?category=new-arrivals"
+    image:
+      "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070",
+    link: "/products?category=new-arrivals",
   },
   {
     id: 2,
     title: "Summer Essentials",
     subtitle: "Hot Deals Up to 50% Off",
     description: "Get ready for summer with our exclusive collection",
-    image: "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2071",
-    link: "/products?category=summer"
+    image:
+      "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2071",
+    link: "/products?category=summer",
   },
   {
     id: 3,
     title: "Luxury Collection",
     subtitle: "Elegance Redefined",
     description: "Premium quality for the discerning customer",
-    image: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070",
-    link: "/products?category=luxury"
-  }
+    image:
+      "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070",
+    link: "/products?category=luxury",
+  },
 ];
 function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -44,7 +47,9 @@ function Hero() {
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+    setCurrentSlide(
+      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length,
+    );
   };
 
   return (
@@ -56,8 +61,9 @@ function Hero() {
           {heroSlides.map((slide, index) => (
             <div
               key={slide.id}
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'
-                }`}
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                index === currentSlide ? "opacity-100" : "opacity-0"
+              }`}
             >
               <div className="absolute inset-0 bg-black/40" />
               <img
@@ -68,9 +74,13 @@ function Hero() {
               <div className="absolute inset-0 left-[10%] flex items-center ">
                 <div className="container mx-auto px-4">
                   <div className="max-w-2xl text-white">
-                    <h2 className="text-sm font-medium mb-2 opacity-90">{slide.subtitle}</h2>
+                    <h2 className="text-sm font-medium mb-2 opacity-90">
+                      {slide.subtitle}
+                    </h2>
                     <h1 className="text-5xl font-bold mb-4">{slide.title}</h1>
-                    <p className="text-lg mb-8 opacity-90">{slide.description}</p>
+                    <p className="text-lg mb-8 opacity-90">
+                      {slide.description}
+                    </p>
                     <Link
                       to={slide.link}
                       className="inline-flex items-center bg-white text-black px-8 py-4 rounded-full font-medium hover:bg-opacity-90 transition-colors"
@@ -105,15 +115,15 @@ function Hero() {
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all ${index === currentSlide
-                  ? 'bg-white w-8'
-                  : 'bg-white/50 hover:bg-white/80'
-                }`}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentSlide
+                  ? "bg-white w-8"
+                  : "bg-white/50 hover:bg-white/80"
+              }`}
             />
           ))}
         </div>
       </div>
-
     </div>
   );
 }

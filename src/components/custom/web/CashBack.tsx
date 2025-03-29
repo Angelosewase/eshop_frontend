@@ -1,4 +1,3 @@
-import React from "react";
 import cashBackImage from "../../../assets/images/image.png";
 
 const CashbackSection = () => {

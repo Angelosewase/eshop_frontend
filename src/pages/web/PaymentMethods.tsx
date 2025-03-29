@@ -4,7 +4,7 @@ import {
   useAddPaymentMethodMutation,
   useDeletePaymentMethodMutation,
   useSetDefaultPaymentMethodMutation,
-  PaymentMethodRequest
+  PaymentMethodRequest,
 } from "../../features/payments/paymentMethodsSlice";
 import { toast } from "sonner";
 import {
@@ -14,14 +14,17 @@ import {
   CheckCircle,
   Star,
   Loader2,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 
 export default function PaymentMethods() {
   const { data, isLoading, error } = useGetUserPaymentMethodsQuery();
-  const [addPaymentMethod, { isLoading: isAdding }] = useAddPaymentMethodMutation();
-  const [deletePaymentMethod, { isLoading: isDeleting }] = useDeletePaymentMethodMutation();
-  const [setDefaultPaymentMethod, { isLoading: isSettingDefault }] = useSetDefaultPaymentMethodMutation();
+  const [addPaymentMethod, { isLoading: isAdding }] =
+    useAddPaymentMethodMutation();
+  const [deletePaymentMethod, { isLoading: isDeleting }] =
+    useDeletePaymentMethodMutation();
+  const [setDefaultPaymentMethod, { isLoading: isSettingDefault }] =
+    useSetDefaultPaymentMethodMutation();
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState<PaymentMethodRequest>({
@@ -29,7 +32,7 @@ export default function PaymentMethods() {
     cardholderName: "",
     expiryDate: "",
     cvv: "",
-    isDefault: false
+    isDefault: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -44,7 +47,7 @@ export default function PaymentMethods() {
         .trim()
         .slice(0, 19);
 
-      setFormData(prev => ({ ...prev, [name]: formattedValue }));
+      setFormData((prev) => ({ ...prev, [name]: formattedValue }));
     }
     // Format expiry date as MM/YY
     else if (name === "expiryDate") {
@@ -55,20 +58,20 @@ export default function PaymentMethods() {
         formatted = `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}`;
       }
 
-      setFormData(prev => ({ ...prev, [name]: formatted }));
+      setFormData((prev) => ({ ...prev, [name]: formatted }));
     }
     // Handle checkbox
     else if (type === "checkbox") {
-      setFormData(prev => ({ ...prev, [name]: checked }));
+      setFormData((prev) => ({ ...prev, [name]: checked }));
     }
     // Handle other inputs
     else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
     // Clear error when field is edited
     if (errors[name]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -120,7 +123,7 @@ export default function PaymentMethods() {
         cardholderName: "",
         expiryDate: "",
         cvv: "",
-        isDefault: false
+        isDefault: false,
       });
     } catch (error) {
       console.error("Failed to add payment method:", error);
@@ -129,7 +132,9 @@ export default function PaymentMethods() {
   };
 
   const handleDeleteCard = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this payment method?")) {
+    if (
+      window.confirm("Are you sure you want to delete this payment method?")
+    ) {
       try {
         await deletePaymentMethod(id).unwrap();
         toast.success("Payment method deleted successfully");
@@ -187,15 +192,17 @@ export default function PaymentMethods() {
           <div className="mb-8">
             {data?.data && data.data.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data.data.map(card => (
+                {data.data.map((card) => (
                   <div
                     key={card.id}
-                    className={`bg-white rounded-lg shadow-sm p-4 border ${card.isDefault ? 'border-blue-500' : 'border-gray-200'}`}
+                    className={`bg-white rounded-lg shadow-sm p-4 border ${card.isDefault ? "border-blue-500" : "border-gray-200"}`}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center">
                         <CreditCard className="h-6 w-6 text-gray-700 mr-2" />
-                        <span className="font-medium">{getCardTypeIcon(card.cardNumber)}</span>
+                        <span className="font-medium">
+                          {getCardTypeIcon(card.cardNumber)}
+                        </span>
                       </div>
                       <div className="flex items-center">
                         {card.isDefault && (
@@ -228,7 +235,9 @@ export default function PaymentMethods() {
                     </div>
 
                     <div className="mb-2">
-                      <div className="text-lg font-mono">•••• •••• •••• {card.lastFourDigits}</div>
+                      <div className="text-lg font-mono">
+                        •••• •••• •••• {card.lastFourDigits}
+                      </div>
                     </div>
 
                     <div className="flex justify-between text-sm text-gray-600">
@@ -241,8 +250,12 @@ export default function PaymentMethods() {
             ) : (
               <div className="bg-gray-50 rounded-lg p-8 text-center">
                 <CreditCard className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">No payment methods found</h3>
-                <p className="text-gray-500 mb-4">Add a payment method to make checkout faster.</p>
+                <h3 className="text-lg font-medium mb-2">
+                  No payment methods found
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  Add a payment method to make checkout faster.
+                </p>
               </div>
             )}
           </div>
@@ -261,7 +274,9 @@ export default function PaymentMethods() {
           {/* Add New Card Form */}
           {showAddForm && (
             <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200 max-w-2xl">
-              <h2 className="text-xl font-semibold mb-4">Add New Payment Method</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Add New Payment Method
+              </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="md:col-span-2">
@@ -275,10 +290,12 @@ export default function PaymentMethods() {
                     onChange={handleInputChange}
                     placeholder="1234 5678 9012 3456"
                     maxLength={19}
-                    className={`w-full px-3 py-2 border rounded-md ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.cardNumber ? "border-red-500" : "border-gray-300"}`}
                   />
                   {errors.cardNumber && (
-                    <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.cardNumber}
+                    </p>
                   )}
                 </div>
 
@@ -292,10 +309,12 @@ export default function PaymentMethods() {
                     value={formData.cardholderName}
                     onChange={handleInputChange}
                     placeholder="John Doe"
-                    className={`w-full px-3 py-2 border rounded-md ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.cardholderName ? "border-red-500" : "border-gray-300"}`}
                   />
                   {errors.cardholderName && (
-                    <p className="text-red-500 text-xs mt-1">{errors.cardholderName}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.cardholderName}
+                    </p>
                   )}
                 </div>
 
@@ -310,10 +329,12 @@ export default function PaymentMethods() {
                     onChange={handleInputChange}
                     placeholder="MM/YY"
                     maxLength={5}
-                    className={`w-full px-3 py-2 border rounded-md ${errors.expiryDate ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.expiryDate ? "border-red-500" : "border-gray-300"}`}
                   />
                   {errors.expiryDate && (
-                    <p className="text-red-500 text-xs mt-1">{errors.expiryDate}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.expiryDate}
+                    </p>
                   )}
                 </div>
 
@@ -328,7 +349,7 @@ export default function PaymentMethods() {
                     onChange={handleInputChange}
                     placeholder="123"
                     maxLength={4}
-                    className={`w-full px-3 py-2 border rounded-md ${errors.cvv ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.cvv ? "border-red-500" : "border-gray-300"}`}
                   />
                   {errors.cvv && (
                     <p className="text-red-500 text-xs mt-1">{errors.cvv}</p>
@@ -344,7 +365,9 @@ export default function PaymentMethods() {
                       onChange={handleInputChange}
                       className="mr-2"
                     />
-                    <span className="text-sm text-gray-700">Set as default payment method</span>
+                    <span className="text-sm text-gray-700">
+                      Set as default payment method
+                    </span>
                   </label>
                 </div>
               </div>
@@ -382,10 +405,11 @@ export default function PaymentMethods() {
       <div className="mt-8 bg-gray-50 p-4 rounded-lg border border-gray-200">
         <h3 className="text-lg font-medium mb-2">Payment Security</h3>
         <p className="text-gray-600 text-sm">
-          Your payment information is securely stored and encrypted. We never store your full card details on our servers.
-          All transactions are processed through secure payment gateways.
+          Your payment information is securely stored and encrypted. We never
+          store your full card details on our servers. All transactions are
+          processed through secure payment gateways.
         </p>
       </div>
     </div>
   );
-} 
+}

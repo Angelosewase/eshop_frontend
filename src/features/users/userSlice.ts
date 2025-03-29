@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Customer } from "../../components/custom/tables/customers/columns";
 import { prepareAuthHeaders } from "../../utils/api";
+import { toast } from "sonner";
 
 interface User {
   id: number;
@@ -8,7 +9,7 @@ interface User {
   phoneNumber: string | null;
   firstName: string | null;
   lastName: string | null;
-  role: 'USER' | 'ADMIN';
+  role: "USER" | "ADMIN";
 }
 
 // The API returns the user data directly, not wrapped in a message
@@ -23,42 +24,51 @@ interface UpdateUserRequest {
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/',
+    baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/",
     credentials: "include",
-    prepareHeaders: prepareAuthHeaders,
+    prepareHeaders: (headers) => prepareAuthHeaders(headers),
   }),
-  tagTypes: ['User'],
+  tagTypes: ["User"],
   endpoints: (builder) => ({
     getCurrentUser: builder.query<UserResponse, void>({
       query: () => ({
         url: "users/me",
-        method: "GET"
+        method: "GET",
       }),
-      providesTags: ['User'],
+      providesTags: ["User"],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
-          dispatch(userApi.util.updateQueryData('getCurrentUser', undefined, () => data));
+          dispatch(
+            userApi.util.updateQueryData(
+              "getCurrentUser",
+              undefined,
+              () => data,
+            ),
+          );
         } catch (error) {
-          console.error("error fetching users/me ==>")
-          console.error(error);
+          console.error("error fetching current user: ", error);
+          toast.error("Error fetching current user");
         }
-      }
+      },
     }),
-    updateUser: builder.mutation<UserResponse, { id: number; data: UpdateUserRequest }>({
+    updateUser: builder.mutation<
+      UserResponse,
+      { id: number; data: UpdateUserRequest }
+    >({
       query: ({ id, data }) => ({
         url: `users/${id}`,
         method: "PUT",
-        body: data
+        body: data,
       }),
-      invalidatesTags: ['User']
+      invalidatesTags: ["User"],
     }),
     getCustomers: builder.query<
       { users: Array<Customer>; total: number; page: number; limit: number },
       void
     >({
       query: () => "users/customers",
-      providesTags: ['User']
+      providesTags: ["User"],
     }),
   }),
 });
@@ -66,5 +76,5 @@ export const userApi = createApi({
 export const {
   useGetCurrentUserQuery,
   useUpdateUserMutation,
-  useGetCustomersQuery
+  useGetCustomersQuery,
 } = userApi;

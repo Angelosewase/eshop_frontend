@@ -1,44 +1,20 @@
-import { ColumnDef, Row } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { formatCurrency } from "../../../../lib/utils";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "../../../ui/dialog";
-
 import { OrderDetails } from "../../../../features/orders/ordersSlice";
-
-export type Order = OrderDetails;
-
 import {
-  ArrowUpFromLine,
-  Copy,
-  MoreHorizontal,
-  Printer,
-  Redo2,
   CheckCircle2,
   XCircle,
   Clock,
   User,
   Calendar,
-  CreditCard,
-  Package
+  Package,
 } from "lucide-react";
-
-import { Button } from "../../..//ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../../..//ui/dropdown-menu";
 import { Checkbox } from "../../../ui/checkbox";
 import { DataTableColumnHeader } from "../ColumnHeader";
-import ViewOrderModal from "../../modals/ViewOrderModal";
 import { Badge } from "../../../ui/badge";
+import { Actions } from "./Actions";
+
+export type Order = OrderDetails;
 
 export const columns: ColumnDef<Order>[] = [
   {
@@ -104,28 +80,28 @@ export const columns: ColumnDef<Order>[] = [
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
-      const status = row.getValue("payment.status") as string || "pending";
+      const status = (row.getValue("payment.status") as string) || "pending";
 
       const getStatusColor = (status: string) => {
         switch (status) {
-          case 'paid':
-            return 'bg-green-100 text-green-800 border-green-200';
-          case 'pending':
-            return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-          case 'cancelled':
-            return 'bg-red-100 text-red-800 border-red-200';
+          case "paid":
+            return "bg-green-100 text-green-800 border-green-200";
+          case "pending":
+            return "bg-yellow-100 text-yellow-800 border-yellow-200";
+          case "cancelled":
+            return "bg-red-100 text-red-800 border-red-200";
           default:
-            return 'bg-gray-100 text-gray-800 border-gray-200';
+            return "bg-gray-100 text-gray-800 border-gray-200";
         }
       };
 
       const getStatusIcon = (status: string) => {
         switch (status) {
-          case 'paid':
+          case "paid":
             return <CheckCircle2 className="h-4 w-4 text-green-600" />;
-          case 'pending':
+          case "pending":
             return <Clock className="h-4 w-4 text-yellow-600" />;
-          case 'cancelled':
+          case "cancelled":
             return <XCircle className="h-4 w-4 text-red-600" />;
           default:
             return <Clock className="h-4 w-4 text-gray-600" />;
@@ -150,9 +126,7 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("total"));
       return (
-        <div className="font-medium text-right">
-          {formatCurrency(amount)}
-        </div>
+        <div className="font-medium text-right">{formatCurrency(amount)}</div>
       );
     },
   },
@@ -168,10 +142,16 @@ export const columns: ColumnDef<Order>[] = [
           <Calendar className="h-4 w-4 text-muted-foreground mr-2" />
           <div>
             <div className="font-medium">
-              {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              {date.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
             </div>
             <div className="text-xs text-muted-foreground">
-              {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+              {date.toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </div>
           </div>
         </div>
@@ -185,37 +165,3 @@ export const columns: ColumnDef<Order>[] = [
     },
   },
 ];
-
-function Actions({ row }: { row: Row<Order> }) {
-  const order = row.original;
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem
-          onClick={() => navigator.clipboard.writeText(order.id.toString())}
-        >
-          <Copy className="h-4 w-4 mr-2" />
-          Copy order ID
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <ViewOrderModal order={order} />
-        <DropdownMenuItem>
-          <Printer className="h-4 w-4 mr-2" />
-          Print order
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Redo2 className="h-4 w-4 mr-2" />
-          Refresh order status
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}

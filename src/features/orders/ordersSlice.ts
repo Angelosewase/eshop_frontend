@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { prepareAuthHeaders } from "../../utils/api";
+import { RootState } from "../../store/store";
 
 export interface OrderItem {
   id: number;
@@ -26,15 +26,26 @@ export interface OrderDetails {
   };
   items: OrderItem[];
   payment: {
-    status: 'paid' | 'pending' | 'cancelled' | 'refunded';
+    status: "paid" | "pending" | "cancelled" | "refunded";
+  };
+}
+
+export interface Order {
+  id: number;
+  total: string;
+  createdAt: string;
+  status: "pending" | "processing" | "completed" | "cancelled";
+  payment?: {
+    status: string;
+  };
+  user: {
+    name: string;
+    email: string;
   };
 }
 
 interface OrderResponse {
-  success: boolean;
-  data: OrderDetails[];
-  total: number;
-  message?: string;
+  orders: Order[];
 }
 
 interface SingleOrderResponse {
@@ -45,23 +56,29 @@ interface SingleOrderResponse {
 export const orderApi = createApi({
   reducerPath: "orders",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/',
+    baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/",
     credentials: "include",
-    prepareHeaders: prepareAuthHeaders,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
-  tagTypes: ['Order'],
+  tagTypes: ["Order"],
   endpoints: (builder) => ({
     getOrders: builder.query<OrderResponse, void>({
       query: () => "orders",
-      providesTags: ['Order']
+      providesTags: ["Order"],
     }),
     getUserOrders: builder.query<OrderResponse, void>({
       query: () => "orders/user",
-      providesTags: ['Order']
+      providesTags: ["Order"],
     }),
     getOrder: builder.query<SingleOrderResponse, number>({
       query: (id) => `orders/${id}`,
-      providesTags: ['Order']
+      providesTags: ["Order"],
     }),
     createOrder: builder.mutation<OrderResponse, any>({
       query: (data) => ({
@@ -69,7 +86,7 @@ export const orderApi = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ['Order']
+      invalidatesTags: ["Order"],
     }),
     updateOrder: builder.mutation<OrderResponse, { id: number; data: any }>({
       query: ({ id, data }) => ({
@@ -77,7 +94,7 @@ export const orderApi = createApi({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ['Order']
+      invalidatesTags: ["Order"],
     }),
   }),
 });
@@ -87,5 +104,5 @@ export const {
   useGetOrdersQuery,
   useGetUserOrdersQuery,
   useUpdateOrderMutation,
-  useGetOrderQuery
+  useGetOrderQuery,
 } = orderApi;

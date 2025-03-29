@@ -1,8 +1,13 @@
-import React from 'react';
-import { Button } from '../ui/button';
-import { LogOut } from 'lucide-react';
-import { toast } from 'sonner';
-import ProfileImage from '../ui-elements/Profile-Image';
+import React from "react";
+import { Button } from "../ui/button";
+import { LogOut } from "lucide-react";
+import { toast } from "sonner";
+import ProfileImage from "../ui-elements/Profile-Image";
+import { logOut } from "../../features/auth/authSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import cartService from "../../features/cart/cartService";
+import { AppDispatch } from "../../store/store";
 
 interface ProfileHeaderProps {
   name: string;
@@ -13,26 +18,36 @@ interface ProfileHeaderProps {
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   name,
   email,
-  profileImage
+  profileImage,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
   const handleProfileImageChange = (file: File) => {
-    // In a real app, this would upload the file to a server
-    console.log('Profile image changed:', file);
-    
+    console.log("Profile image changed:", file);
     toast.message("Profile image changed");
   };
 
-  const handleLogout = () => {
-    // In a real app, this would handle the logout process
-    toast.message("You have been logged out");
+  const handleLogout = async () => {
+    try {
+      await cartService.clearCart();
+      await dispatch(logOut());
+
+      toast.success("Successfully logged out");
+
+      navigate("/auth/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to log out. Please try again.");
+    }
   };
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between glass-card p-6 mb-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row items-center">
         <ProfileImage
-          src={profileImage} 
-          size="lg" 
+          src={profileImage}
+          size="lg"
           onImageChange={handleProfileImageChange}
           className="mb-4 sm:mb-0 sm:mr-6"
         />
@@ -41,10 +56,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           <p className="text-muted-foreground">{email}</p>
         </div>
       </div>
-      <Button 
-        variant="outline" 
-        size="sm" 
-        className="mt-4 sm:mt-0" 
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-4 sm:mt-0"
         onClick={handleLogout}
       >
         <LogOut className="mr-2 h-4 w-4" />
@@ -55,3 +70,4 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 };
 
 export default ProfileHeader;
+

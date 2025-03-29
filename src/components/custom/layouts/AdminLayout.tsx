@@ -18,9 +18,7 @@ import {
   Package,
   ShoppingBag,
   LogOut,
-  Bell,
-  User,
-  BarChart3
+  BarChart3,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { useAppSelector, useAppDispatch } from "../../../hooks/Reduxhooks";
@@ -35,7 +33,7 @@ function AdminLayout() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const user = useAppSelector(state => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
   useValidatePath();
 
@@ -47,13 +45,16 @@ function AdminLayout() {
 
   // Calculate badge counts
   const pendingOrdersCount = useMemo(() => {
-    if (!ordersData?.data) return 0;
-    return ordersData.data.filter(order => order.payment?.status === 'pending').length;
+    if (!ordersData?.orders) return 0;
+    return ordersData.orders.filter(
+      (order) => order.payment?.status === "pending",
+    ).length;
   }, [ordersData]);
 
   const unreadNotificationsCount = useMemo(() => {
     if (!notificationsData?.data) return 0;
-    return notificationsData.data.filter(notification => !notification.isRead).length;
+    return notificationsData.data.filter((notification) => !notification.isRead)
+      .length;
   }, [notificationsData]);
 
   const newProductsCount = useMemo(() => {
@@ -63,65 +64,83 @@ function AdminLayout() {
   }, [productsData]);
 
   // Create dynamic navigation items with badge counts
-  const mainNavItems = useMemo(() => [
-    {
-      name: "Dashboard",
-      icon: <DashboardIcon />,
-      to: "/admin",
-      badge: null,
-    },
-    {
-      name: "Orders",
-      icon: <OrdersIcon />,
-      to: "/admin/orders",
-      badge: pendingOrdersCount > 0 ? { count: pendingOrdersCount, color: "bg-blue-500" } : null,
-    },
-    {
-      name: "Inventory",
-      icon: <InventoryIcon />,
-      to: "/admin/inventory",
-      badge: null,
-    },
-    {
-      name: "Products",
-      icon: <Package size={24} />,
-      to: "/admin/products",
-      badge: newProductsCount > 0 ? { count: newProductsCount, color: "bg-green-500" } : null,
-    },
-    {
-      name: "Payments",
-      icon: <PaymentsIcon />,
-      to: "/admin/payments",
-      badge: null,
-    },
-    {
-      name: "Customers",
-      icon: <CustomersIcon />,
-      to: "/admin/customers",
-      badge: dashboardStats?.totalCustomers > 0 ? { count: dashboardStats.totalCustomers, color: "bg-purple-500" } : null,
-    },
-  ], [pendingOrdersCount, newProductsCount, dashboardStats]);
+  const mainNavItems = useMemo(
+    () => [
+      {
+        name: "Dashboard",
+        icon: <DashboardIcon />,
+        to: "/admin",
+        badge: null,
+      },
+      {
+        name: "Orders",
+        icon: <OrdersIcon />,
+        to: "/admin/orders",
+        badge:
+          pendingOrdersCount > 0
+            ? { count: pendingOrdersCount, color: "bg-blue-500" }
+            : null,
+      },
+      {
+        name: "Inventory",
+        icon: <InventoryIcon />,
+        to: "/admin/inventory",
+        badge: null,
+      },
+      {
+        name: "Products",
+        icon: <Package size={24} />,
+        to: "/admin/products",
+        badge:
+          newProductsCount > 0
+            ? { count: newProductsCount, color: "bg-green-500" }
+            : null,
+      },
+      {
+        name: "Payments",
+        icon: <PaymentsIcon />,
+        to: "/admin/payments",
+        badge: null,
+      },
+      {
+        name: "Customers",
+        icon: <CustomersIcon />,
+        to: "/admin/customers",
+        badge:
+          (dashboardStats?.totalCustomers ?? 0) > 0
+            ? { count: dashboardStats?.totalCustomers ?? 0, color: "bg-purple-500" }
+            : null,
+      },
+    ],
+    [pendingOrdersCount, newProductsCount, dashboardStats],
+  );
 
-  const secondaryNavItems = useMemo(() => [
-    {
-      name: "Notifications",
-      icon: <NotificationIcon />,
-      to: "/admin/notifications",
-      badge: unreadNotificationsCount > 0 ? { count: unreadNotificationsCount, color: "bg-red-500" } : null,
-    },
-    {
-      name: "Help & Support",
-      icon: <HelpsupportIcon />,
-      to: "/admin/support",
-      badge: null,
-    },
-    {
-      name: "Settings",
-      icon: <SettingsIcon />,
-      to: "/admin/settings",
-      badge: null,
-    },
-  ], [unreadNotificationsCount]);
+  const secondaryNavItems = useMemo(
+    () => [
+      {
+        name: "Notifications",
+        icon: <NotificationIcon />,
+        to: "/admin/notifications",
+        badge:
+          unreadNotificationsCount > 0
+            ? { count: unreadNotificationsCount, color: "bg-red-500" }
+            : null,
+      },
+      {
+        name: "Help & Support",
+        icon: <HelpsupportIcon />,
+        to: "/admin/support",
+        badge: null,
+      },
+      {
+        name: "Settings",
+        icon: <SettingsIcon />,
+        to: "/admin/settings",
+        badge: null,
+      },
+    ],
+    [unreadNotificationsCount],
+  );
 
   // Handle window resize for responsive behavior
   useEffect(() => {
@@ -131,10 +150,10 @@ function AdminLayout() {
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize(); // Check on initial load
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const toggleSidebar = () => {
@@ -166,7 +185,7 @@ function AdminLayout() {
           "h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white transition-all duration-300 flex flex-col z-30",
           collapsed ? "w-20" : "w-64",
           "fixed md:sticky top-0 left-0",
-          mobileOpen ? "left-0" : "-left-full md:left-0"
+          mobileOpen ? "left-0" : "-left-full md:left-0",
         )}
       >
         {/* Logo */}
@@ -174,7 +193,9 @@ function AdminLayout() {
           {!collapsed && (
             <Link to="/admin" className="flex items-center">
               <ShoppingBag className="h-7 w-7 text-blue-400" />
-              <h1 className="text-xl font-bold ml-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">E-shop</h1>
+              <h1 className="text-xl font-bold ml-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                E-shop
+              </h1>
             </Link>
           )}
           {collapsed && (
@@ -186,13 +207,14 @@ function AdminLayout() {
             onClick={toggleSidebar}
             className={cn(
               "p-1 rounded-full hover:bg-gray-700 transition-colors",
-              collapsed && "mx-auto mt-2"
+              collapsed && "mx-auto mt-2",
             )}
           >
-            {collapsed ?
-              <ChevronRight className="h-5 w-5 text-gray-400" /> :
+            {collapsed ? (
+              <ChevronRight className="h-5 w-5 text-gray-400" />
+            ) : (
               <ChevronLeft className="h-5 w-5 text-gray-400" />
-            }
+            )}
           </button>
         </div>
 
@@ -249,7 +271,9 @@ function AdminLayout() {
             <div className="mt-4 px-2">
               <div className="bg-gray-800 rounded-lg p-2">
                 <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-xs font-medium text-gray-300">Sales Today</h3>
+                  <h3 className="text-xs font-medium text-gray-300">
+                    Sales Today
+                  </h3>
                   <BarChart3 size={14} className="text-gray-400" />
                 </div>
                 <div className="flex justify-between items-center mb-1">
@@ -257,7 +281,10 @@ function AdminLayout() {
                   <span className="text-xs font-medium text-white">$1,429</span>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-1.5">
-                  <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '70%' }}></div>
+                  <div
+                    className="bg-blue-500 h-1.5 rounded-full"
+                    style={{ width: "70%" }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -278,12 +305,16 @@ function AdminLayout() {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                    {user?.firstName?.charAt(0) || 'A'}
+                    {user?.firstName?.charAt(0) || "A"}
                   </div>
                 </div>
                 <div className="ml-3">
-                  <p className="text-xs font-medium text-white">{user?.firstName || 'Admin'} {user?.lastName || 'User'}</p>
-                  <p className="text-xs text-gray-400">{user?.email || 'admin@example.com'}</p>
+                  <p className="text-xs font-medium text-white">
+                    {user?.firstName || "Admin"} {user?.lastName || "User"}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {user?.email || "admin@example.com"}
+                  </p>
                 </div>
               </div>
               <button
@@ -296,7 +327,7 @@ function AdminLayout() {
           ) : (
             <div className="flex flex-col items-center space-y-3">
               <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                {user?.firstName?.charAt(0) || 'A'}
+                {user?.firstName?.charAt(0) || "A"}
               </div>
               <button
                 onClick={handleLogout}
@@ -322,7 +353,7 @@ function AdminLayout() {
         className={cn(
           "flex-1 overflow-y-auto",
           collapsed ? "md:ml-20" : "md:ml-64",
-          "w-full transition-all duration-300"
+          "w-full transition-all duration-300",
         )}
       >
         <Outlet />

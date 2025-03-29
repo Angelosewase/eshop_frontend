@@ -25,7 +25,7 @@ export const useIsUserAdmin = (): boolean => {
 export const useValidatePath = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const user = useAppSelector(state => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
   const isLoggedIn = useIsUserLoggedIn();
   const isUserAdmin = useIsUserAdmin();
 

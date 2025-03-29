@@ -31,7 +31,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Search
+  Search,
 } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
@@ -43,13 +43,18 @@ export default function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [paginationState, setPaginationState] = React.useState<PaginationState>({
-    pageSize: 10,
-    pageIndex: 0
-  });
+  const [paginationState, setPaginationState] = React.useState<PaginationState>(
+    {
+      pageSize: 10,
+      pageIndex: 0,
+    },
+  );
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
 
@@ -111,9 +116,9 @@ export default function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -131,7 +136,7 @@ export default function DataTable<TData, TValue>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -152,7 +157,8 @@ export default function DataTable<TData, TValue>({
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          Showing {table.getRowModel().rows.length} of {table.getFilteredRowModel().rows.length} items
+          Showing {table.getRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} items
         </div>
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2">

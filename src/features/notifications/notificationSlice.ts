@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { prepareAuthHeaders } from "../../utils/api";
+import { RootState } from "../../store/store";
 
 export interface Notification {
   id: number;
@@ -22,39 +22,54 @@ interface NotificationResponse {
 export const notificationApi = createApi({
   reducerPath: "notificationApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/',
+    baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/",
     credentials: "include",
-    prepareHeaders: prepareAuthHeaders,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
-  tagTypes: ['Notification'],
+  tagTypes: ["Notification"],
   endpoints: (builder) => ({
     getNotifications: builder.query<NotificationResponse, void>({
       query: () => ({
         url: "notifications/",
-        method: "GET"
+        method: "GET",
       }),
-      providesTags: ['Notification']
+      providesTags: ["Notification"],
     }),
-    markNotificationAsRead: builder.mutation<{ success: boolean; message: string }, number>({
+    markNotificationAsRead: builder.mutation<
+      { success: boolean; message: string },
+      number
+    >({
       query: (notificationId) => ({
         url: `notifications/${notificationId}/read`,
-        method: "PATCH"
+        method: "PATCH",
       }),
-      invalidatesTags: ['Notification']
+      invalidatesTags: ["Notification"],
     }),
-    markAllNotificationsAsRead: builder.mutation<{ success: boolean; message: string }, void>({
+    markAllNotificationsAsRead: builder.mutation<
+      { success: boolean; message: string },
+      void
+    >({
       query: () => ({
         url: "notifications/read-all",
-        method: "PATCH"
+        method: "PATCH",
       }),
-      invalidatesTags: ['Notification']
+      invalidatesTags: ["Notification"],
     }),
-    deleteNotification: builder.mutation<{ success: boolean; message: string }, number>({
+    deleteNotification: builder.mutation<
+      { success: boolean; message: string },
+      number
+    >({
       query: (notificationId) => ({
         url: `notifications/${notificationId}`,
-        method: "DELETE"
+        method: "DELETE",
       }),
-      invalidatesTags: ['Notification']
+      invalidatesTags: ["Notification"],
     }),
   }),
 });
@@ -64,4 +79,4 @@ export const {
   useMarkNotificationAsReadMutation,
   useMarkAllNotificationsAsReadMutation,
   useDeleteNotificationMutation,
-} = notificationApi; 
+} = notificationApi;

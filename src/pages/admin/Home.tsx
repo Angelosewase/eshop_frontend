@@ -1,35 +1,34 @@
+import { ShoppingBag, Users } from "lucide-react";
+import { PageHeaderWithIcons } from "../../components/custom";
 import {
-  ChartColumnStacked,
-  FolderX,
-  HeartHandshake,
-  Kanban,
-  Pen,
-  PersonStanding,
-  Pencil,
-  Trash2,
-  BarChart3,
-  DollarSign,
-  ShoppingCart,
-  Users,
-  Activity,
-  TrendingUp,
-  Clock,
-  Calendar,
-  CreditCard,
-  AlertCircle
-} from "lucide-react";
-import { PageHeaderWithIcons, StatisticsCard } from "../../components/custom";
-import { AddCategoryModal, EditCategoryModal } from "../../components/custom/modals";
+  AddCategoryModal,
+  EditCategoryModal,
+} from "../../components/custom/modals";
 import { useGetDashboardStatsQuery } from "../../features/dashboard/dashboardSlice";
-import { useGetCategoriesQuery, useDeleteCategoryMutation } from "../../features/inventory/categorySlice";
+import {
+  useGetCategoriesQuery,
+  useDeleteCategoryMutation,
+} from "../../features/inventory/categorySlice";
 import { useGetRecentActivityQuery } from "../../features/activity/activitySlice";
 import { useGetRecentPaymentsQuery } from "../../features/payments/paymentsSlice";
 import { toast } from "sonner";
 import { LoadingSpinner } from "../../components/ui/loading-spinner";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
 import { useState, useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 
@@ -40,7 +39,7 @@ interface ActivityItem {
   user: string;
   time: string;
   amount: string | null;
-  status: 'pending' | 'completed' | 'cancelled' | 'info';
+  status: "pending" | "completed" | "cancelled" | "info";
 }
 
 // Define payment interface
@@ -56,8 +55,16 @@ interface PaymentItem {
 
 function Home() {
   const { data: stats, isLoading, error } = useGetDashboardStatsQuery();
-  const { data: activityData, isLoading: isLoadingActivity, error: activityError } = useGetRecentActivityQuery();
-  const { data: paymentsData, isLoading: isLoadingPayments, error: paymentsError } = useGetRecentPaymentsQuery();
+  const {
+    data: activityData,
+    isLoading: isLoadingActivity,
+    error: activityError,
+  } = useGetRecentActivityQuery();
+  const {
+    data: paymentsData,
+    isLoading: isLoadingPayments,
+    error: paymentsError,
+  } = useGetRecentPaymentsQuery();
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
   const [recentPayments, setRecentPayments] = useState<PaymentItem[]>([]);
   const [activityTab, setActivityTab] = useState<string>("all");
@@ -76,7 +83,7 @@ function Home() {
   }, [paymentsData]);
 
   if (error) {
-    console.error('Failed to fetch dashboard stats:', error);
+    console.error("Failed to fetch dashboard stats:", error);
     return (
       <div className="flex flex-col p-6 min-h-screen">
         <PageHeaderWithIcons title="Dashboard" />
@@ -91,43 +98,59 @@ function Home() {
   const DashboardStats = [
     {
       title: "Total Products",
-      value: isLoading ? <LoadingSpinner size="sm" /> : stats?.totalProducts.toLocaleString() || "0",
-      icon: <Kanban className="h-5 w-5 text-blue-600" />,
+      value: isLoading ? (
+        <LoadingSpinner size="sm" />
+      ) : (
+        stats?.totalProducts.toLocaleString() || "0"
+      ),
+      icon: <ShoppingBag className="h-5 w-5 text-blue-600" />,
       description: "Total products in inventory",
       trend: "+12.5%",
-      trendUp: true
+      trendUp: true,
     },
     {
       title: "Total Categories",
-      value: isLoading ? <LoadingSpinner size="sm" /> : stats?.totalCategories.toLocaleString() || "0",
-      icon: <ChartColumnStacked className="h-5 w-5 text-purple-600" />,
+      value: isLoading ? (
+        <LoadingSpinner size="sm" />
+      ) : (
+        stats?.totalCategories.toLocaleString() || "0"
+      ),
+      icon: <ShoppingBag className="h-5 w-5 text-purple-600" />,
       description: "Product categories",
       trend: "+5.2%",
-      trendUp: true
+      trendUp: true,
     },
     {
       title: "Active Deals",
-      value: isLoading ? <LoadingSpinner size="sm" /> : stats?.totalDeals.toLocaleString() || "0",
-      icon: <HeartHandshake className="h-5 w-5 text-green-600" />,
+      value: isLoading ? (
+        <LoadingSpinner size="sm" />
+      ) : (
+        stats?.totalDeals.toLocaleString() || "0"
+      ),
+      icon: <ShoppingBag className="h-5 w-5 text-green-600" />,
       description: "Current promotions",
       trend: "+18.3%",
-      trendUp: true
+      trendUp: true,
     },
     {
       title: "Total Customers",
-      value: isLoading ? <LoadingSpinner size="sm" /> : stats?.totalCustomers.toLocaleString() || "0",
+      value: isLoading ? (
+        <LoadingSpinner size="sm" />
+      ) : (
+        stats?.totalCustomers.toLocaleString() || "0"
+      ),
       icon: <Users className="h-5 w-5 text-amber-600" />,
       description: "Registered users",
       trend: "+7.1%",
-      trendUp: true
+      trendUp: true,
     },
   ];
 
   // Filter activities based on selected tab
   const filteredActivities = Array.isArray(recentActivity)
-    ? (activityTab === "all"
+    ? activityTab === "all"
       ? recentActivity
-      : recentActivity.filter(activity => activity.status === activityTab))
+      : recentActivity.filter((activity) => activity.status === activityTab)
     : [];
 
   return (
@@ -154,8 +177,15 @@ function Home() {
                 <p className="text-xs text-muted-foreground">
                   {stat.description}
                 </p>
-                <Badge variant={stat.trendUp ? "default" : "destructive"} className={`flex items-center gap-1 ${stat.trendUp ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}`}>
-                  {stat.trendUp ? <TrendingUp className="h-3 w-3" /> : <TrendingUp className="h-3 w-3 rotate-180" />}
+                <Badge
+                  variant={stat.trendUp ? "default" : "destructive"}
+                  className={`flex items-center gap-1 ${stat.trendUp ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}`}
+                >
+                  {stat.trendUp ? (
+                    <ShoppingBag className="h-3 w-3" />
+                  ) : (
+                    <ShoppingBag className="h-3 w-3 rotate-180" />
+                  )}
                   {stat.trend}
                 </Badge>
               </div>
@@ -170,7 +200,9 @@ function Home() {
         <Card className="lg:col-span-1 shadow-md">
           <CardHeader className="pb-3 flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-lg font-semibold">Product Categories</CardTitle>
+              <CardTitle className="text-lg font-semibold">
+                Product Categories
+              </CardTitle>
               <CardDescription>Manage your product categories</CardDescription>
             </div>
             <AddCategoryModal />
@@ -183,18 +215,36 @@ function Home() {
         {/* Right Column - Activity & Performance */}
         <Card className="lg:col-span-2 shadow-md">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold">Recent Activity</CardTitle>
-            <CardDescription>Latest transactions and system events</CardDescription>
+            <CardTitle className="text-lg font-semibold">
+              Recent Activity
+            </CardTitle>
+            <CardDescription>
+              Latest transactions and system events
+            </CardDescription>
           </CardHeader>
 
           {/* Activity Tabs */}
-          <Tabs value={activityTab} onValueChange={setActivityTab} className="px-6">
+          <Tabs
+            value={activityTab}
+            onValueChange={setActivityTab}
+            className="px-6"
+          >
             <TabsList className="grid grid-cols-5 mb-4">
-              <TabsTrigger value="all" className="text-xs">All Activity</TabsTrigger>
-              <TabsTrigger value="completed" className="text-xs">Completed</TabsTrigger>
-              <TabsTrigger value="pending" className="text-xs">Pending</TabsTrigger>
-              <TabsTrigger value="cancelled" className="text-xs">Cancelled</TabsTrigger>
-              <TabsTrigger value="payments" className="text-xs">Payments</TabsTrigger>
+              <TabsTrigger value="all" className="text-xs">
+                All Activity
+              </TabsTrigger>
+              <TabsTrigger value="completed" className="text-xs">
+                Completed
+              </TabsTrigger>
+              <TabsTrigger value="pending" className="text-xs">
+                Pending
+              </TabsTrigger>
+              <TabsTrigger value="cancelled" className="text-xs">
+                Cancelled
+              </TabsTrigger>
+              <TabsTrigger value="payments" className="text-xs">
+                Payments
+              </TabsTrigger>
             </TabsList>
 
             {/* All Activity Types Content */}
@@ -239,34 +289,49 @@ function Home() {
                 <div className="flex justify-center items-center py-12">
                   <LoadingSpinner size="md" />
                 </div>
-              ) : paymentsError || !paymentsData || paymentsData.length === 0 ? (
+              ) : paymentsError ||
+                !paymentsData ||
+                paymentsData.length === 0 ? (
                 <Alert className="bg-blue-50 border-blue-200 text-blue-800">
-                  <AlertCircle className="h-4 w-4 text-blue-600" />
+                  <ShoppingBag className="h-4 w-4 text-blue-600" />
                   <AlertTitle>Payment System Under Development</AlertTitle>
                   <AlertDescription>
-                    The payment tracking system is currently being implemented and will be available soon.
-                    Check back later for real-time payment information.
+                    The payment tracking system is currently being implemented
+                    and will be available soon. Check back later for real-time
+                    payment information.
                   </AlertDescription>
                 </Alert>
               ) : (
                 <div className="space-y-4">
-                  {Array.isArray(recentPayments) && recentPayments.map((payment) => (
-                    <div key={payment.id} className="flex items-center justify-between border-b pb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-full bg-green-100">
-                          <CreditCard className="h-4 w-4 text-green-600" />
+                  {Array.isArray(recentPayments) &&
+                    recentPayments.map((payment) => (
+                      <div
+                        key={payment.id}
+                        className="flex items-center justify-between border-b pb-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-full bg-green-100">
+                            <ShoppingBag className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">
+                              Payment for Order #{payment.orderId}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {payment.customer}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium">Payment for Order #{payment.orderId}</p>
-                          <p className="text-xs text-muted-foreground">{payment.customer}</p>
+                        <div className="text-right">
+                          <p className="text-sm font-medium">
+                            {payment.amount}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {payment.date}
+                          </p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium">{payment.amount}</p>
-                        <p className="text-xs text-muted-foreground">{payment.date}</p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
             </TabsContent>
@@ -290,7 +355,11 @@ interface ActivityContentProps {
   error: any;
 }
 
-const ActivityContent = ({ activities, isLoading, error }: ActivityContentProps) => {
+const ActivityContent = ({
+  activities,
+  isLoading,
+  error,
+}: ActivityContentProps) => {
   // Debug the incoming activities
   console.log("ActivityContent received activities:", activities);
 
@@ -316,7 +385,9 @@ const ActivityContent = ({ activities, isLoading, error }: ActivityContentProps)
     return (
       <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
         <p className="font-medium">No activity found</p>
-        <p className="text-sm mt-1">Activity will appear here as users interact with the system</p>
+        <p className="text-sm mt-1">
+          Activity will appear here as users interact with the system
+        </p>
       </div>
     );
   }
@@ -324,16 +395,32 @@ const ActivityContent = ({ activities, isLoading, error }: ActivityContentProps)
   return (
     <div className="space-y-4">
       {activities.map((activity) => (
-        <div key={activity.id} className="flex items-center justify-between border-b pb-3">
+        <div
+          key={activity.id}
+          className="flex items-center justify-between border-b pb-3"
+        >
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-full 
-              ${activity.status === 'completed' ? 'bg-green-100' :
-                activity.status === 'pending' ? 'bg-amber-100' :
-                  activity.status === 'cancelled' ? 'bg-red-100' : 'bg-blue-100'}`}>
-              {activity.status === 'completed' ? <DollarSign className="h-4 w-4 text-green-600" /> :
-                activity.status === 'pending' ? <Clock className="h-4 w-4 text-amber-600" /> :
-                  activity.status === 'cancelled' ? <Trash2 className="h-4 w-4 text-red-600" /> :
-                    <Activity className="h-4 w-4 text-blue-600" />}
+            <div
+              className={`p-2 rounded-full 
+              ${
+                activity.status === "completed"
+                  ? "bg-green-100"
+                  : activity.status === "pending"
+                    ? "bg-amber-100"
+                    : activity.status === "cancelled"
+                      ? "bg-red-100"
+                      : "bg-blue-100"
+              }`}
+            >
+              {activity.status === "completed" ? (
+                <ShoppingBag className="h-4 w-4 text-green-600" />
+              ) : activity.status === "pending" ? (
+                <ShoppingBag className="h-4 w-4 text-amber-600" />
+              ) : activity.status === "cancelled" ? (
+                <ShoppingBag className="h-4 w-4 text-red-600" />
+              ) : (
+                <ShoppingBag className="h-4 w-4 text-blue-600" />
+              )}
             </div>
             <div>
               <p className="text-sm font-medium">{activity.action}</p>
@@ -341,7 +428,9 @@ const ActivityContent = ({ activities, isLoading, error }: ActivityContentProps)
             </div>
           </div>
           <div className="text-right">
-            {activity.amount && <p className="text-sm font-medium">{activity.amount}</p>}
+            {activity.amount && (
+              <p className="text-sm font-medium">{activity.amount}</p>
+            )}
             <p className="text-xs text-muted-foreground">{activity.time}</p>
           </div>
         </div>
@@ -357,9 +446,9 @@ const ProductCategories = () => {
   const [deleteCategory] = useDeleteCategoryMutation();
 
   // Debug logs for categories
-  console.log('Categories Response:', categories);
-  console.log('Categories Loading State:', isLoading);
-  console.log('Categories Error:', error);
+  console.log("Categories Response:", categories);
+  console.log("Categories Loading State:", isLoading);
+  console.log("Categories Error:", error);
 
   const handleDelete = async (id: number) => {
     try {
@@ -406,7 +495,9 @@ const ProductCategories = () => {
           <div>
             <h3 className="font-medium">{category.name}</h3>
             {category.description && (
-              <p className="text-sm text-gray-500 line-clamp-1">{category.description}</p>
+              <p className="text-sm text-gray-500 line-clamp-1">
+                {category.description}
+              </p>
             )}
           </div>
           <div className="flex gap-2">
@@ -415,7 +506,7 @@ const ProductCategories = () => {
               className="p-1.5 hover:bg-red-50 rounded text-red-500 transition-colors"
               onClick={() => handleDelete(category.id)}
             >
-              <Trash2 size={16} />
+              <ShoppingBag size={16} />
             </button>
           </div>
         </div>

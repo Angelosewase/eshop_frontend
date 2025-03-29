@@ -4,14 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { HeaderCategoriesDropDown } from "./modals";
 import { useGetCurrentUserQuery } from "../../features/users/userSlice";
 import { useAppSelector } from "../../hooks/Reduxhooks";
-import { selectCartItemsCount } from "../../features/cart/cartSlice";
-import { toast } from "sonner";
+import { selectCartItemCount } from "../../features/cart/cartSlice";
 
 function WebHeader() {
   const { data: userData, isLoading } = useGetCurrentUserQuery();
-  const cartItemsCount = useAppSelector(selectCartItemsCount);
+  const cartItemsCount = useAppSelector(selectCartItemCount);
   const navigate = useNavigate();
-
 
   return (
     <div className="w-full ">
@@ -59,7 +57,7 @@ function WebHeader() {
               Cart
               {cartItemsCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItemsCount > 9 ? '9+' : cartItemsCount}
+                  {cartItemsCount > 9 ? "9+" : cartItemsCount}
                 </span>
               )}
             </Link>
@@ -77,7 +75,7 @@ function WebHeader() {
               </div>
             ) : userData ? (
               <button
-                onClick={() => navigate('/profile')}
+                onClick={() => navigate("/profile")}
                 className="py-1 flex items-center gap-2 px-3 hover:bg-gray-100 rounded-lg"
               >
                 <User className="size-5" />
@@ -85,7 +83,7 @@ function WebHeader() {
               </button>
             ) : (
               <button
-                onClick={() => navigate('/auth/login')}
+                onClick={() => navigate("/auth/login")}
                 className="py-1 flex items-center gap-2 px-3 hover:bg-gray-100 rounded-lg"
               >
                 <User className="size-5" />

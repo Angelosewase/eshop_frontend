@@ -3,16 +3,21 @@ import { ScrollArea, ScrollBar } from "../../components/ui/scroll-area";
 import { Button } from "../../components/ui/button";
 import { WebProduct } from "../../components/custom";
 import { useGetProductsQuery } from "../../features/inventory/productSlice";
-import { useGetCategoriesQuery, Category } from "../../features/inventory/categorySlice";
+import {
+  useGetCategoriesQuery,
+  Category,
+} from "../../features/inventory/categorySlice";
 
 export default function ExplorePage() {
-  const [selectedCategory, setSelectedCategory] = useState<number | undefined>(undefined);
+  const [selectedCategory, setSelectedCategory] = useState<number | undefined>(
+    undefined,
+  );
   const [page, setPage] = useState(1);
   const { data: categoriesData } = useGetCategoriesQuery();
   const { data, isLoading } = useGetProductsQuery({
     page,
     limit: 12,
-    categoryId: selectedCategory
+    categoryId: selectedCategory,
   });
 
   if (isLoading) {
@@ -42,7 +47,9 @@ export default function ExplorePage() {
             {categories.map((category: Category) => (
               <Button
                 key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
+                variant={
+                  selectedCategory === category.id ? "default" : "outline"
+                }
                 className="rounded-full"
                 onClick={() => setSelectedCategory(category.id)}
               >
@@ -55,7 +62,10 @@ export default function ExplorePage() {
 
         <div>
           <h2 className="text-2xl font-semibold mb-6">
-            {selectedCategory === undefined ? "All Products" : categories.find((c: Category) => c.id === selectedCategory)?.name}
+            {selectedCategory === undefined
+              ? "All Products"
+              : categories.find((c: Category) => c.id === selectedCategory)
+                  ?.name}
           </h2>
 
           {products.length === 0 ? (
@@ -69,7 +79,9 @@ export default function ExplorePage() {
                   <div key={product.id} className="flex justify-center">
                     <WebProduct
                       id={product.id}
-                      description={product.description || "No description available"}
+                      description={
+                        product.description || "No description available"
+                      }
                       imgUrl={product.cover || "/placeholder.jpg"}
                       name={product.name}
                       price={Number(product.productSkus?.[0]?.price) || 0}
@@ -86,7 +98,7 @@ export default function ExplorePage() {
                 <div className="flex justify-center mt-8 gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
                   >
                     Previous
@@ -96,7 +108,7 @@ export default function ExplorePage() {
                   </span>
                   <Button
                     variant="outline"
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
                   >
                     Next

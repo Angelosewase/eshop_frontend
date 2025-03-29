@@ -21,7 +21,7 @@ import {
   Orders as WebOrders,
   ProductDetails,
   Explore,
-  CheckOut,
+  Checkout,
   Profile,
   OrderConfirmation,
   PaymentMethods,
@@ -41,7 +41,7 @@ const routes = createBrowserRouter([
     children: [
       { path: "/auth/login", element: <Login /> },
       { path: "/auth/signup", element: <SignUp /> },
-    ]
+    ],
   },
   {
     path: "/admin",
@@ -105,7 +105,7 @@ const routes = createBrowserRouter([
       { path: "orders", element: <WebOrders /> },
       { path: "contact", element: <Contact /> },
       { path: "profile", element: <Profile /> },
-      { path: "checkout", element: <CheckOut /> },
+      { path: "checkout", element: <Checkout /> },
       { path: "order-confirmation", element: <OrderConfirmation /> },
       { path: "payment-methods", element: <PaymentMethods /> },
     ],
@@ -113,7 +113,7 @@ const routes = createBrowserRouter([
   {
     path: "/profile",
     element: <Profile />,
-  }
+  },
 ]);
 
 function App() {
@@ -122,21 +122,19 @@ function App() {
   useEffect(() => {
     const checkExistingCart = async () => {
       try {
-        const storedCart = localStorage.getItem('cart');
+        const storedCart = localStorage.getItem("cart");
         const hasLocalItems = storedCart && JSON.parse(storedCart).length > 0;
 
         if (hasLocalItems) {
           await cartSync.initializeCart();
         }
       } catch (error) {
-        const err = error instanceof Error ? error : new Error('Unknown error checking cart');
+        const err =
+          error instanceof Error
+            ? error
+            : new Error("Unknown error checking cart");
         setInitError(err);
-        errorHandler.handleCartError(
-          error,
-          'checkExistingCart',
-          null,
-          true
-        );
+        errorHandler.handleCartError(error, "checkExistingCart", null, true);
       }
     };
 
@@ -145,10 +143,11 @@ function App() {
 
   if (initError) {
     errorHandler.handleCartError(
-      'Application continuing with cart initialization error: ' + initError.message,
-      'App.useEffect',
+      "Application continuing with cart initialization error: " +
+        initError.message,
+      "App.useEffect",
       null,
-      false
+      false,
     );
   }
 
